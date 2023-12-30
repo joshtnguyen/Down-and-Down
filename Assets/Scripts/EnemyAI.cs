@@ -13,6 +13,8 @@ public class EnemyAI : MonoBehaviour
 
     public LayerMask solidObjectsLayer;
 
+    public LayerMask playerObjectsLayer;
+
     private void Awake() {
         animator = GetComponent<Animator>();
     }
@@ -54,27 +56,29 @@ public class EnemyAI : MonoBehaviour
                 verticalCorrection = false;
             }
 
-            if (verticalCorrection && horizontalCorrection) {
-                if (Vector3.Distance(playerPos, targetPosX) > Vector3.Distance(playerPos, targetPosY)) {
+            if (!playerInCollision(targetPos)) {
+                if (verticalCorrection && horizontalCorrection) {
+                    if (Vector3.Distance(playerPos, targetPosX) > Vector3.Distance(playerPos, targetPosY)) {
+                        targetPos.y = targetPosY.y;
+                        animator.SetFloat("moveX", 0);
+                        animator.SetFloat("moveY", targetPosY.y - pos.y);
+                    } else {
+                        targetPos.x = targetPosX.x;
+                        animator.SetFloat("moveX", targetPosX.x - pos.x);
+                        animator.SetFloat("moveY", 0);
+                    }
+                    StartCoroutine(Move(targetPos));
+                } else if (verticalCorrection) {
                     targetPos.y = targetPosY.y;
                     animator.SetFloat("moveX", 0);
                     animator.SetFloat("moveY", targetPosY.y - pos.y);
-                } else {
+                    StartCoroutine(Move(targetPos));
+                } else if (horizontalCorrection) {
                     targetPos.x = targetPosX.x;
                     animator.SetFloat("moveX", targetPosX.x - pos.x);
                     animator.SetFloat("moveY", 0);
+                    StartCoroutine(Move(targetPos));
                 }
-                StartCoroutine(Move(targetPos));
-            } else if (verticalCorrection) {
-                targetPos.y = targetPosY.y;
-                animator.SetFloat("moveX", 0);
-                animator.SetFloat("moveY", targetPosY.y - pos.y);
-                StartCoroutine(Move(targetPos));
-            } else if (horizontalCorrection) {
-                targetPos.x = targetPosX.x;
-                animator.SetFloat("moveX", targetPosX.x - pos.x);
-                animator.SetFloat("moveY", 0);
-                StartCoroutine(Move(targetPos));
             }
         }
 
@@ -99,6 +103,14 @@ public class EnemyAI : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    private bool playerInCollision(Vector3 targetPos) {
+        if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null) {
+            Debug.Log("HIT!");
+            return true;
+        }
+        return false;
     }
 }
 

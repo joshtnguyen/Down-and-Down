@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
 
     private bool isMoving;
 
+    public static bool isFrozen;
+
     private Vector2 input;
 
     private Animator animator;
@@ -20,7 +22,7 @@ public class PlayerController : MonoBehaviour
     
     private void Update()
     {
-        if (!isMoving)
+        if (!isMoving && !isFrozen)
         {
             input.x = Input.GetAxisRaw("Horizontal");
             input.y = Input.GetAxisRaw("Vertical");
