@@ -57,19 +57,23 @@ public class EnemyAI : MonoBehaviour
             if (verticalCorrection && horizontalCorrection) {
                 if (Vector3.Distance(playerPos, targetPosX) > Vector3.Distance(playerPos, targetPosY)) {
                     targetPos.y = targetPosY.y;
+                    animator.SetFloat("moveX", 0);
                     animator.SetFloat("moveY", targetPosY.y - pos.y);
                 } else {
                     targetPos.x = targetPosX.x;
                     animator.SetFloat("moveX", targetPosX.x - pos.x);
+                    animator.SetFloat("moveY", 0);
                 }
                 StartCoroutine(Move(targetPos));
             } else if (verticalCorrection) {
                 targetPos.y = targetPosY.y;
+                animator.SetFloat("moveX", 0);
                 animator.SetFloat("moveY", targetPosY.y - pos.y);
                 StartCoroutine(Move(targetPos));
             } else if (horizontalCorrection) {
                 targetPos.x = targetPosX.x;
                 animator.SetFloat("moveX", targetPosX.x - pos.x);
+                animator.SetFloat("moveY", 0);
                 StartCoroutine(Move(targetPos));
             }
         }
