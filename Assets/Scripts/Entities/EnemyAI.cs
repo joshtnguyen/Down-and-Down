@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
+    
+    public bool isAlive = true;
 
     public float moveSpeed;
 
@@ -14,6 +16,13 @@ public class EnemyAI : MonoBehaviour
     public LayerMask solidObjectsLayer;
 
     public LayerMask playerObjectsLayer;
+
+    public static void CreateEnemy(GameObject originalEnemy, int num) {
+        for (int i = 0; i < num; i++) {
+            GameObject EnemyClone = Instantiate(originalEnemy, new Vector3(Random.Range(1, 17) - 8, Random.Range(1, 17) - 8), originalEnemy.transform.rotation);
+            EnemyClone.name = "EnemyClone" + (i + 1);
+        }
+    }
 
     private void Awake() {
         animator = GetComponent<Animator>();
@@ -107,7 +116,7 @@ public class EnemyAI : MonoBehaviour
 
     private bool PlayerInCollision(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
-            Battle.StartBattle();
+            //Battle.StartBattle();
             return true;
         }
         return false;

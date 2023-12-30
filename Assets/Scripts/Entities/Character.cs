@@ -2,20 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Game : MonoBehaviour
+public class Character : MonoBehaviour
 {
 
-    public static bool gameMovementFreeze = false;
+    public double baseHP;
 
-    public static string gameEvent = "Roaming";
+    public double baseATK;
 
-    public GameObject originalEnemy;
+    public double baseDEF;
+
+    public double baseSPD;
+
+    public double baseCR;
+
+    public double baseCD;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameEvent = "Roaming";
-        EnemyAI.CreateEnemy(originalEnemy, 1);
+        
     }
 
     // Update is called once per frame
