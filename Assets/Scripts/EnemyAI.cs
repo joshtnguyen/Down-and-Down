@@ -60,7 +60,6 @@ public class EnemyAI : MonoBehaviour
                     animator.SetFloat("moveY", targetPosY.y - pos.y);
                 } else {
                     targetPos.x = targetPosX.x;
-                    Debug.Log(targetPosX.x - pos.x);
                     animator.SetFloat("moveX", targetPosX.x - pos.x);
                 }
                 StartCoroutine(Move(targetPos));
@@ -71,7 +70,6 @@ public class EnemyAI : MonoBehaviour
             } else if (horizontalCorrection) {
                 targetPos.x = targetPosX.x;
                 animator.SetFloat("moveX", targetPosX.x - pos.x);
-                Debug.Log(targetPosX.x - pos.x);
                 StartCoroutine(Move(targetPos));
             }
         }
