@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour
 
     private bool isMoving;
 
-    public static bool isFrozen;
-
     private Vector2 input;
 
     private Animator animator;
@@ -22,7 +20,7 @@ public class PlayerController : MonoBehaviour
     
     private void Update()
     {
-        if (!isMoving && !isFrozen)
+        if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
         {
             input.x = Input.GetAxisRaw("Horizontal");
             input.y = Input.GetAxisRaw("Vertical");
@@ -39,7 +37,7 @@ public class PlayerController : MonoBehaviour
                 targetPos.x += input.x;
                 targetPos.y += input.y;
                 
-                if (isWalkable(targetPos)) {
+                if (IsWalkable(targetPos)) {
                     StartCoroutine(Move(targetPos));
                 }
             }
@@ -61,7 +59,7 @@ public class PlayerController : MonoBehaviour
         isMoving = false;
     }
 
-    private bool isWalkable(Vector3 targetPos) {
+    private bool IsWalkable(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, solidObjectsLayer) != null) {
             return false;
         }

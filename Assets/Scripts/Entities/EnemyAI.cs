@@ -21,7 +21,7 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        if (!isMoving)
+        if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
         {
 
             var playerPos = GameObject.Find("Player").transform.position;
@@ -40,7 +40,7 @@ public class EnemyAI : MonoBehaviour
                 horizontalCorrection = true;
             }
             
-            if (!isWalkable(targetPosX)) {
+            if (!IsWalkable(targetPosX)) {
                 horizontalCorrection = false;
             }
 
@@ -52,11 +52,11 @@ public class EnemyAI : MonoBehaviour
                 verticalCorrection = true;
             }
 
-            if (!isWalkable(targetPosY)) {
+            if (!IsWalkable(targetPosY)) {
                 verticalCorrection = false;
             }
 
-            if (!playerInCollision(targetPos)) {
+            if (!PlayerInCollision(targetPos)) {
                 if (verticalCorrection && horizontalCorrection) {
                     if (Vector3.Distance(playerPos, targetPosX) > Vector3.Distance(playerPos, targetPosY)) {
                         targetPos.y = targetPosY.y;
@@ -98,16 +98,16 @@ public class EnemyAI : MonoBehaviour
         isMoving = false;
     }
 
-    private bool isWalkable(Vector3 targetPos) {
+    private bool IsWalkable(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, solidObjectsLayer) != null) {
             return false;
         }
         return true;
     }
 
-    private bool playerInCollision(Vector3 targetPos) {
-        if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null) {
-            Debug.Log("HIT!");
+    private bool PlayerInCollision(Vector3 targetPos) {
+        if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
+            Battle.StartBattle();
             return true;
         }
         return false;
