@@ -50,7 +50,7 @@ public class EnemyAI : MonoBehaviour
                 verticalCorrection = true;
             }
 
-            if (!isWalkable(targetPos)) {
+            if (!isWalkable(targetPosY)) {
                 verticalCorrection = false;
             }
 
