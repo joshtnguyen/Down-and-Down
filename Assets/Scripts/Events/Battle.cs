@@ -38,6 +38,8 @@ public class Battle : MonoBehaviour
     public Text obj_HPVALUE_3;
     public Text obj_HPVALUE_4;
 
+    public GameObject TurnBox;
+    public Text turnOrderDisplay;
 
     public static bool firstRun = false;
     public static int battleSP;
@@ -168,6 +170,15 @@ public class Battle : MonoBehaviour
                 action_SKIP.fontStyle = FontStyle.Bold;
                 break;
         }
+        
+        int turnNumber = 0;
+        string displayCycle = "";
+        foreach(string c in cycle) {
+            turnNumber++;
+            displayCycle += turnNumber + " - " + c + "\n";
+        }
+
+        turnOrderDisplay.text = displayCycle;
 
         if (!buttonCooldown) {
             if (lastTurn != turn) {
