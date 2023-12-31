@@ -16874,7 +16874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfac86da473abe42bb15c0d3d9429cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAlive: 1
+  isAlive: 0
   moveSpeed: 2
   solidObjectsLayer:
     serializedVersion: 2

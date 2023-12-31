@@ -7,6 +7,18 @@ using UnityEngine.SceneManagement;
 public class Battle : MonoBehaviour
 {
 
+    public GameObject SP_Bar;
+    public Slider obj_SPSLIDER;
+    public Text obj_SP;
+
+    public GameObject ActionBox;
+    public Text action_ATK;
+    public Text action_SK1;
+    public Text action_SK2;
+    public Text action_SKIP;
+
+    public GameObject CharacterBox;
+
     public Text obj_NAME_1;
     public Text obj_NAME_2;
     public Text obj_NAME_3;
@@ -24,6 +36,8 @@ public class Battle : MonoBehaviour
 
 
     public static bool firstRun = false;
+    public static int battleSP;
+    public static int battleSPMAX;
     public static List<Character> characters = new List<Character>();
     public static Character walter = new Character("Walter", 100, 15, 10, 10, 5, 12);
     public static Character benedict = new Character("Benedict", 95, 10, 12, 11, 8, 8);
@@ -48,6 +62,8 @@ public class Battle : MonoBehaviour
             characters.Add(benedict);
             characters.Add(sherri);
             characters.Add(jade);
+            battleSP = 10;
+            battleSPMAX = battleSP;
         }
         
     }
@@ -67,5 +83,14 @@ public class Battle : MonoBehaviour
         obj_HPSLIDER_4.maxValue = jade.baseHP;
         obj_HPSLIDER_4.value = jade.health;
         obj_HPVALUE_4.text = jade.health + " / " + jade.baseHP;
+
+        obj_SPSLIDER.maxValue = battleSPMAX;
+        obj_SPSLIDER.value = battleSP;
+        if (battleSP == battleSPMAX) {
+            obj_SP.text = "MAX";
+        } else {
+            obj_SP.text = "" + battleSP;
+        }
+
     }
 }

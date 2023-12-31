@@ -29,7 +29,7 @@ public class Character
         baseSPD = spd;
         baseCR = cr;
         baseCD = cd;
-        health = hp;
+        health = hp / 2 + 10;
     }
 
     // Start is called before the first frame update
