@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     
-    public bool isAlive = true;
+    public bool isAlive;
 
     public float moveSpeed;
 
@@ -21,6 +21,8 @@ public class EnemyAI : MonoBehaviour
         for (int i = 0; i < num; i++) {
             GameObject EnemyClone = Instantiate(originalEnemy, new Vector3(Random.Range(1, 17) - 8, Random.Range(1, 17) - 8), originalEnemy.transform.rotation);
             EnemyClone.name = "EnemyClone" + (i + 1);
+            EnemyAI obj = EnemyClone.GetComponent<EnemyAI>();
+            obj.isAlive = true;
         }
     }
 
@@ -30,7 +32,9 @@ public class EnemyAI : MonoBehaviour
 
     private void Update()
     {
-        if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
+        if (!isAlive) {
+            Destroy(this.gameObject);
+        } else if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
         {
 
             var playerPos = GameObject.Find("Player").transform.position;
@@ -116,7 +120,7 @@ public class EnemyAI : MonoBehaviour
 
     private bool PlayerInCollision(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
-            //Battle.StartBattle();
+            Battle.StartBattle(this.gameObject);
             return true;
         }
         return false;
