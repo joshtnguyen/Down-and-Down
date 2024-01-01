@@ -10,16 +10,16 @@ using Unity.VisualScripting;
 public class Battle : MonoBehaviour
 {
 
-    private Vector2 input;
+    private List<GameObject> trashCan = new List<GameObject>();
     public GameObject SP_Bar;
     public Slider obj_SPSLIDER;
     public Text obj_SP;
 
     public GameObject ActionBox;
-    public Text action_ATK;
-    public Text action_SK1;
-    public Text action_SK2;
-    public Text action_SKIP;
+    public Text action_OP1;
+    public Text action_OP2;
+    public Text action_OP3;
+    public Text action_OP4;
 
     public GameObject CharacterBox;
 
@@ -41,15 +41,18 @@ public class Battle : MonoBehaviour
     public GameObject TurnBox;
     public Text turnOrderDisplay;
 
+    public GameObject DescriptionBox;
+
     public static bool firstRun = false;
     public static int battleSP;
     public static int battleSPMAX;
     public static int sel_phase;
+    public static int sel_action_last = -1;
     public static int sel_action = 0;
     public static int sel_target = 0;
     public static bool buttonCooldown = false;
-    public static float moveSpeed = 2500;
-    public static List<string> cycle = new List<string>();
+    public static float moveSpeed = 4000;
+    public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
 
     public static List<Character> characters = new List<Character>();
@@ -57,13 +60,18 @@ public class Battle : MonoBehaviour
     public static Character benedict = new Character("Benedict", 95, 10, 12, 11, 8, 8);
     public static Character sherri = new Character("Sherri", 120, 7, 12, 12, 8, 3);
     public static Character jade = new Character("Jade", 150, 5, 18, 9, 2, 3);
+    public static List<Enemy> enemies = new List<Enemy>();
 
 
-    public static void StartBattle(GameObject enemy) {
+    public static void StartBattle(GameObject enemy, int numEnemies) {
         Destroy(enemy);
         Game.gameEvent = "Battle";
         Game.gameMovementFreeze = true;
         lastTurn = "NOBODY";
+        sel_phase = 1;
+        for (int i = 0; i < numEnemies; i++) {
+            enemies.Add(new Enemy("Slime", i + 1, 45, 8, 5, 5, 5, 8));
+        }
         SceneManager.LoadScene("Battle Scene");
     }
 
@@ -81,7 +89,7 @@ public class Battle : MonoBehaviour
         }
 
         foreach(Character c in charCycle) {
-            cycle.Add(c.character);
+            cycle.Add(c);
         }
     }
 
@@ -91,12 +99,23 @@ public class Battle : MonoBehaviour
 
         if (!firstRun) {
             firstRun = true;
+
             characters.Add(walter);
             characters.Add(benedict);
             characters.Add(sherri);
             characters.Add(jade);
+            
             battleSP = 10;
             battleSPMAX = battleSP;
+
+            Skills basic = new Skills("Attack", "A basic attack that deals 100% of the player's attack on a single target.", 0, 0);
+            Skills item = new Skills("Items", "Use an item to help you and your allies with battle!", 0, 0);
+            Skills test = new Skills("Test", "Test skill. JTN is a pro gamer tho.", 2, 3);
+            foreach (Character c in characters) {
+                c.skills.Add(basic);
+                c.skills.Add(item);
+                c.skills.Add(test);
+            }
         }
         
     }
@@ -135,8 +154,8 @@ public class Battle : MonoBehaviour
             //yield return new WaitForSeconds(2);
         }
 
-        string turn = cycle[0];
-        switch(cycle[0]) {
+        string turn = cycle[0].character;
+        switch(cycle[0].character) {
             case "Walter":
                 obj_NAME_1.fontStyle = FontStyle.Bold;
                 break;
@@ -151,48 +170,84 @@ public class Battle : MonoBehaviour
                 break;
         }
 
-        action_ATK.fontStyle = FontStyle.Normal;
-        action_SK1.fontStyle = FontStyle.Normal;
-        action_SK2.fontStyle = FontStyle.Normal;
-        action_SKIP.fontStyle = FontStyle.Normal;
+        action_OP1.fontStyle = FontStyle.Normal;
+        action_OP2.fontStyle = FontStyle.Normal;
+        action_OP3.fontStyle = FontStyle.Normal;
+        action_OP4.fontStyle = FontStyle.Normal;
 
         switch(sel_action) {
             case 0:
-                action_ATK.fontStyle = FontStyle.Bold;
+                action_OP1.fontStyle = FontStyle.Bold;
                 break;
             case 1:
-                action_SK1.fontStyle = FontStyle.Bold;
+                action_OP2.fontStyle = FontStyle.Bold;
                 break;
             case 2:
-                action_SK2.fontStyle = FontStyle.Bold;
+                action_OP3.fontStyle = FontStyle.Bold;
                 break;
             case 3:
-                action_SKIP.fontStyle = FontStyle.Bold;
+                action_OP4.fontStyle = FontStyle.Bold;
                 break;
         }
         
         int turnNumber = 0;
         string displayCycle = "";
-        foreach(string c in cycle) {
+        foreach(Character c in cycle) {
             turnNumber++;
-            displayCycle += turnNumber + " - " + c + "\n";
+            displayCycle += turnNumber + " - " + c.character + "\n";
         }
 
         turnOrderDisplay.text = displayCycle;
 
         if (!buttonCooldown) {
-            if (lastTurn != turn) {
-                buttonCooldown = true;
-                sel_phase = 0;
-                lastTurn = turn;
-                var targetPos = CharacterBox.transform.position;
-                ActionBox.transform.position = CharacterBox.transform.position;
-                targetPos.x += 517;
-                StartCoroutine(Move(ActionBox, targetPos));
-                buttonCooldown = false;
+            if (isPlayerTurn()) {
+                if (lastTurn != turn) {
+                    sel_phase = 2;
+                    lastTurn = turn;
+                    var targetPos = CharacterBox.transform.position;
+                    ActionBox.transform.position = CharacterBox.transform.position;
+                    targetPos.x += 517;
+                    StartCoroutine(Move(ActionBox, targetPos));
 
-            } else if (sel_phase == 0) {
-                updateSelection(ref sel_action, 3);
+                } else if (sel_phase == 2) {
+                    updateSelection(ref sel_action, 3);
+                    string selectedAction = "idklol";
+                    switch(sel_action) {
+                        case 0:
+                            selectedAction = action_OP1.text;
+                            break;
+                        case 1:
+                            selectedAction = action_OP2.text;
+                            break;
+                        case 2:
+                            selectedAction = action_OP3.text;
+                            break;
+                        case 3:
+                            selectedAction = action_OP4.text;
+                            break;
+                    }
+                    
+                    if (selectedAction != "idklol") {
+                        if (sel_action_last != sel_action) {
+                            sel_action_last = sel_action;
+                            selectedAction = selectedAction.Substring(4);
+                            while (trashCan.Any()) {
+                                GameObject t = trashCan[0];
+                                trashCan.RemoveAt(0);
+                                Destroy(t);
+                            }
+                            GameObject DescriptionBoxClone = Instantiate(DescriptionBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                            DescriptionBoxClone.transform.SetParent(DescriptionBox.transform);
+                            DescriptionBoxClone.name = "TEMP DescBox" + sel_action;
+                            DescriptionBoxClone.GetComponent<DescriptionManager>().text = DescriptionManager.convertSkillDescription(cycle[0], selectedAction);
+                            trashCan.Add(DescriptionBoxClone);
+                            var targetPos = ActionBox.transform.position;
+                            targetPos.x += 517;
+                            StartCoroutine(Move(DescriptionBoxClone, targetPos));
+                            
+                        }
+                    }
+                }
             }
         }
 
@@ -213,6 +268,17 @@ public class Battle : MonoBehaviour
                 option = optionLimit;
             }
         }
+
+    }
+
+    private bool isPlayerTurn() {
+        string p = cycle[0].character;
+        foreach (Character c in characters) {
+            if (p == c.character) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int GetVertical() {
@@ -237,12 +303,18 @@ public class Battle : MonoBehaviour
 
     IEnumerator Move(GameObject item, Vector3 targetPos)
     {
-        while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
+
+        buttonCooldown = true;
+        while (item != null && (targetPos - item.transform.position).sqrMagnitude > Mathf.Epsilon)
         {
             item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, moveSpeed * Time.deltaTime);
             yield return null;
         }
-        item.transform.position = targetPos;
+
+        if (item != null) {
+            item.transform.position = targetPos;
+        }
+        buttonCooldown = false;
     }
     
 }

@@ -21,6 +21,8 @@ public class Character
 
     public int health;
 
+    public List<Skills> skills = new List<Skills>();
+
     public Character(string name, int hp, double atk, double def, double spd, double cr, double cd) {
         character = name;
         baseHP = hp;
@@ -43,4 +45,9 @@ public class Character
     {
         
     }
+
+    public override string ToString() {
+        return "{ name: " + character + ", baseHP: " + baseHP + ", hp: " + health + " }";
+    }
+
 }
