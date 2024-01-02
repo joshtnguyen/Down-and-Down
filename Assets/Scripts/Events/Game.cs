@@ -12,6 +12,8 @@ public class Game : MonoBehaviour
 
     public GameObject originalEnemy;
 
+    public static int floorNumber = 1;
+
     // Start is called before the first frame update
     void Start()
     {

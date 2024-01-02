@@ -6,6 +6,7 @@ public class Enemy : Character
 {
 
     public int id;
+    public int sp;
 
     public Enemy(string name, int identifier, int hp, double atk, double def, double spd, double cr, double cd) : base(name, hp, atk, def, spd, cr, cd) {
         character = name;
@@ -17,6 +18,21 @@ public class Enemy : Character
         baseCD = cd;
         health = hp;
         id = identifier;
+    }
+
+    public static Character selectTarget(bool isCharacter) {
+        if (isCharacter) {
+            List<Character> selection = new List<Character>();
+            foreach (Character c in Battle.characters) {
+                if (c.health > 0) {
+                    selection.Add(c);
+                }
+            }
+            var rand = new System.Random();
+            return selection[rand.Next(selection.Count)];
+        }
+
+        return Battle.characters[0];
     }
 
     // Start is called before the first frame update
@@ -32,7 +48,7 @@ public class Enemy : Character
     }
 
     public override string ToString() {
-        return "{ name: " + character + ", id: " + id + ", baseHP: " + baseHP + ", hp: " + health + " }";
+        return "{ name: " + character + ", id: " + id + " }";
     }
 
 }

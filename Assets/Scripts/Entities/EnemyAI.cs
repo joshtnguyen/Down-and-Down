@@ -22,6 +22,7 @@ public class EnemyAI : MonoBehaviour
             GameObject EnemyClone = Instantiate(originalEnemy, new Vector3(Random.Range(1, 17) - 8, Random.Range(1, 17) - 8), originalEnemy.transform.rotation);
             EnemyClone.name = "EnemyClone" + (i + 1);
             EnemyAI obj = EnemyClone.GetComponent<EnemyAI>();
+            obj.GetComponent<Renderer>().enabled = true;
             obj.isAlive = true;
         }
     }
@@ -33,7 +34,7 @@ public class EnemyAI : MonoBehaviour
     private void Update()
     {
         if (!isAlive) {
-            Destroy(this.gameObject);
+            GetComponent<Renderer>().enabled = false;
         } else if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
         {
 

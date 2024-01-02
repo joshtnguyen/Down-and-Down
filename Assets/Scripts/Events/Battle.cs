@@ -71,15 +71,20 @@ public class Battle : MonoBehaviour
         sel_phase = 1;
         for (int i = 0; i < numEnemies; i++) {
             enemies.Add(new Enemy("Slime", i + 1, 45, 8, 5, 5, 5, 8));
+
         }
         SceneManager.LoadScene("Battle Scene");
+        foreach (Character c in characters) {
+            c.resetMod();
+        }
     }
 
     private static void NewCycle() {
         cycle.Clear();
         cycle.Add(characters[characters.Count - 1]);
         for (int i = characters.Count - 2; i >= 0; i--) {
-            bool flag = true;
+            if (characters[i].health > 0) {
+                bool flag = true;
             for (int j = cycle.Count - 1; j >= 0; j--) {
                 if (characters[i].baseSPD > cycle[j].baseSPD) {
                     cycle.Insert(j, characters[i]);
@@ -90,20 +95,23 @@ public class Battle : MonoBehaviour
             if (flag) {
                 cycle.Insert(0, characters[i]);
             }
+            }
         }
         
         if (enemies.Any()) {
             for (int i = enemies.Count - 1; i >= 0; i--) {
-                bool flag = true;
-                for (int j = cycle.Count - 1; j >= 0; j--) {
-                    if (enemies[i].baseSPD > cycle[j].baseSPD) {
-                        cycle.Insert(j, enemies[i]);
-                        flag = false;
+                if (enemies[i].health > 0) {
+                    bool flag = true;
+                    for (int j = cycle.Count - 1; j >= 0; j--) {
+                        if (enemies[i].baseSPD > cycle[j].baseSPD) {
+                            cycle.Insert(j, enemies[i]);
+                            flag = false;
+                        }
+                        j = -1;
                     }
-                    j = -1;
-                }
-                if (flag) {
-                    cycle.Insert(0, enemies[i]);
+                    if (flag) {
+                        cycle.Insert(0, enemies[i]);
+                    }
                 }
             }
         }
@@ -125,13 +133,12 @@ public class Battle : MonoBehaviour
             battleSP = 10;
             battleSPMAX = battleSP;
 
-            Skills basic = new Skills("Attack", "A basic attack that deals 100% of the player's attack on a single target.", 0, 0);
-            Skills item = new Skills("Items", "Use an item to help you and your allies with battle!", 0, 0);
-            Skills test = new Skills("Test", "Test skill. JTN is a pro gamer tho.", 2, 3);
+            SkillsRegistry.firstRun();
+
             foreach (Character c in characters) {
-                c.skills.Add(basic);
-                c.skills.Add(item);
-                c.skills.Add(test);
+                c.skills.Add(SkillsRegistry.getSkill("Attack"));
+                c.skills.Add(SkillsRegistry.getSkill("Items"));
+                c.skills.Add(SkillsRegistry.getSkill("Test"));
             }
         }
         
@@ -215,11 +222,13 @@ public class Battle : MonoBehaviour
 
         turnOrderDisplay.text = displayCycle;
 
+        // CYCLE UPDATE
         if (!buttonCooldown) {
             if (isPlayerTurn()) {
                 if (lastTurn != turn) {
                     sel_phase = 2;
                     lastTurn = turn;
+                    cycle[0].startTurn();
                     var targetPos = CharacterBox.transform.position;
                     ActionBox.transform.position = CharacterBox.transform.position;
                     targetPos.x += 517;
@@ -265,6 +274,7 @@ public class Battle : MonoBehaviour
                     }
                 }
             } else {
+                cycle[0].damage(Enemy.selectTarget(true), 100);
                 StartCoroutine(SuspendCycleChange(2));
             }
         }
