@@ -77,20 +77,37 @@ public class Battle : MonoBehaviour
 
     private static void NewCycle() {
         cycle.Clear();
-        List<Character> charCycle = new List<Character>();
-        charCycle.Add(characters[characters.Count - 1]);
+        cycle.Add(characters[characters.Count - 1]);
         for (int i = characters.Count - 2; i >= 0; i--) {
-            for (int j = charCycle.Count - 1; j >= 0; j--) {
-                if (characters[i].baseSPD > charCycle[j].baseSPD) {
-                    charCycle.Insert(j, characters[i]);
+            bool flag = true;
+            for (int j = cycle.Count - 1; j >= 0; j--) {
+                if (characters[i].baseSPD > cycle[j].baseSPD) {
+                    cycle.Insert(j, characters[i]);
+                    flag = false;
                 }
                 j = -1;
             }
+            if (flag) {
+                cycle.Insert(0, characters[i]);
+            }
         }
-
-        foreach(Character c in charCycle) {
-            cycle.Add(c);
+        
+        if (enemies.Any()) {
+            for (int i = enemies.Count - 1; i >= 0; i--) {
+                bool flag = true;
+                for (int j = cycle.Count - 1; j >= 0; j--) {
+                    if (enemies[i].baseSPD > cycle[j].baseSPD) {
+                        cycle.Insert(j, enemies[i]);
+                        flag = false;
+                    }
+                    j = -1;
+                }
+                if (flag) {
+                    cycle.Insert(0, enemies[i]);
+                }
+            }
         }
+        
     }
 
     // Start is called before the first frame update
@@ -151,7 +168,6 @@ public class Battle : MonoBehaviour
 
         if (!cycle.Any()) {
             NewCycle();
-            //yield return new WaitForSeconds(2);
         }
 
         string turn = cycle[0].character;
@@ -211,7 +227,7 @@ public class Battle : MonoBehaviour
 
                 } else if (sel_phase == 2) {
                     updateSelection(ref sel_action, 3);
-                    string selectedAction = "idklol";
+                    string selectedAction = null;
                     switch(sel_action) {
                         case 0:
                             selectedAction = action_OP1.text;
@@ -227,7 +243,7 @@ public class Battle : MonoBehaviour
                             break;
                     }
                     
-                    if (selectedAction != "idklol") {
+                    if (selectedAction != null) {
                         if (sel_action_last != sel_action) {
                             sel_action_last = sel_action;
                             selectedAction = selectedAction.Substring(4);
@@ -248,6 +264,8 @@ public class Battle : MonoBehaviour
                         }
                     }
                 }
+            } else {
+                StartCoroutine(SuspendCycleChange(2));
             }
         }
 
@@ -278,7 +296,7 @@ public class Battle : MonoBehaviour
                 return true;
             }
         }
-        return false;
+         return false;
     }
 
     private int GetVertical() {
@@ -314,6 +332,15 @@ public class Battle : MonoBehaviour
         if (item != null) {
             item.transform.position = targetPos;
         }
+        buttonCooldown = false;
+    }
+
+    IEnumerator SuspendCycleChange(int seconds)
+    {
+
+        buttonCooldown = true;
+        yield return new WaitForSecondsRealtime(seconds);
+        cycle.RemoveAt(0);
         buttonCooldown = false;
     }
     
