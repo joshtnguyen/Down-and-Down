@@ -8,8 +8,9 @@ public class Enemy : Character
     public int id;
     public int sp;
 
-    public Enemy(string name, int identifier, int hp, double atk, double def, double spd, double cr, double cd) : base(name, hp, atk, def, spd, cr, cd) {
+    public Enemy(string name, int identifier, int le, int hp, double atk, double def, double spd, double cr, double cd) : base(name,le, hp, atk, def, spd, cr, cd) {
         character = name;
+        level = le;
         baseHP = hp;
         baseATK = atk;
         baseDEF = def;
@@ -45,6 +46,10 @@ public class Enemy : Character
     void Update()
     {
         
+    }
+
+    public override string getName() {
+        return character + " (" + id + ")"; 
     }
 
     public override string ToString() {

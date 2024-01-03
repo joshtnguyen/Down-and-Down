@@ -56,10 +56,10 @@ public class Battle : MonoBehaviour
     public static string lastTurn;
 
     public static List<Character> characters = new List<Character>();
-    public static Character walter = new Character("Walter", 100, 15, 10, 10, 5, 12);
-    public static Character benedict = new Character("Benedict", 95, 10, 12, 11, 8, 8);
-    public static Character sherri = new Character("Sherri", 120, 7, 12, 12, 8, 3);
-    public static Character jade = new Character("Jade", 150, 5, 18, 9, 2, 3);
+    public static Character walter = new Character("Walter", 1, 100, 15, 10, 10, 5, 12);
+    public static Character benedict = new Character("Benedict", 1, 95, 10, 12, 11, 8, 8);
+    public static Character sherri = new Character("Sherri", 1, 120, 7, 12, 12, 8, 3);
+    public static Character jade = new Character("Jade", 1, 150, 5, 18, 9, 2, 3);
     public static List<Enemy> enemies = new List<Enemy>();
 
 
@@ -70,7 +70,7 @@ public class Battle : MonoBehaviour
         lastTurn = "NOBODY";
         sel_phase = 1;
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 45, 8, 5, 5, 5, 8));
+            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 8, 5, 5, 5, 8));
 
         }
         SceneManager.LoadScene("Battle Scene");

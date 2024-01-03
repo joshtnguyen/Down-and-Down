@@ -10,6 +10,8 @@ public class Character
 
     public string character;
 
+    public int level;
+
     public int health;
     public int maxhealth;
     public int baseHP;
@@ -35,8 +37,9 @@ public class Character
 
     public List<Skills> skills = new List<Skills>();
 
-    public Character(string name, int hp, double atk, double def, double spd, double cr, double cd) {
+    public Character(string name, int le, int hp, double atk, double def, double spd, double cr, double cd) {
         character = name;
+        level = le;
         baseHP = hp;
         maxhealth = hp;
         health = hp;
@@ -94,24 +97,25 @@ public class Character
         
     }
 
-    public void damage(Character ch, double multiplier) {
+    public int damage(Character ch, double multiplier) {
         verifyMod();
         ch.verifyMod();
 
         var rand = new System.Random();
 
         // DMG CALCULATION
-        double dmg = (double)((baseATK + atk_mod[0]) * ((100 + atk_p_mod[0]) / 100) * (multiplier / 100));
+        double dmg = (double)((baseATK + atk_mod[0]) * ((100.0 + atk_p_mod[0]) / 100.0) * (multiplier / 100.0));
 
         // CRIT MULTIPLIER
-        if ((rand.NextDouble() * 100) > (baseCR + cr_mod[0])) {
-            dmg *= (double)((100 + baseCD + cd_mod[0]) / 100);
+        if ((rand.NextDouble() * 100.0) > (baseCR + cr_mod[0])) {
+            dmg *= (double)((100.0 + baseCD + cd_mod[0]) / 100.0);
         }
 
         // DEF MULTIPLIER
-        dmg *= (double)(100 - ((baseDEF + def_mod[0]) * (100 * def_p_mod[0])) / (((baseDEF + def_mod[0]) * (100 * def_p_mod[0])) + 200 + (10 * Game.floorNumber))) / 100;
+        double def = (double)(1 - ((ch.baseDEF + ch.def_mod[0]) * ((100.0 + ch.def_p_mod[0])/100.0)) / (((ch.baseDEF + ch.def_mod[0]) * ((100.0 + ch.def_p_mod[0])/100.0)) + 200 + (10 * ((double) ch.level))));
 
         // INVOKE DMG
+        dmg *= def;
         ch.health -= (int) dmg;
         
         if (ch.health <= 0) {
@@ -123,6 +127,8 @@ public class Character
                 }
             }
         }
+
+        return (int) dmg;
 
     }
 
@@ -171,6 +177,10 @@ public class Character
     void Update()
     {
         
+    }
+
+    public virtual string getName() {
+        return character; 
     }
 
     public override string ToString() {

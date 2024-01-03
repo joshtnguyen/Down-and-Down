@@ -12,7 +12,7 @@ public class Game : MonoBehaviour
 
     public GameObject originalEnemy;
 
-    public static int floorNumber = 1;
+    public static int floorNumber = 100;
 
     // Start is called before the first frame update
     void Start()
