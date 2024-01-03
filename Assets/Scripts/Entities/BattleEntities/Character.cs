@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using Unity.VisualScripting;
@@ -97,7 +98,7 @@ public class Character
         
     }
 
-    public int damage(Character ch, double multiplier) {
+    public int damage(Character ch, double multiplier, bool isMultiple) {
         verifyMod();
         ch.verifyMod();
 
@@ -107,15 +108,16 @@ public class Character
         double dmg = (double)((baseATK + atk_mod[0]) * ((100.0 + atk_p_mod[0]) / 100.0) * (multiplier / 100.0));
 
         // CRIT MULTIPLIER
-        if ((rand.NextDouble() * 100.0) > (baseCR + cr_mod[0])) {
-            dmg *= (double)((100.0 + baseCD + cd_mod[0]) / 100.0);
+        double crit = 1;
+        if ((rand.NextDouble() * 100.0) <= (baseCR + cr_mod[0])) {
+            crit = (100.0 + baseCD + cd_mod[0]) / 100.0;
         }
 
         // DEF MULTIPLIER
         double def = (double)(1 - ((ch.baseDEF + ch.def_mod[0]) * ((100.0 + ch.def_p_mod[0])/100.0)) / (((ch.baseDEF + ch.def_mod[0]) * ((100.0 + ch.def_p_mod[0])/100.0)) + 200 + (10 * ((double) ch.level))));
 
         // INVOKE DMG
-        dmg *= def;
+        dmg = dmg * crit * def;
         ch.health -= (int) dmg;
         
         if (ch.health <= 0) {
@@ -127,7 +129,7 @@ public class Character
                 }
             }
         }
-
+        
         return (int) dmg;
 
     }

@@ -42,6 +42,7 @@ public class Battle : MonoBehaviour
     public Text turnOrderDisplay;
 
     public GameObject DescriptionBox;
+    public GameObject DamageBox;
 
     public static bool firstRun = false;
     public static int battleSP;
@@ -51,6 +52,7 @@ public class Battle : MonoBehaviour
     public static int sel_action = 0;
     public static int sel_target = 0;
     public static bool buttonCooldown = false;
+    public static bool animationCooldown = false;
     public static float moveSpeed = 4000;
     public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
@@ -223,7 +225,7 @@ public class Battle : MonoBehaviour
         turnOrderDisplay.text = displayCycle;
 
         // CYCLE UPDATE
-        if (!buttonCooldown) {
+        if (!buttonCooldown && !animationCooldown) {
             if (isPlayerTurn()) {
                 if (lastTurn != turn) {
                     sel_phase = 2;
@@ -264,7 +266,7 @@ public class Battle : MonoBehaviour
                             GameObject DescriptionBoxClone = Instantiate(DescriptionBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
                             DescriptionBoxClone.transform.SetParent(DescriptionBox.transform);
                             DescriptionBoxClone.name = "TEMP DescBox" + sel_action;
-                            DescriptionBoxClone.GetComponent<DescriptionManager>().text = DescriptionManager.convertSkillDescription(cycle[0], selectedAction);
+                            DescriptionBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillDescription(cycle[0], selectedAction);
                             trashCan.Add(DescriptionBoxClone);
                             var targetPos = ActionBox.transform.position;
                             targetPos.x += 517;
@@ -274,8 +276,11 @@ public class Battle : MonoBehaviour
                     }
                 }
             } else {
-                cycle[0].damage(Enemy.selectTarget(true), 100);
-                StartCoroutine(SuspendCycleChange(2));
+                int dmg = cycle[0].damage(Enemy.selectTarget(true), 100, false);
+                if (dmg > 0) {
+                    StartCoroutine(Damage(dmg));
+                }
+                StartCoroutine(SuspendCycleChange(0));
             }
         }
 
@@ -329,9 +334,8 @@ public class Battle : MonoBehaviour
         return val;
     }
 
-    IEnumerator Move(GameObject item, Vector3 targetPos)
+    public static IEnumerator Move(GameObject item, Vector3 targetPos)
     {
-
         buttonCooldown = true;
         while (item != null && (targetPos - item.transform.position).sqrMagnitude > Mathf.Epsilon)
         {
@@ -352,6 +356,17 @@ public class Battle : MonoBehaviour
         yield return new WaitForSecondsRealtime(seconds);
         cycle.RemoveAt(0);
         buttonCooldown = false;
+    }
+
+    public IEnumerator Damage(int dmg)
+    {
+        animationCooldown = true;
+        DamageBox.SetActive(true);
+        DamageBox.GetComponent<TextManager>().text = "Total Damage\n" + dmg;
+        yield return new WaitForSecondsRealtime(2);
+        DamageBox.SetActive(false);
+        yield return new WaitForSecondsRealtime(1);
+        animationCooldown = false;
     }
     
 }

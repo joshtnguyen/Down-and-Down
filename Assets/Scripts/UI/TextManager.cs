@@ -4,11 +4,12 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DescriptionManager : MonoBehaviour
+public class TextManager : MonoBehaviour
 {
 
     public Text textBox;
     public string text;
+    public static int moveSpeed = 500;
 
     // Start is called before the first frame update
     void Start()
@@ -43,5 +44,6 @@ public class DescriptionManager : MonoBehaviour
         string r = s + "\n" + desc + "\n";
         return r;
     }
+
     
 }

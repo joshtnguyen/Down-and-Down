@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Enemy : Character
@@ -29,6 +30,11 @@ public class Enemy : Character
                     selection.Add(c);
                 }
             }
+
+            if (!selection.Any()) {
+                return null;
+            }
+
             var rand = new System.Random();
             return selection[rand.Next(selection.Count)];
         }
