@@ -27,8 +27,8 @@ public class Character
     public List<double> def_mod = new List<double>();
     public List<double> def_p_mod = new List<double>();
 
-    public double baseSPD;
-    public List<double> spd_mod = new List<double>();
+    public int baseSPD;
+    public List<int> spd_mod = new List<int>();
 
     public double baseCR;
     public List<double> cr_mod = new List<double>();
@@ -38,7 +38,7 @@ public class Character
 
     public List<Skills> skills = new List<Skills>();
 
-    public Character(string name, int le, int hp, double atk, double def, double spd, double cr, double cd) {
+    public Character(string name, int le, int hp, double atk, double def, int spd, double cr, double cd) {
         character = name;
         level = le;
         baseHP = hp;
@@ -167,6 +167,11 @@ public class Character
 
         maxhealth = (int)((baseHP + hp_mod[0]) * (100 + hp_p_mod[0]));
 
+    }
+
+    public int getSpeed() {
+        verifyMod();
+        return baseSPD + spd_mod[0];
     }
 
     // Start is called before the first frame update

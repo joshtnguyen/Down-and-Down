@@ -72,7 +72,7 @@ public class Battle : MonoBehaviour
         lastTurn = "NOBODY";
         sel_phase = 1;
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 8, 5, 5, 5, 8));
+            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 7, 5, 8));
 
         }
         SceneManager.LoadScene("Battle Scene");
@@ -87,16 +87,16 @@ public class Battle : MonoBehaviour
         for (int i = characters.Count - 2; i >= 0; i--) {
             if (characters[i].health > 0) {
                 bool flag = true;
-            for (int j = cycle.Count - 1; j >= 0; j--) {
-                if (characters[i].baseSPD > cycle[j].baseSPD) {
-                    cycle.Insert(j, characters[i]);
-                    flag = false;
+                for (int j = cycle.Count - 1; j >= 0; j--) {
+                    if (characters[i].getSpeed() > cycle[j].getSpeed()) {
+                        cycle.Insert(j, characters[i]);
+                        flag = false;
+                        j = -1;
+                    }
                 }
-                j = -1;
-            }
-            if (flag) {
-                cycle.Insert(0, characters[i]);
-            }
+                if (flag) {
+                    cycle.Add(characters[i]);
+                }
             }
         }
         
@@ -105,14 +105,14 @@ public class Battle : MonoBehaviour
                 if (enemies[i].health > 0) {
                     bool flag = true;
                     for (int j = cycle.Count - 1; j >= 0; j--) {
-                        if (enemies[i].baseSPD > cycle[j].baseSPD) {
+                        if (enemies[i].getSpeed() > cycle[j].getSpeed()) {
                             cycle.Insert(j, enemies[i]);
                             flag = false;
+                            j = -1;
                         }
-                        j = -1;
                     }
                     if (flag) {
-                        cycle.Insert(0, enemies[i]);
+                        cycle.Add(enemies[i]);
                     }
                 }
             }
