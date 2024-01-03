@@ -72,7 +72,7 @@ public class Battle : MonoBehaviour
         lastTurn = "NOBODY";
         sel_phase = 1;
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 7, 5, 8));
+            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8));
 
         }
         SceneManager.LoadScene("Battle Scene");
@@ -87,11 +87,11 @@ public class Battle : MonoBehaviour
         for (int i = characters.Count - 2; i >= 0; i--) {
             if (characters[i].health > 0) {
                 bool flag = true;
-                for (int j = cycle.Count - 1; j >= 0; j--) {
+                for (int j = 0; j < cycle.Count; j++) {
                     if (characters[i].getSpeed() > cycle[j].getSpeed()) {
                         cycle.Insert(j, characters[i]);
                         flag = false;
-                        j = -1;
+                        j = cycle.Count;
                     }
                 }
                 if (flag) {
@@ -104,11 +104,11 @@ public class Battle : MonoBehaviour
             for (int i = enemies.Count - 1; i >= 0; i--) {
                 if (enemies[i].health > 0) {
                     bool flag = true;
-                    for (int j = cycle.Count - 1; j >= 0; j--) {
+                    for (int j = 0; j < cycle.Count; j++) {
                         if (enemies[i].getSpeed() > cycle[j].getSpeed()) {
                             cycle.Insert(j, enemies[i]);
                             flag = false;
-                            j = -1;
+                            j = cycle.Count;
                         }
                     }
                     if (flag) {
