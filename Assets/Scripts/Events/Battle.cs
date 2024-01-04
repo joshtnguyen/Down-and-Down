@@ -83,12 +83,21 @@ public class Battle : MonoBehaviour
 
     private static void NewCycle() {
         cycle.Clear();
+
+        foreach (Character c in characters) {
+            c.verifyMod();
+        }
+
+        foreach (Character c in enemies) {
+            c.verifyMod();
+        }
+
         cycle.Add(characters[characters.Count - 1]);
         for (int i = characters.Count - 2; i >= 0; i--) {
             if (characters[i].health > 0) {
                 bool flag = true;
                 for (int j = 0; j < cycle.Count; j++) {
-                    if (characters[i].getSpeed() > cycle[j].getSpeed()) {
+                    if (characters[i].currentSPD > cycle[j].currentSPD) {
                         cycle.Insert(j, characters[i]);
                         flag = false;
                         j = cycle.Count;
@@ -105,7 +114,7 @@ public class Battle : MonoBehaviour
                 if (enemies[i].health > 0) {
                     bool flag = true;
                     for (int j = 0; j < cycle.Count; j++) {
-                        if (enemies[i].getSpeed() > cycle[j].getSpeed()) {
+                        if (enemies[i].currentSPD > cycle[j].currentSPD) {
                             cycle.Insert(j, enemies[i]);
                             flag = false;
                             j = cycle.Count;
@@ -149,18 +158,18 @@ public class Battle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        obj_HPSLIDER_1.maxValue = walter.baseHP;
+        obj_HPSLIDER_1.maxValue = walter.maxhealth;
         obj_HPSLIDER_1.value = walter.health;
-        obj_HPVALUE_1.text = walter.health + " / " + walter.baseHP;
-        obj_HPSLIDER_2.maxValue = benedict.baseHP;
+        obj_HPVALUE_1.text = walter.health + " / " + walter.maxhealth;
+        obj_HPSLIDER_2.maxValue = benedict.maxhealth;
         obj_HPSLIDER_2.value = benedict.health;
-        obj_HPVALUE_2.text = benedict.health + " / " + benedict.baseHP;
-        obj_HPSLIDER_3.maxValue = sherri.baseHP;
+        obj_HPVALUE_2.text = benedict.health + " / " + benedict.maxhealth;
+        obj_HPSLIDER_3.maxValue = sherri.maxhealth;
         obj_HPSLIDER_3.value = sherri.health;
-        obj_HPVALUE_3.text = sherri.health + " / " + sherri.baseHP;
-        obj_HPSLIDER_4.maxValue = jade.baseHP;
+        obj_HPVALUE_3.text = sherri.health + " / " + sherri.maxhealth;
+        obj_HPSLIDER_4.maxValue = jade.maxhealth;
         obj_HPSLIDER_4.value = jade.health;
-        obj_HPVALUE_4.text = jade.health + " / " + jade.baseHP;
+        obj_HPVALUE_4.text = jade.health + " / " + jade.maxhealth;
 
         obj_SPSLIDER.maxValue = battleSPMAX;
         obj_SPSLIDER.value = battleSP;

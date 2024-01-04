@@ -6,6 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 using Unity.VisualScripting;
 
+public class Mod {
+    public string modName;
+    public double value;
+    public bool isDebuff;
+}
+
 public class Character
 {
 
@@ -16,25 +22,30 @@ public class Character
     public int health;
     public int maxhealth;
     public int baseHP;
-    public List<int> hp_mod = new List<int>();
-    public List<double> hp_p_mod = new List<double>();
+    public List<List<Mod>> hp_mod = new List<List<Mod>>();
+    public List<List<Mod>> hp_p_mod = new List<List<Mod>>();
 
+    public double currentATK;
     public double baseATK;
-    public List<double> atk_mod = new List<double>();
-    public List<double> atk_p_mod = new List<double>();
+    public List<List<Mod>> atk_mod = new List<List<Mod>>();
+    public List<List<Mod>> atk_p_mod = new List<List<Mod>>();
 
+    public double currentDEF;
     public double baseDEF;
-    public List<double> def_mod = new List<double>();
-    public List<double> def_p_mod = new List<double>();
+    public List<List<Mod>> def_mod = new List<List<Mod>>();
+    public List<List<Mod>> def_p_mod = new List<List<Mod>>();
 
+    public double currentSPD;
     public int baseSPD;
-    public List<int> spd_mod = new List<int>();
+    public List<List<Mod>> spd_mod = new List<List<Mod>>();
 
+    public double currentCR;
     public double baseCR;
-    public List<double> cr_mod = new List<double>();
+    public List<List<Mod>> cr_mod = new List<List<Mod>>();
 
+    public double currentCD;
     public double baseCD;
-    public List<double> cd_mod = new List<double>();
+    public List<List<Mod>> cd_mod = new List<List<Mod>>();
 
     public List<Skills> skills = new List<Skills>();
 
@@ -105,16 +116,16 @@ public class Character
         var rand = new System.Random();
 
         // DMG CALCULATION
-        double dmg = (double)((baseATK + atk_mod[0]) * ((100.0 + atk_p_mod[0]) / 100.0) * (multiplier / 100.0));
+        double dmg = (double)(currentATK * (multiplier / 100.0));
 
         // CRIT MULTIPLIER
         double crit = 1;
-        if ((rand.NextDouble() * 100.0) <= (baseCR + cr_mod[0])) {
-            crit = (100.0 + baseCD + cd_mod[0]) / 100.0;
+        if ((rand.NextDouble() * 100.0) <= currentCR) {
+            crit = currentCD;
         }
 
         // DEF MULTIPLIER
-        double def = (double)(1 - ((ch.baseDEF + ch.def_mod[0]) * ((100.0 + ch.def_p_mod[0])/100.0)) / (((ch.baseDEF + ch.def_mod[0]) * ((100.0 + ch.def_p_mod[0])/100.0)) + 200 + (10 * ((double) ch.level))));
+        double def = (double)(1 - (currentDEF / (currentDEF + 200 + (10 * ((double) ch.level)))));
 
         // INVOKE DMG
         dmg = dmg * crit * def;
@@ -135,43 +146,126 @@ public class Character
     }
 
     public void verifyMod() {
-        for (int i = 0; i < 11; i++) {
-            if (hp_mod.Count < 10) {
-                hp_mod.Add(0);
+        for (int i = 0; i < 6; i++) {
+            if (hp_mod.Count < 5) {
+                hp_mod.Add(new List<Mod>());
             }
-            if (hp_p_mod.Count < 10) {
-                hp_p_mod.Add(0);
+            if (hp_p_mod.Count < 5) {
+                hp_p_mod.Add(new List<Mod>());
             }
-            if (atk_mod.Count < 10) {
-                atk_mod.Add(0);
+            if (atk_mod.Count < 5) {
+                atk_mod.Add(new List<Mod>());
             }
-            if (atk_p_mod.Count < 10) {
-                atk_p_mod.Add(0);
+            if (atk_p_mod.Count < 5) {
+                atk_p_mod.Add(new List<Mod>());
             }
-            if (def_mod.Count < 10) {
-                def_mod.Add(0);
+            if (def_mod.Count < 5) {
+                def_mod.Add(new List<Mod>());
             }
-            if (def_p_mod.Count < 10) {
-                def_p_mod.Add(0);
+            if (def_p_mod.Count < 5) {
+                def_p_mod.Add(new List<Mod>());
             }
-            if (spd_mod.Count < 10) {
-                spd_mod.Add(0);
+            if (spd_mod.Count < 5) {
+                spd_mod.Add(new List<Mod>());
             }
-            if (cr_mod.Count < 10) {
-                cr_mod.Add(0);
+            if (cr_mod.Count < 5) {
+                cr_mod.Add(new List<Mod>());
             }
-            if (cd_mod.Count < 10) {
-                cd_mod.Add(0);
+            if (cd_mod.Count < 5) {
+                cd_mod.Add(new List<Mod>());
             }
         }
+        
+        double val = 0;
+        double per = 100;
 
-        maxhealth = (int)((baseHP + hp_mod[0]) * (100 + hp_p_mod[0]));
+        val = baseHP;
+        per = 100;
+        if (hp_mod[0].Any()) {
+            foreach (Mod m in hp_mod[0]) {
+                if (m != null) {
+                    val += m.value;
+                }
+            }
+        }
+        if (hp_p_mod[0].Any()) {
+            foreach (Mod m in hp_p_mod[0]) {
+                if (m != null) {
+                    per += m.value;
+                }
+            }
+        }
+        maxhealth = (int)(val * (per / 100));
 
-    }
+        val = baseATK;
+        per = 100;
+        if (atk_mod[0].Any()) {
+            foreach (Mod m in atk_mod[0]) {
+                if (m != null) {
+                    val += m.value;
+                }
+            }
+        }
+        if (atk_p_mod[0].Any()) {
+            foreach (Mod m in atk_p_mod[0]) {
+                if (m != null) {
+                    per += m.value;
+                }
+            }
+        }
+        currentATK = val * (per / 100);
 
-    public int getSpeed() {
-        verifyMod();
-        return baseSPD + spd_mod[0];
+        val = baseDEF;
+        per = 100;
+        if (def_mod[0].Any()) {
+            foreach (Mod m in def_mod[0]) {
+                if (m != null) {
+                    val += m.value;
+                }
+            }
+        }
+        if (def_p_mod[0].Any()) {
+            foreach (Mod m in def_p_mod[0]) {
+                if (m != null) {
+                    per += m.value;
+                }
+            }
+        }
+        currentDEF = val * (per / 100);
+
+        val = baseSPD;
+        per = 100;
+        if (spd_mod[0].Any()) {
+            foreach (Mod m in spd_mod[0]) {
+                if (m != null) {
+                    val += m.value;
+                }
+            }
+        }
+        currentSPD = val * (per / 100);
+
+        val = baseCR;
+        per = 100;
+        if (cr_mod[0].Any()) {
+            foreach (Mod m in cr_mod[0]) {
+                if (m != null) {
+                    val += m.value;
+                }
+            }
+        }
+        currentCR = val * (per / 100);
+
+        val = baseCD;
+        per = 100;
+        if (cd_mod[0].Any()) {
+            foreach (Mod m in cd_mod[0]) {
+                if (m != null) {
+                    val += m.value;
+                }
+            }
+        }
+        currentCD = val * (per / 100);
+
     }
 
     // Start is called before the first frame update
