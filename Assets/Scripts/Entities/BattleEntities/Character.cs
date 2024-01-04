@@ -251,7 +251,6 @@ public class Character
         currentSPD = val * (per / 100);
 
         val = baseCR;
-        per = 100;
         if (cr_mod[0].Any()) {
             foreach (Mod m in cr_mod[0]) {
                 if (m != null) {
@@ -261,8 +260,7 @@ public class Character
         }
         currentCR = val * (per / 100);
 
-        val = baseCD;
-        per = 100;
+        val = baseCD + 100;
         if (cd_mod[0].Any()) {
             foreach (Mod m in cd_mod[0]) {
                 if (m != null) {
@@ -270,7 +268,7 @@ public class Character
                 }
             }
         }
-        currentCD = val * (per / 100);
+        currentCD = val / 100;
 
     }
 

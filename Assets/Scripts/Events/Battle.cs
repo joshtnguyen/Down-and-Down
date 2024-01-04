@@ -38,6 +38,28 @@ public class Battle : MonoBehaviour
     public Text obj_HPVALUE_3;
     public Text obj_HPVALUE_4;
 
+    public GameObject TargetBox;
+
+    public GameObject tar_BOX_1;
+    public GameObject tar_BOX_2;
+    public GameObject tar_BOX_3;
+    public GameObject tar_BOX_4;
+
+    public Text tar_NAME_1;
+    public Text tar_NAME_2;
+    public Text tar_NAME_3;
+    public Text tar_NAME_4;
+
+    public Slider tar_HPSLIDER_1;
+    public Slider tar_HPSLIDER_2;
+    public Slider tar_HPSLIDER_3;
+    public Slider tar_HPSLIDER_4;
+
+    public Text tar_HPVALUE_1;
+    public Text tar_HPVALUE_2;
+    public Text tar_HPVALUE_3;
+    public Text tar_HPVALUE_4;
+
     public GameObject TurnBox;
     public Text turnOrderDisplay;
 
@@ -224,6 +246,102 @@ public class Battle : MonoBehaviour
                 action_OP4.fontStyle = FontStyle.Bold;
                 break;
         }
+
+        tar_BOX_1.SetActive(false);
+        tar_BOX_2.SetActive(false);
+        tar_BOX_3.SetActive(false);
+        tar_BOX_4.SetActive(false);
+
+        int target = 0;
+        if (sel_target < 4) {
+
+            target = 0;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_1.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_1.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_1.value = enemies[target].health;
+                tar_HPVALUE_1.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_1.SetActive(true);
+            }
+            target = 1;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_2.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_2.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_2.value = enemies[target].health;
+                tar_HPVALUE_2.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_2.SetActive(true);
+            }
+            target = 2;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_3.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_3.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_3.value = enemies[target].health;
+                tar_HPVALUE_3.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_3.SetActive(true);
+            }
+            target = 3;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_4.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_4.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_4.value = enemies[target].health;
+                tar_HPVALUE_4.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_4.SetActive(true);
+            }
+        } else {
+
+            target = 4;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_1.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_1.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_1.value = enemies[target].health;
+                tar_HPVALUE_1.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_1.SetActive(true);
+            }
+            target = 5;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_2.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_2.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_2.value = enemies[target].health;
+                tar_HPVALUE_2.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_2.SetActive(true);
+            }
+            target = 6;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_3.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_3.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_3.value = enemies[target].health;
+                tar_HPVALUE_3.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_3.SetActive(true);
+            }
+            target = 7;
+            if (enemies.Count >= target + 1) {
+                tar_NAME_4.text = ">>  " + enemies[target].character;
+                tar_HPSLIDER_4.maxValue = enemies[target].maxhealth;
+                tar_HPSLIDER_4.value = enemies[target].health;
+                tar_HPVALUE_4.text = enemies[target].health + " / " + enemies[target].maxhealth;
+                tar_BOX_4.SetActive(true);
+            }
+        }
+
+        tar_NAME_1.fontStyle = FontStyle.Normal;
+        tar_NAME_2.fontStyle = FontStyle.Normal;
+        tar_NAME_3.fontStyle = FontStyle.Normal;
+        tar_NAME_4.fontStyle = FontStyle.Normal;
+        
+        switch(sel_target) {
+            case 0 or 4:
+                tar_NAME_1.fontStyle = FontStyle.Bold;
+                break;
+            case 1 or 5:
+                tar_NAME_2.fontStyle = FontStyle.Bold;
+                break;
+            case 2 or 6:
+                tar_NAME_3.fontStyle = FontStyle.Bold;
+                break;
+            case 3 or 7:
+                tar_NAME_4.fontStyle = FontStyle.Bold;
+                break;
+        }
         
         int turnNumber = 0;
         string displayCycle = "";
@@ -281,8 +399,35 @@ public class Battle : MonoBehaviour
                             var targetPos = ActionBox.transform.position;
                             targetPos.x += 517;
                             StartCoroutine(Move(DescriptionBoxClone, targetPos));
-                            
                         }
+
+                        int confirm = getConfirmation();
+                        if (confirm == 1) {
+                            while (trashCan.Any()) {
+                                GameObject t = trashCan[0];
+                                trashCan.RemoveAt(0);
+                                Destroy(t);
+                            }
+                            sel_phase = 3;
+                            var targetPos = ActionBox.transform.position;
+                            TargetBox.transform.position = ActionBox.transform.position;
+                            targetPos.x += 517;
+                            StartCoroutine(Move(TargetBox, targetPos));
+                        }
+
+                    }
+                } else if (sel_phase == 3) {
+                    updateSelection(ref sel_target, enemies.Count - 1);
+                    int confirm = getConfirmation();
+                    if (confirm == -1) {
+                        while (trashCan.Any()) {
+                            GameObject t = trashCan[0];
+                            trashCan.RemoveAt(0);
+                            Destroy(t);
+                        }
+                        TargetBox.transform.position = CharacterBox.transform.position;
+                        sel_phase = 2;
+                        sel_action_last = -1;
                     }
                 }
             } else {
@@ -312,6 +457,16 @@ public class Battle : MonoBehaviour
             }
         }
 
+    }
+
+    private int getConfirmation() {
+        if (Input.GetKeyDown(KeyCode.C)) {
+            return 1;
+        } else if (Input.GetKeyDown(KeyCode.X)) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     private bool isPlayerTurn() {

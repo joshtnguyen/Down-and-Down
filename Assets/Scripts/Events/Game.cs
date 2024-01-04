@@ -12,13 +12,15 @@ public class Game : MonoBehaviour
 
     public GameObject originalEnemy;
 
-    public static int floorNumber = 100;
+    public int enemiesLeft;
+
+    public static int floorNumber = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         gameEvent = "Roaming";
-        EnemyAI.CreateEnemy(originalEnemy, 5);
+        EnemyAI.CreateEnemy(originalEnemy, enemiesLeft);
     }
 
     // Update is called once per frame
