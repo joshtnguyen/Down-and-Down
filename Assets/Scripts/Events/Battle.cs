@@ -72,8 +72,8 @@ public class Battle : MonoBehaviour
         lastTurn = "NOBODY";
         sel_phase = 1;
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8));
-
+            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 20, 5, 8));
+            enemies[i].verifyMod();
         }
         SceneManager.LoadScene("Battle Scene");
         foreach (Character c in characters) {
@@ -150,6 +150,7 @@ public class Battle : MonoBehaviour
                 c.skills.Add(SkillsRegistry.getSkill("Attack"));
                 c.skills.Add(SkillsRegistry.getSkill("Items"));
                 c.skills.Add(SkillsRegistry.getSkill("Test"));
+                c.verifyMod();
             }
         }
         

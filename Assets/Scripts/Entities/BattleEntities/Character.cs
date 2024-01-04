@@ -10,6 +10,12 @@ public class Mod {
     public string modName;
     public double value;
     public bool isDebuff;
+
+    public Mod(string m, double v, bool i) {
+        modName = m;
+        value = v;
+        isDebuff = i;
+    }
 }
 
 public class Character
