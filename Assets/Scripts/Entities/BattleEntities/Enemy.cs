@@ -7,7 +7,6 @@ public class Enemy : Character
 {
 
     public int id;
-    public int sp;
 
     public Enemy(string name, int identifier, int le, int hp, double atk, double def, int spd, double cr, double cd) : base(name, le, hp, atk, def, spd, cr, cd) {
         character = name;
@@ -20,6 +19,7 @@ public class Enemy : Character
         baseCD = cd;
         health = hp;
         id = identifier;
+        sp = 2;
     }
 
     public static Character selectTarget(bool isCharacter) {
@@ -52,6 +52,10 @@ public class Enemy : Character
     void Update()
     {
         
+    }
+
+    public override bool isEnemy() {
+        return true; 
     }
 
     public override string getName() {

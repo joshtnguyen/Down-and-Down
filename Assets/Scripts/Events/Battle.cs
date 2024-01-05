@@ -172,8 +172,8 @@ public class Battle : MonoBehaviour
             characters.Add(sherri);
             characters.Add(jade);
             
-            battleSP = 10;
-            battleSPMAX = battleSP;
+            battleSPMAX = 10;
+            battleSP = battleSPMAX / 2;
 
             SkillsRegistry.firstRun();
 
@@ -203,6 +203,10 @@ public class Battle : MonoBehaviour
         obj_HPSLIDER_4.value = jade.health;
         obj_HPVALUE_4.text = jade.health + " / " + jade.maxhealth;
 
+        if (battleSP > battleSPMAX) {
+            battleSP = battleSPMAX;
+        }
+        
         obj_SPSLIDER.maxValue = battleSPMAX;
         obj_SPSLIDER.value = battleSP;
         if (battleSP == battleSPMAX) {
@@ -411,11 +415,6 @@ public class Battle : MonoBehaviour
 
                         int confirm = getConfirmation();
                         if (confirm == 1) {
-                            while (trashCan.Any()) {
-                                GameObject t = trashCan[0];
-                                trashCan.RemoveAt(0);
-                                Destroy(t);
-                            }
 
                             selectedAction = selectedAction.Substring(4);
                             Skills skill = SkillsRegistry.getSkill(selectedAction);
@@ -427,15 +426,22 @@ public class Battle : MonoBehaviour
                             }
 
                             if (skill != null) {
-                                if (skill.targetType == "Self") {
-                                    Skills.useSkill(cycle[0], skill);
-                                    sel_phase = -2;
-                                } else if (skill.targetType == "Enemy") {
-                                    sel_phase = 3;
-                                    var targetPos = ActionBox.transform.position;
-                                    TargetBox.transform.position = ActionBox.transform.position;
-                                    targetPos.x += 517;
-                                    StartCoroutine(Move(TargetBox, targetPos));
+                                if (battleSP >= skill.spConsumption) {
+                                    while (trashCan.Any()) {
+                                        GameObject t = trashCan[0];
+                                        trashCan.RemoveAt(0);
+                                        Destroy(t);
+                                    }
+                                    if (skill.targetType == "Self") {
+                                        Skills.useSkill(cycle[0], skill);
+                                        sel_phase = -2;
+                                    } else if (skill.targetType == "Enemy") {
+                                        sel_phase = 3;
+                                        var targetPos = ActionBox.transform.position;
+                                        TargetBox.transform.position = ActionBox.transform.position;
+                                        targetPos.x += 517;
+                                        StartCoroutine(Move(TargetBox, targetPos));
+                                    }
                                 }
                             }
                         }
@@ -511,6 +517,7 @@ public class Battle : MonoBehaviour
                     ActionBox.transform.position = CharacterBox.transform.position;
                     TargetBox.transform.position = CharacterBox.transform.position;
                     cycle[0].endTurn();
+                    sel_action_last = -1;
                     StartCoroutine(SuspendCycleChange(0));
                 }
             } else {

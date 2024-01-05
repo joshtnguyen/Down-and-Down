@@ -30,6 +30,7 @@ public class Character
     public string character;
 
     public int level;
+    public int sp;
 
     public int health;
     public int maxhealth;
@@ -299,6 +300,10 @@ public class Character
         
     }
 
+    public virtual bool isEnemy() {
+        return false; 
+    }
+    
     public virtual string getName() {
         return character; 
     }

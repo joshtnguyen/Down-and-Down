@@ -31,9 +31,20 @@ public class Skills
         Mod m3;
         Mod m4;
 
+        if (c.isEnemy()) {
+            c.sp -= s.spConsumption;
+        } else {
+            Battle.battleSP -= s.spConsumption;
+        }
+
         switch (s.skillName) {
             case "Attack":
                 dmg = c.damage(t, 100, false);
+                if (c.isEnemy()) {
+                    c.sp += s.spConsumption;
+                } else {
+                    Battle.battleSP += 1;
+                }
                 break;
             case "Block":
                 m = new Mod(s.skillName, 200, false);
