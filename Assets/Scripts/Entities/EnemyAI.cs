@@ -121,10 +121,16 @@ public class EnemyAI : MonoBehaviour
 
     private bool PlayerInCollision(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
-            Battle.StartBattle(this.gameObject, 3);
+            Game.gameMovementFreeze = true;
+            StartCoroutine(Sleep(1));
+            Battle.StartBattle(this.gameObject, 1);
             return true;
         }
         return false;
+    }
+
+    IEnumerator Sleep(int seconds) {
+        yield return new WaitForSecondsRealtime(1);
     }
 }
 

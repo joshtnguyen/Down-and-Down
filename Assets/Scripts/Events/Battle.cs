@@ -88,19 +88,28 @@ public class Battle : MonoBehaviour
 
 
     public static void StartBattle(GameObject enemy, int numEnemies) {
-        Destroy(enemy);
         Game.gameEvent = "Battle";
         Game.gameMovementFreeze = true;
         lastTurn = "NOBODY";
         sel_phase = 1;
+        sel_action_last = -1;
+        sel_action = 0;
+        sel_target = 0;
+
+        cycle.Clear();
+        enemies.Clear();
+
         for (int i = 0; i < numEnemies; i++) {
             enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8));
             enemies[i].verifyMod();
         }
-        SceneManager.LoadScene("Battle Scene");
+        
         foreach (Character c in characters) {
             c.resetMod();
         }
+
+        SceneManager.LoadScene("Battle Scene");
+        Destroy(enemy);
     }
 
     private void NewCycle() {
@@ -604,6 +613,9 @@ public class Battle : MonoBehaviour
         yield return new WaitForSecondsRealtime(seconds);
         cycle.RemoveAt(0);
         buttonCooldown = false;
+
+        checkGameStatus();
+        
     }
 
     public IEnumerator Damage(int dmg)
@@ -615,6 +627,34 @@ public class Battle : MonoBehaviour
         DamageBox.SetActive(false);
         yield return new WaitForSecondsRealtime(1);
         animationCooldown = false;
+    }
+
+    public void checkGameStatus() {
+        int alive = 0;
+        foreach (Character c in characters) {
+            if (c.health > 0) {
+                alive++;
+            }
+        }
+
+        if (alive <= 0) {
+            SceneManager.LoadScene("End Scene");
+        }
+
+        alive = 0;
+        foreach (Character c in enemies) {
+            if (c.health > 0) {
+                alive++;
+            }
+        }
+
+        if (alive <= 0) {
+            SceneManager.LoadScene("Overworld Scene");
+            StartCoroutine(Sleep(1));
+            Game.gameMovementFreeze = false;
+        }
+
+        
     }
     
 }

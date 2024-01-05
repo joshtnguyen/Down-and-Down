@@ -17290,7 +17290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalEnemy: {fileID: 114654047}
-  enemiesLeft: 1
+  enemiesLeft: 5
 --- !u!4 &832841681
 Transform:
   m_ObjectHideFlags: 0
