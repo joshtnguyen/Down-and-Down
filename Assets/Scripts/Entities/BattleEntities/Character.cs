@@ -282,33 +282,6 @@ public class Character
 
     }
 
-    public int useSkill(Skills s) {
-        int dmg = 0;
-        switch (s.skillName) {
-            case "Block":
-                Mod m = new Mod(s.skillName, 200, false);
-                Mod m2 = new Mod(s.skillName, Math.Abs(baseSPD) * -1, false);
-                def_p_mod[0].Add(m);
-                spd_mod[0].Add(m2);
-                break;
-
-        }
-        verifyMod();
-        return dmg;
-    }
-
-    public int useSkill(Skills s, Character c) {
-        int dmg = 0;
-        switch (s.skillName) {
-            case "Attack":
-                dmg = damage(c, 100, false);
-                break;
-        }
-        verifyMod();
-        c.verifyMod();
-        return dmg;
-    }
-
     // Start is called before the first frame update
     void Start()
     {

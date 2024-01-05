@@ -19,11 +19,31 @@ public class Skills
         targetType = t;
     }
 
-    public void use(Character c, EnemyAI e) {
-        switch(skillName) {
+    public static int useSkill(Character c, Skills s) {
+        int dmg = 0;
+        switch (s.skillName) {
+            case "Block":
+                Mod m = new Mod(s.skillName, 200, false);
+                Mod m2 = new Mod(s.skillName, c.baseSPD * -1, false);
+                c.def_p_mod[0].Add(m);
+                c.spd_mod[0].Add(m2);
+                break;
+
+        }
+        c.verifyMod();
+        return dmg;
+    }
+
+    public static int useSkill(Character c, Skills s, Character t) {
+        int dmg = 0;
+        switch (s.skillName) {
             case "Attack":
+                dmg = c.damage(t, 100, false);
                 break;
         }
+        c.verifyMod();
+        t.verifyMod();
+        return dmg;
     }
 
     // Start is called before the first frame update

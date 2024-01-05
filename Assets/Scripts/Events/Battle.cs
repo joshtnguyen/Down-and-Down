@@ -416,7 +416,7 @@ public class Battle : MonoBehaviour
 
                             if (skill != null) {
                                 if (skill.targetType == "Self") {
-                                    cycle[0].useSkill(skill);
+                                    Skills.useSkill(cycle[0], skill);
                                     sel_phase = -2;
                                 } else if (skill.targetType == "Enemy") {
                                     sel_phase = 3;
@@ -467,12 +467,12 @@ public class Battle : MonoBehaviour
                         if (skill != null) {
                             if (skill.targetType == "Enemy") {
                                 if (enemies[sel_target].health > 0) {
-                                    dmg = cycle[0].useSkill(skill, enemies[sel_target]);
+                                    dmg = Skills.useSkill(cycle[0], skill, enemies[sel_target]);
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Ally") {
                                 if (characters[sel_target].health > 0) {
-                                    cycle[0].useSkill(skill, characters[sel_target]);
+                                    Skills.useSkill(cycle[0], skill, characters[sel_target]);
                                     sel_phase = -2;
                                 }
                             }
@@ -494,7 +494,7 @@ public class Battle : MonoBehaviour
                     StartCoroutine(SuspendCycleChange(0));
                 }
             } else {
-                int dmg = cycle[0].useSkill(SkillsRegistry.getSkill("Attack"), Enemy.selectTarget(true));
+                int dmg = Skills.useSkill(cycle[0], SkillsRegistry.getSkill("Attack"), Enemy.selectTarget(true));
                 if (dmg > 0) {
                     StartCoroutine(Damage(dmg));
                 }
