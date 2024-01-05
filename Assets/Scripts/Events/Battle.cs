@@ -95,6 +95,8 @@ public class Battle : MonoBehaviour
         sel_action_last = -1;
         sel_action = 0;
         sel_target = 0;
+        battleSPMAX = 10;
+        battleSP = battleSPMAX / 2;
 
         cycle.Clear();
         enemies.Clear();
@@ -171,9 +173,6 @@ public class Battle : MonoBehaviour
             characters.Add(benedict);
             characters.Add(sherri);
             characters.Add(jade);
-            
-            battleSPMAX = 10;
-            battleSP = battleSPMAX / 2;
 
             SkillsRegistry.firstRun();
 
