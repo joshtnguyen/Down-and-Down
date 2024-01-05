@@ -123,6 +123,8 @@ public class EnemyAI : MonoBehaviour
         if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
             Game.gameMovementFreeze = true;
             StartCoroutine(Sleep(1));
+            Room.enemiesLeft--;
+            Destroy(this);
             Battle.StartBattle(this.gameObject, 1);
             return true;
         }

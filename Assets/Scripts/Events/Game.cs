@@ -9,10 +9,8 @@ public class Game : MonoBehaviour
     public static bool gameMovementFreeze = false;
 
     public static string gameEvent = "Roaming";
-
+    
     public GameObject originalEnemy;
-
-    public int enemiesLeft;
 
     public static int floorNumber = 0;
 
@@ -20,7 +18,7 @@ public class Game : MonoBehaviour
     void Start()
     {
         gameEvent = "Roaming";
-        EnemyAI.CreateEnemy(originalEnemy, enemiesLeft);
+        EnemyAI.CreateEnemy(originalEnemy, Room.enemiesLeft);
     }
 
     // Update is called once per frame

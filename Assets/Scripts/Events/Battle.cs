@@ -109,7 +109,6 @@ public class Battle : MonoBehaviour
         }
 
         SceneManager.LoadScene("Battle Scene");
-        Destroy(enemy);
     }
 
     private void NewCycle() {
@@ -123,8 +122,7 @@ public class Battle : MonoBehaviour
             c.verifyMod();
         }
 
-        cycle.Add(characters[0]);
-        for (int i = 1; i < characters.Count; i++) {
+        for (int i = 0; i < characters.Count; i++) {
             if (characters[i].health > 0) {
                 bool flag = true;
                 for (int j = 0; j < cycle.Count; j++) {
@@ -612,9 +610,8 @@ public class Battle : MonoBehaviour
         buttonCooldown = true;
         yield return new WaitForSecondsRealtime(seconds);
         cycle.RemoveAt(0);
-        buttonCooldown = false;
-
         checkGameStatus();
+        buttonCooldown = false;
         
     }
 
@@ -638,7 +635,7 @@ public class Battle : MonoBehaviour
         }
 
         if (alive <= 0) {
-            SceneManager.LoadScene("End Scene");
+            StartCoroutine(SuspendSceneChange(2, "End Scene"));
         }
 
         alive = 0;
@@ -649,11 +646,20 @@ public class Battle : MonoBehaviour
         }
 
         if (alive <= 0) {
-            SceneManager.LoadScene("Overworld Scene");
-            StartCoroutine(Sleep(1));
-            Game.gameMovementFreeze = false;
+            StartCoroutine(SuspendSceneChange(2, "Overworld Scene"));
         }
 
+        
+    }
+
+    IEnumerator SuspendSceneChange(int seconds, string scene)
+    {
+
+        animationCooldown = true;
+        yield return new WaitForSecondsRealtime(seconds);
+        SceneManager.LoadScene(scene);
+        Game.gameMovementFreeze = false;
+        animationCooldown = false;
         
     }
     

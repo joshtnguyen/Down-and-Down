@@ -122,33 +122,38 @@ public class Character
     }
 
     public int damage(Character ch, double multiplier, bool isMultiple) {
-        verifyMod();
-        ch.verifyMod();
 
-        var rand = new System.Random();
+        double dmg = 0;
 
-        // DMG CALCULATION
-        double dmg = (double)(currentATK * (multiplier / 100.0));
+        if (ch != null) {
+            verifyMod();
+            ch.verifyMod();
 
-        // CRIT MULTIPLIER
-        double crit = 1;
-        if ((rand.NextDouble() * 100.0) <= currentCR) {
-            crit = currentCD;
-        }
+            var rand = new System.Random();
 
-        // DEF MULTIPLIER
-        double def = (double)(1 - (ch.currentDEF / (ch.currentDEF + 100 + (5 * ((double) ch.level)))));
+            // DMG CALCULATION
+            dmg = (double)(currentATK * (multiplier / 100.0));
 
-        // INVOKE DMG
-        dmg = dmg * crit * def;
-        ch.health -= (int) dmg;
-        
-        if (ch.health <= 0) {
-            ch.health = 0;
-            for (int i = 0; i < Battle.cycle.Count; i++) {
-                if (Battle.cycle[i] == ch) {
-                    Battle.cycle.RemoveAt(i);
-                    i--;
+            // CRIT MULTIPLIER
+            double crit = 1;
+            if ((rand.NextDouble() * 100.0) <= currentCR) {
+                crit = currentCD;
+            }
+
+            // DEF MULTIPLIER
+            double def = (double)(1 - (ch.currentDEF / (ch.currentDEF + 100 + (5 * ((double) ch.level)))));
+
+            // INVOKE DMG
+            dmg = dmg * crit * def;
+            ch.health -= (int) dmg;
+            
+            if (ch.health <= 0) {
+                ch.health = 0;
+                for (int i = 0; i < Battle.cycle.Count; i++) {
+                    if (Battle.cycle[i] == ch) {
+                        Battle.cycle.RemoveAt(i);
+                        i--;
+                    }
                 }
             }
         }

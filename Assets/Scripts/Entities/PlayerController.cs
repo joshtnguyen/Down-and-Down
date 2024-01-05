@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+
+    public static Vector3 lastPos;
+
     public float moveSpeed;
 
     private bool isMoving;
@@ -17,11 +20,20 @@ public class PlayerController : MonoBehaviour
     private void Awake() {
         animator = GetComponent<Animator>();
     }
+
+    void Start() {
+        if (lastPos != null) {
+            transform.position = lastPos;
+        }
+    }
     
     private void Update()
     {
         if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
         {
+
+            lastPos = transform.position;
+
             input.x = Input.GetAxisRaw("Horizontal");
             input.y = Input.GetAxisRaw("Vertical");
 
@@ -65,4 +77,5 @@ public class PlayerController : MonoBehaviour
         }
         return true;
     }
+
 }
