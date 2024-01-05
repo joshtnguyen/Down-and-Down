@@ -9,12 +9,14 @@ public class Skills
     public string description;
     public int spConsumption;
     public int stacks;
+    public string targetType;
 
-    public Skills(string n, string d, int c, int s) {
+    public Skills(string n, string d, int c, int s, string t) {
         skillName = n;
         description = d;
         spConsumption = c;
         stacks = s;
+        targetType = t;
     }
 
     public void use(Character c, EnemyAI e) {
@@ -35,4 +37,6 @@ public class Skills
     {
         
     }
+
+    
 }

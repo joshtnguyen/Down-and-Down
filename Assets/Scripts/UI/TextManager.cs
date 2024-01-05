@@ -31,12 +31,14 @@ public class TextManager : MonoBehaviour
         string desc = "[NO DESCRIPTION FOUND]";
         if (c.skills.Any()) {
             foreach (Skills skill in c.skills) {
-                if (s == skill.skillName) {
-                    desc = skill.description;
-                    if (skill.stacks > 0)
-                        s += " (x" + skill.stacks + ")";
-                    if (skill.spConsumption > 0)
-                        s += " - " + skill.spConsumption + " SP"; 
+                if (skill != null) {
+                    if (s == skill.skillName) {
+                        desc = skill.description;
+                        if (skill.stacks > 0)
+                            s += " (x" + skill.stacks + ")";
+                        if (skill.spConsumption > 0)
+                            s += " - " + skill.spConsumption + " SP"; 
+                    }
                 }
             }
         }

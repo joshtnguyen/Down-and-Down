@@ -5,17 +5,23 @@ using UnityEngine.UI;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using Unity.VisualScripting;
+using System;
 
 public class Mod {
     public string modName;
     public double value;
     public bool isDebuff;
 
-    public Mod(string m, double v, bool i) {
-        modName = m;
-        value = v;
-        isDebuff = i;
+    public Mod(string modName, double value, bool isDebuff) {
+        this.modName = modName;
+        this.value = value;
+        this.isDebuff = isDebuff;
     }
+
+    public override string ToString() {
+        return "{ name: " + modName + ", value: " + value + ", isDebuff: " + isDebuff + " }";
+    }
+
 }
 
 public class Character
@@ -67,7 +73,7 @@ public class Character
         baseCR = cr;
         baseCD = cd;
 
-        skills.Add(new Skills("Attack", "A basic attack that deals 100% of the player's attack on a single target.", 0, 0));
+        skills.Add(SkillsRegistry.getSkill("Attack"));
 
     }
 
@@ -131,7 +137,7 @@ public class Character
         }
 
         // DEF MULTIPLIER
-        double def = (double)(1 - (currentDEF / (currentDEF + 200 + (10 * ((double) ch.level)))));
+        double def = (double)(1 - (ch.currentDEF / (ch.currentDEF + 100 + (5 * ((double) ch.level)))));
 
         // INVOKE DMG
         dmg = dmg * crit * def;
@@ -270,6 +276,37 @@ public class Character
         }
         currentCD = val / 100;
 
+        if (health > maxhealth) {
+            health = maxhealth;
+        }
+
+    }
+
+    public int useSkill(Skills s) {
+        int dmg = 0;
+        switch (s.skillName) {
+            case "Block":
+                Mod m = new Mod(s.skillName, 200, false);
+                Mod m2 = new Mod(s.skillName, Math.Abs(baseSPD) * -1, false);
+                def_p_mod[0].Add(m);
+                spd_mod[0].Add(m2);
+                break;
+
+        }
+        verifyMod();
+        return dmg;
+    }
+
+    public int useSkill(Skills s, Character c) {
+        int dmg = 0;
+        switch (s.skillName) {
+            case "Attack":
+                dmg = damage(c, 100, false);
+                break;
+        }
+        verifyMod();
+        c.verifyMod();
+        return dmg;
     }
 
     // Start is called before the first frame update

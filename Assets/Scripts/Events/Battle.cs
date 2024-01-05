@@ -94,7 +94,7 @@ public class Battle : MonoBehaviour
         lastTurn = "NOBODY";
         sel_phase = 1;
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 20, 5, 8));
+            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8));
             enemies[i].verifyMod();
         }
         SceneManager.LoadScene("Battle Scene");
@@ -103,7 +103,7 @@ public class Battle : MonoBehaviour
         }
     }
 
-    private static void NewCycle() {
+    private void NewCycle() {
         cycle.Clear();
 
         foreach (Character c in characters) {
@@ -148,6 +148,8 @@ public class Battle : MonoBehaviour
                 }
             }
         }
+
+        StartCoroutine(Sleep(2));
         
     }
 
@@ -170,7 +172,7 @@ public class Battle : MonoBehaviour
 
             foreach (Character c in characters) {
                 c.skills.Add(SkillsRegistry.getSkill("Attack"));
-                c.skills.Add(SkillsRegistry.getSkill("Items"));
+                c.skills.Add(SkillsRegistry.getSkill("Block"));
                 c.skills.Add(SkillsRegistry.getSkill("Test"));
                 c.verifyMod();
             }
@@ -408,11 +410,22 @@ public class Battle : MonoBehaviour
                                 trashCan.RemoveAt(0);
                                 Destroy(t);
                             }
-                            sel_phase = 3;
-                            var targetPos = ActionBox.transform.position;
-                            TargetBox.transform.position = ActionBox.transform.position;
-                            targetPos.x += 517;
-                            StartCoroutine(Move(TargetBox, targetPos));
+
+                            selectedAction = selectedAction.Substring(4);
+                            Skills skill = SkillsRegistry.getSkill(selectedAction);
+
+                            if (skill != null) {
+                                if (skill.targetType == "Self") {
+                                    cycle[0].useSkill(skill);
+                                    sel_phase = -2;
+                                } else if (skill.targetType == "Enemy") {
+                                    sel_phase = 3;
+                                    var targetPos = ActionBox.transform.position;
+                                    TargetBox.transform.position = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Move(TargetBox, targetPos));
+                                }
+                            }
                         }
 
                     }
@@ -429,9 +442,18 @@ public class Battle : MonoBehaviour
                         sel_phase = 2;
                         sel_action_last = -1;
                     }
+                } else if (sel_phase == -2) {
+                    while (trashCan.Any()) {
+                        GameObject t = trashCan[0];
+                        trashCan.RemoveAt(0);
+                        Destroy(t);
+                    }
+                    ActionBox.transform.position = CharacterBox.transform.position;
+                    TargetBox.transform.position = CharacterBox.transform.position;
+                    StartCoroutine(SuspendCycleChange(0));
                 }
             } else {
-                int dmg = cycle[0].damage(Enemy.selectTarget(true), 100, false);
+                int dmg = cycle[0].useSkill(SkillsRegistry.getSkill("Attack"), Enemy.selectTarget(true));
                 if (dmg > 0) {
                     StartCoroutine(Damage(dmg));
                 }
@@ -512,6 +534,12 @@ public class Battle : MonoBehaviour
             item.transform.position = targetPos;
         }
         buttonCooldown = false;
+    }
+
+    IEnumerator Sleep(int seconds) {
+        animationCooldown = true;
+        yield return new WaitForSecondsRealtime(seconds);
+        animationCooldown = false;
     }
 
     IEnumerator SuspendCycleChange(int seconds)
