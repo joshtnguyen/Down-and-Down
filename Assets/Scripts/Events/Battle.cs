@@ -430,8 +430,30 @@ public class Battle : MonoBehaviour
 
                     }
                 } else if (sel_phase == 3) {
+
+                    int dmg = 0;
+
+                    string selectedAction = null;
+                    switch(sel_action) {
+                        case 0:
+                            selectedAction = action_OP1.text;
+                            break;
+                        case 1:
+                            selectedAction = action_OP2.text;
+                            break;
+                        case 2:
+                            selectedAction = action_OP3.text;
+                            break;
+                        case 3:
+                            selectedAction = action_OP4.text;
+                            break;
+                    }
+                    selectedAction = selectedAction.Substring(4);
+                    Skills skill = SkillsRegistry.getSkill(selectedAction);
+
                     updateSelection(ref sel_target, enemies.Count - 1);
                     int confirm = getConfirmation();
+
                     if (confirm == -1) {
                         while (trashCan.Any()) {
                             GameObject t = trashCan[0];
@@ -441,7 +463,26 @@ public class Battle : MonoBehaviour
                         TargetBox.transform.position = CharacterBox.transform.position;
                         sel_phase = 2;
                         sel_action_last = -1;
+                    } else if (confirm == 1) {
+                        if (skill != null) {
+                            if (skill.targetType == "Enemy") {
+                                if (enemies[sel_target].health > 0) {
+                                    dmg = cycle[0].useSkill(skill, enemies[sel_target]);
+                                    sel_phase = -2;
+                                }
+                            } else if (skill.targetType == "Ally") {
+                                if (characters[sel_target].health > 0) {
+                                    cycle[0].useSkill(skill, characters[sel_target]);
+                                    sel_phase = -2;
+                                }
+                            }
+                        }
                     }
+
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    }
+
                 } else if (sel_phase == -2) {
                     while (trashCan.Any()) {
                         GameObject t = trashCan[0];
@@ -556,7 +597,7 @@ public class Battle : MonoBehaviour
         animationCooldown = true;
         DamageBox.SetActive(true);
         DamageBox.GetComponent<TextManager>().text = "Total Damage\n" + dmg;
-        yield return new WaitForSecondsRealtime(2);
+        yield return new WaitForSecondsRealtime(1);
         DamageBox.SetActive(false);
         yield return new WaitForSecondsRealtime(1);
         animationCooldown = false;
