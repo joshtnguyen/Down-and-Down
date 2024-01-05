@@ -8,9 +8,9 @@ public class SkillsRegistry
     public static List<Skills> registry = new List<Skills>();
 
     public static void firstRun() {
-        registry.Add(new Skills("Attack", "A basic attack that deals 100% of the player's attack on a single target.", 0, 0, "Enemy"));
-        registry.Add(new Skills("Block", "A basic defensive maneuver in order to decrease incoming damage. Increases DEF % by 200% and reduces SPD by their base SPD for 1 turn.", 0, 0, "Self"));
-        registry.Add(new Skills("Test", "Test skill. JTN is a pro gamer tho.", 2, 3, "Enemy"));
+        registry.Add(new Skills("Attack", "Deals 100% of the player's attack on a single target.", 0, 0, "Enemy"));
+        registry.Add(new Skills("Block", "Increases DEF % by 200% and reduces SPD by their base SPD for 1 turn.", 0, 0, "Self"));
+        registry.Add(new Skills("Test", "Decreases an enemy's ATK % by 50% for 2 turns.", 2, 3, "Enemy"));
     }
 
     public static Skills getSkill(string skill) {

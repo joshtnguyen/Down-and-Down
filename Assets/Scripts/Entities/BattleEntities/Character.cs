@@ -89,7 +89,7 @@ public class Character
         cd_mod.Clear();
     }
 
-    public void startTurn() {
+    public void endTurn() {
         
         if (hp_mod.Any()) {
             hp_mod.RemoveAt(0);

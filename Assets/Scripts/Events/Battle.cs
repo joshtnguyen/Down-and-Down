@@ -114,8 +114,8 @@ public class Battle : MonoBehaviour
             c.verifyMod();
         }
 
-        cycle.Add(characters[characters.Count - 1]);
-        for (int i = characters.Count - 2; i >= 0; i--) {
+        cycle.Add(characters[0]);
+        for (int i = 1; i < characters.Count; i++) {
             if (characters[i].health > 0) {
                 bool flag = true;
                 for (int j = 0; j < cycle.Count; j++) {
@@ -132,7 +132,7 @@ public class Battle : MonoBehaviour
         }
         
         if (enemies.Any()) {
-            for (int i = enemies.Count - 1; i >= 0; i--) {
+            for (int i = 0; i < enemies.Count; i++) {
                 if (enemies[i].health > 0) {
                     bool flag = true;
                     for (int j = 0; j < cycle.Count; j++) {
@@ -259,7 +259,7 @@ public class Battle : MonoBehaviour
 
             target = 0;
             if (enemies.Count >= target + 1) {
-                tar_NAME_1.text = ">>  " + enemies[target].character;
+                tar_NAME_1.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_1.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_1.value = enemies[target].health;
                 tar_HPVALUE_1.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -267,7 +267,7 @@ public class Battle : MonoBehaviour
             }
             target = 1;
             if (enemies.Count >= target + 1) {
-                tar_NAME_2.text = ">>  " + enemies[target].character;
+                tar_NAME_2.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_2.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_2.value = enemies[target].health;
                 tar_HPVALUE_2.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -275,7 +275,7 @@ public class Battle : MonoBehaviour
             }
             target = 2;
             if (enemies.Count >= target + 1) {
-                tar_NAME_3.text = ">>  " + enemies[target].character;
+                tar_NAME_3.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_3.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_3.value = enemies[target].health;
                 tar_HPVALUE_3.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -283,7 +283,7 @@ public class Battle : MonoBehaviour
             }
             target = 3;
             if (enemies.Count >= target + 1) {
-                tar_NAME_4.text = ">>  " + enemies[target].character;
+                tar_NAME_4.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_4.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_4.value = enemies[target].health;
                 tar_HPVALUE_4.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -293,7 +293,7 @@ public class Battle : MonoBehaviour
 
             target = 4;
             if (enemies.Count >= target + 1) {
-                tar_NAME_1.text = ">>  " + enemies[target].character;
+                tar_NAME_1.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_1.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_1.value = enemies[target].health;
                 tar_HPVALUE_1.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -301,7 +301,7 @@ public class Battle : MonoBehaviour
             }
             target = 5;
             if (enemies.Count >= target + 1) {
-                tar_NAME_2.text = ">>  " + enemies[target].character;
+                tar_NAME_2.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_2.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_2.value = enemies[target].health;
                 tar_HPVALUE_2.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -309,7 +309,7 @@ public class Battle : MonoBehaviour
             }
             target = 6;
             if (enemies.Count >= target + 1) {
-                tar_NAME_3.text = ">>  " + enemies[target].character;
+                tar_NAME_3.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_3.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_3.value = enemies[target].health;
                 tar_HPVALUE_3.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -317,7 +317,7 @@ public class Battle : MonoBehaviour
             }
             target = 7;
             if (enemies.Count >= target + 1) {
-                tar_NAME_4.text = ">>  " + enemies[target].character;
+                tar_NAME_4.text = ">>  " + enemies[target].getName();
                 tar_HPSLIDER_4.maxValue = enemies[target].maxhealth;
                 tar_HPSLIDER_4.value = enemies[target].health;
                 tar_HPVALUE_4.text = enemies[target].health + " / " + enemies[target].maxhealth;
@@ -349,7 +349,7 @@ public class Battle : MonoBehaviour
         string displayCycle = "";
         foreach(Character c in cycle) {
             turnNumber++;
-            displayCycle += turnNumber + " - " + c.character + "\n";
+            displayCycle += turnNumber + " - " + c.getName() + "\n";
         }
 
         turnOrderDisplay.text = displayCycle;
@@ -360,7 +360,6 @@ public class Battle : MonoBehaviour
                 if (lastTurn != turn) {
                     sel_phase = 2;
                     lastTurn = turn;
-                    cycle[0].startTurn();
                     var targetPos = CharacterBox.transform.position;
                     ActionBox.transform.position = CharacterBox.transform.position;
                     targetPos.x += 517;
@@ -413,6 +412,12 @@ public class Battle : MonoBehaviour
 
                             selectedAction = selectedAction.Substring(4);
                             Skills skill = SkillsRegistry.getSkill(selectedAction);
+                            if (skill == null) {
+                                if (selectedAction.IndexOf("Skill: ")  >= 0) {
+                                    selectedAction = selectedAction.Substring(7);
+                                    skill = SkillsRegistry.getSkill(selectedAction);
+                                }
+                            }
 
                             if (skill != null) {
                                 if (skill.targetType == "Self") {
@@ -448,8 +453,15 @@ public class Battle : MonoBehaviour
                             selectedAction = action_OP4.text;
                             break;
                     }
+
                     selectedAction = selectedAction.Substring(4);
                     Skills skill = SkillsRegistry.getSkill(selectedAction);
+                    if (skill == null) {
+                        if (selectedAction.IndexOf("Skill: ")  >= 0) {
+                            selectedAction = selectedAction.Substring(7);
+                            skill = SkillsRegistry.getSkill(selectedAction);
+                        }
+                    }
 
                     updateSelection(ref sel_target, enemies.Count - 1);
                     int confirm = getConfirmation();
@@ -491,6 +503,7 @@ public class Battle : MonoBehaviour
                     }
                     ActionBox.transform.position = CharacterBox.transform.position;
                     TargetBox.transform.position = CharacterBox.transform.position;
+                    cycle[0].endTurn();
                     StartCoroutine(SuspendCycleChange(0));
                 }
             } else {
@@ -498,6 +511,7 @@ public class Battle : MonoBehaviour
                 if (dmg > 0) {
                     StartCoroutine(Damage(dmg));
                 }
+                cycle[0].endTurn();
                 StartCoroutine(SuspendCycleChange(0));
             }
         }

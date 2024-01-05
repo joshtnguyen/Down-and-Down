@@ -19,31 +19,44 @@ public class Skills
         targetType = t;
     }
 
-    public static int useSkill(Character c, Skills s) {
-        int dmg = 0;
-        switch (s.skillName) {
-            case "Block":
-                Mod m = new Mod(s.skillName, 200, false);
-                Mod m2 = new Mod(s.skillName, c.baseSPD * -1, false);
-                c.def_p_mod[0].Add(m);
-                c.spd_mod[0].Add(m2);
-                break;
-
-        }
-        c.verifyMod();
-        return dmg;
-    }
-
     public static int useSkill(Character c, Skills s, Character t) {
+
+        c.verifyMod();
+        if (t != null) 
+            t.verifyMod();
+
         int dmg = 0;
+        Mod m;
+        Mod m2;
+        Mod m3;
+        Mod m4;
+
         switch (s.skillName) {
             case "Attack":
                 dmg = c.damage(t, 100, false);
                 break;
+            case "Block":
+                m = new Mod(s.skillName, 200, false);
+                m2 = new Mod(s.skillName, c.baseSPD * -1, false);
+                c.def_p_mod[1].Add(m);
+                c.spd_mod[1].Add(m2);
+                break;
+            case "Test":
+                m = new Mod(s.skillName, -50, true);
+                t.atk_p_mod[0].Add(m);
+                t.atk_p_mod[1].Add(m);
+                break;
         }
+
         c.verifyMod();
-        t.verifyMod();
+        if (t != null) 
+            t.verifyMod();
+        
         return dmg;
+    }
+
+    public static int useSkill(Character c, Skills s) {
+        return useSkill(c, s, null);
     }
 
     // Start is called before the first frame update

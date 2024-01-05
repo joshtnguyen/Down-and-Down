@@ -55,7 +55,7 @@ public class Enemy : Character
     }
 
     public override string getName() {
-        return character + " (" + id + ")"; 
+        return character + "/" + id; 
     }
 
     public override string ToString() {
