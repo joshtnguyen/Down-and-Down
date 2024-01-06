@@ -1176,7 +1176,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '>>  Skill:'
+  m_Text: '>>  Skill: Ally Thing'
 --- !u!222 &376325955
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3960,6 +3960,7 @@ MonoBehaviour:
   obj_HPVALUE_3: {fileID: 262160883}
   obj_HPVALUE_4: {fileID: 297767191}
   TargetBox: {fileID: 1174457793}
+  targetTypeIsEnemy: 1
   tar_BOX_1: {fileID: 875605285}
   tar_BOX_2: {fileID: 845167719}
   tar_BOX_3: {fileID: 1508289163}

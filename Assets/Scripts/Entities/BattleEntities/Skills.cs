@@ -57,6 +57,9 @@ public class Skills
                 t.atk_p_mod[0].Add(m);
                 t.atk_p_mod[1].Add(m);
                 break;
+            case "Ally Thing":
+                dmg = c.damage(t, 300, false);
+                break;
         }
 
         c.verifyMod();

@@ -75,6 +75,7 @@ public class Character
         baseCD = cd;
 
         skills.Add(SkillsRegistry.getSkill("Attack"));
+        skills.Add(SkillsRegistry.getSkill("Ally Thing"));
 
     }
 
