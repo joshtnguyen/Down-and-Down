@@ -88,19 +88,11 @@ public class Game : MonoBehaviour
         setRoom(row, col, "null");
         setRoom(row, col, "null");
 
-        bool checkFlag = true;
-
-        for (int i = 0; i < mapLength * mapLength + 2 && checkFlag; i++) {
+        for (int i = 0; i < mapLength * mapLength; i++) {
 
             if (combos.Any()) {
                 var roomCombo = combos[Random.Range(0, combos.Count)];
                 setRoom(roomCombo[0], roomCombo[1], "null");
-            }
-            
-            if (i % 10 == 9) {
-                if (isRoomsSet()) {
-                    checkFlag = false;
-                }
             }
 
         }
@@ -113,8 +105,12 @@ public class Game : MonoBehaviour
     public static bool setRoom(int row, int col, string blockedDirection) {
 
         string flag;
-        int[] c = {row, col};
-        combos.Remove(c);
+        for (int i = 0; i < combos.Count(); i++) {
+            if (combos[i][0] == row && combos[i][1] == col) {
+                combos.RemoveAt(i);
+                break;
+            }
+        }
         
         List<string> directions = new List<string>();
         if (row > 0 && blockedDirection != "North") {
@@ -178,11 +174,12 @@ public class Game : MonoBehaviour
     public static bool isRoomsSet() {
         for (int i = 0; i < mapLength; i++) {
             for (int j = 0; j < mapLength; j++) {
-                if (map[i, j] == null) {
+                if (map[i, j].ToString() == null) {
                     return false;
                 }
             }
         }
+        Debug.Log("ROOMS SET!");
         return true;
     }
 
@@ -221,11 +218,32 @@ public class Game : MonoBehaviour
             EnemyAI.emptyTrash();
             EnemyAI.CreateEnemy(originalEnemy, map[row, col].enemiesLeft);
             updateEnemies = false;
+            map[row, col].hasEntered = true;
         }
     }
 
     public static void getRoom() {
         Debug.Log("Room: " + row + " / " + col);
+        for (int i = 0; i < mapLength; i++) {
+            string r1 = "";
+            string r2 = "";
+            for (int j = 0; j < mapLength; j++) {
+                if (map[i, j].east) {
+                    r1 += "X - ";
+                } else if (map[i, j].ToString() == null) {
+                    r1 += "O   ";
+                } else {
+                    r1 += "X   ";
+                }
+                if (map[i, j].south) {
+                    r2 += j + "    ";
+                } else {
+                    r2 += "       ";
+                }
+            }
+            Debug.Log(r1);
+            Debug.Log(r2);
+        }
     }
 
 }
