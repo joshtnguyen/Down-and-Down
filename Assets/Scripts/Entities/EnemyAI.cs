@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -17,13 +19,16 @@ public class EnemyAI : MonoBehaviour
 
     public LayerMask playerObjectsLayer;
 
+    public static List<GameObject> trashCan = new List<GameObject>();
+
     public static void CreateEnemy(GameObject originalEnemy, int num) {
         for (int i = 0; i < num; i++) {
-            GameObject EnemyClone = Instantiate(originalEnemy, new Vector3(Random.Range(1, 17) - 8, Random.Range(1, 17) - 8), originalEnemy.transform.rotation);
+            GameObject EnemyClone = Instantiate(originalEnemy, new Vector3(Random.Range(0, 15) - 7, Random.Range(0, 13) - 6), originalEnemy.transform.rotation);
             EnemyClone.name = "EnemyClone" + (i + 1);
             EnemyAI obj = EnemyClone.GetComponent<EnemyAI>();
             obj.GetComponent<Renderer>().enabled = true;
             obj.isAlive = true;
+            trashCan.Add(EnemyClone);
         }
     }
 
@@ -122,9 +127,9 @@ public class EnemyAI : MonoBehaviour
     private bool PlayerInCollision(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
             Game.gameMovementFreeze = true;
-            StartCoroutine(Sleep(1));
-            Room.enemiesLeft--;
+            Game.map[Game.row, Game.col].enemiesLeft--;
             Destroy(this);
+            StartCoroutine(Sleep(1));
             Battle.StartBattle(this.gameObject, 1);
             return true;
         }
@@ -133,6 +138,12 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator Sleep(int seconds) {
         yield return new WaitForSecondsRealtime(1);
+    }
+
+    public static void emptyTrash() {
+        foreach(GameObject t in trashCan) {
+            Destroy(t);
+        }
     }
 }
 

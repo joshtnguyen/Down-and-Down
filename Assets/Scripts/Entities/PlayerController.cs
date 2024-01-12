@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -16,6 +17,10 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     public LayerMask solidObjectsLayer;
+    public LayerMask northLayer;
+    public LayerMask eastLayer;
+    public LayerMask southLayer;
+    public LayerMask westLayer;
 
     private void Awake() {
         animator = GetComponent<Animator>();
@@ -48,9 +53,37 @@ public class PlayerController : MonoBehaviour
                 var targetPos = transform.position;
                 targetPos.x += input.x;
                 targetPos.y += input.y;
+
                 
                 if (IsWalkable(targetPos)) {
                     StartCoroutine(Move(targetPos));
+                    Game.getRoom();
+                } else {
+                    var pos = transform.position;
+                    if (goingNorth(targetPos)) {
+                        pos.y = -9;
+                        transform.position = pos;
+                        Game.row--;
+                        Game.updateEnemies = true;
+                    }
+                    if (goingSouth(targetPos)) {
+                        pos.y = 10;
+                        transform.position = pos;
+                        Game.row++;
+                        Game.updateEnemies = true;
+                    }
+                    if (goingEast(targetPos)) {
+                        pos.x = -11;
+                        transform.position = pos;
+                        Game.col++;
+                        Game.updateEnemies = true;
+                    }
+                    if (goingWest(targetPos)) {
+                        pos.x = 11;
+                        transform.position = pos;
+                        Game.col--;
+                        Game.updateEnemies = true;
+                    }
                 }
             }
         }
@@ -76,6 +109,34 @@ public class PlayerController : MonoBehaviour
             return false;
         }
         return true;
+    }
+
+    private bool goingNorth(Vector3 targetPos) {
+        if (Physics2D.OverlapCircle(targetPos, 0.2f, northLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool goingEast(Vector3 targetPos) {
+        if (Physics2D.OverlapCircle(targetPos, 0.2f, eastLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool goingSouth(Vector3 targetPos) {
+        if (Physics2D.OverlapCircle(targetPos, 0.2f, southLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool goingWest(Vector3 targetPos) {
+        if (Physics2D.OverlapCircle(targetPos, 0.2f, westLayer) != null) {
+            return true;
+        }
+        return false;
     }
 
 }
