@@ -81,11 +81,6 @@ public class Battle : MonoBehaviour
     public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
 
-    public static List<Character> characters = new List<Character>();
-    public static Character walter = new Character("Walter", 1, 100, 15, 10, 10, 5, 12);
-    public static Character benedict = new Character("Benedict", 1, 95, 10, 12, 11, 8, 8);
-    public static Character sherri = new Character("Sherri", 1, 120, 7, 12, 12, 8, 3);
-    public static Character jade = new Character("Jade", 1, 150, 5, 18, 9, 2, 3);
     public static List<Enemy> enemies = new List<Enemy>();
 
 
@@ -108,7 +103,7 @@ public class Battle : MonoBehaviour
             enemies[i].verifyMod();
         }
         
-        foreach (Character c in characters) {
+        foreach (Character c in Game.characters) {
             c.resetMod();
         }
 
@@ -118,7 +113,7 @@ public class Battle : MonoBehaviour
     private void NewCycle() {
         cycle.Clear();
 
-        foreach (Character c in characters) {
+        foreach (Character c in Game.characters) {
             c.verifyMod();
         }
 
@@ -126,18 +121,18 @@ public class Battle : MonoBehaviour
             c.verifyMod();
         }
 
-        for (int i = 0; i < characters.Count; i++) {
-            if (characters[i].health > 0) {
+        for (int i = 0; i < Game.characters.Count; i++) {
+            if (Game.characters[i].health > 0) {
                 bool flag = true;
                 for (int j = 0; j < cycle.Count; j++) {
-                    if (characters[i].currentSPD > cycle[j].currentSPD) {
-                        cycle.Insert(j, characters[i]);
+                    if (Game.characters[i].currentSPD > cycle[j].currentSPD) {
+                        cycle.Insert(j, Game.characters[i]);
                         flag = false;
                         j = cycle.Count;
                     }
                 }
                 if (flag) {
-                    cycle.Add(characters[i]);
+                    cycle.Add(Game.characters[i]);
                 }
             }
         }
@@ -170,21 +165,6 @@ public class Battle : MonoBehaviour
 
         if (!firstRun) {
             firstRun = true;
-
-            characters.Add(walter);
-            characters.Add(benedict);
-            characters.Add(sherri);
-            characters.Add(jade);
-
-            SkillsRegistry.firstRun();
-
-            foreach (Character c in characters) {
-                c.skills.Add(SkillsRegistry.getSkill("Attack"));
-                c.skills.Add(SkillsRegistry.getSkill("Block"));
-                c.skills.Add(SkillsRegistry.getSkill("Test"));
-                c.skills.Add(SkillsRegistry.getSkill("Ally Thing"));
-                c.verifyMod();
-            }
         }
         
     }
@@ -192,18 +172,18 @@ public class Battle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        obj_HPSLIDER_1.maxValue = walter.maxhealth;
-        obj_HPSLIDER_1.value = walter.health;
-        obj_HPVALUE_1.text = walter.health + " / " + walter.maxhealth;
-        obj_HPSLIDER_2.maxValue = benedict.maxhealth;
-        obj_HPSLIDER_2.value = benedict.health;
-        obj_HPVALUE_2.text = benedict.health + " / " + benedict.maxhealth;
-        obj_HPSLIDER_3.maxValue = sherri.maxhealth;
-        obj_HPSLIDER_3.value = sherri.health;
-        obj_HPVALUE_3.text = sherri.health + " / " + sherri.maxhealth;
-        obj_HPSLIDER_4.maxValue = jade.maxhealth;
-        obj_HPSLIDER_4.value = jade.health;
-        obj_HPVALUE_4.text = jade.health + " / " + jade.maxhealth;
+        obj_HPSLIDER_1.maxValue = Game.characters[0].maxhealth;
+        obj_HPSLIDER_1.value = Game.characters[0].health;
+        obj_HPVALUE_1.text = Game.characters[0].health + " / " + Game.characters[0].maxhealth;
+        obj_HPSLIDER_2.maxValue = Game.characters[1].maxhealth;
+        obj_HPSLIDER_2.value = Game.characters[1].health;
+        obj_HPVALUE_2.text = Game.characters[1].health + " / " + Game.characters[1].maxhealth;
+        obj_HPSLIDER_3.maxValue = Game.characters[2].maxhealth;
+        obj_HPSLIDER_3.value = Game.characters[2].health;
+        obj_HPVALUE_3.text = Game.characters[2].health + " / " + Game.characters[2].maxhealth;
+        obj_HPSLIDER_4.maxValue = Game.characters[3].maxhealth;
+        obj_HPSLIDER_4.value = Game.characters[3].health;
+        obj_HPVALUE_4.text = Game.characters[3].health + " / " + Game.characters[3].maxhealth;
 
         if (battleSP > battleSPMAX) {
             battleSP = battleSPMAX;
@@ -364,31 +344,31 @@ public class Battle : MonoBehaviour
         } else {
 
             target = 0;
-            tar_NAME_1.text = ">>  " + characters[target].getName();
-            tar_HPSLIDER_1.maxValue = characters[target].maxhealth;
-            tar_HPSLIDER_1.value = characters[target].health;
-            tar_HPVALUE_1.text = characters[target].health + " / " + characters[target].maxhealth;
+            tar_NAME_1.text = ">>  " + Game.characters[target].getName();
+            tar_HPSLIDER_1.maxValue = Game.characters[target].maxhealth;
+            tar_HPSLIDER_1.value = Game.characters[target].health;
+            tar_HPVALUE_1.text = Game.characters[target].health + " / " + Game.characters[target].maxhealth;
             tar_BOX_1.SetActive(true);
 
             target = 1;
-            tar_NAME_2.text = ">>  " + characters[target].getName();
-            tar_HPSLIDER_2.maxValue = characters[target].maxhealth;
-            tar_HPSLIDER_2.value = characters[target].health;
-            tar_HPVALUE_2.text = characters[target].health + " / " + characters[target].maxhealth;
+            tar_NAME_2.text = ">>  " + Game.characters[target].getName();
+            tar_HPSLIDER_2.maxValue = Game.characters[target].maxhealth;
+            tar_HPSLIDER_2.value = Game.characters[target].health;
+            tar_HPVALUE_2.text = Game.characters[target].health + " / " + Game.characters[target].maxhealth;
                 tar_BOX_2.SetActive(true);
 
             target = 2;
-            tar_NAME_3.text = ">>  " + characters[target].getName();
-            tar_HPSLIDER_3.maxValue = characters[target].maxhealth;
-            tar_HPSLIDER_3.value = characters[target].health;
-            tar_HPVALUE_3.text = characters[target].health + " / " + characters[target].maxhealth;
+            tar_NAME_3.text = ">>  " + Game.characters[target].getName();
+            tar_HPSLIDER_3.maxValue = Game.characters[target].maxhealth;
+            tar_HPSLIDER_3.value = Game.characters[target].health;
+            tar_HPVALUE_3.text = Game.characters[target].health + " / " + Game.characters[target].maxhealth;
             tar_BOX_3.SetActive(true);
             
             target = 3;
-            tar_NAME_4.text = ">>  " + characters[target].getName();
-            tar_HPSLIDER_4.maxValue = characters[target].maxhealth;
-            tar_HPSLIDER_4.value = characters[target].health;
-            tar_HPVALUE_4.text = characters[target].health + " / " + characters[target].maxhealth;
+            tar_NAME_4.text = ">>  " + Game.characters[target].getName();
+            tar_HPSLIDER_4.maxValue = Game.characters[target].maxhealth;
+            tar_HPSLIDER_4.value = Game.characters[target].health;
+            tar_HPVALUE_4.text = Game.characters[target].health + " / " + Game.characters[target].maxhealth;
             tar_BOX_4.SetActive(true);
 
             tar_NAME_1.fontStyle = FontStyle.Normal;
@@ -501,8 +481,8 @@ public class Battle : MonoBehaviour
                                         }
                                         if (skill.targetType == "Ally" || skill.targetType == "Non-Self Ally" || skill.targetType == "Dead") {
                                             targetTypeIsEnemy = false;
-                                            if (sel_target >= characters.Count) {
-                                                sel_target = characters.Count - 1;
+                                            if (sel_target >= Game.characters.Count) {
+                                                sel_target = Game.characters.Count - 1;
                                             }
                                         }
                                             
@@ -549,7 +529,7 @@ public class Battle : MonoBehaviour
                     if (targetTypeIsEnemy) {
                         updateSelection(ref sel_target, enemies.Count - 1);
                     } else {
-                        updateSelection(ref sel_target, characters.Count - 1);
+                        updateSelection(ref sel_target, Game.characters.Count - 1);
                     }
                     int confirm = getConfirmation();
 
@@ -570,18 +550,18 @@ public class Battle : MonoBehaviour
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Ally") {
-                                if (characters[sel_target].health > 0) {
-                                    dmg = Skills.useSkill(cycle[0], skill, characters[sel_target]);
+                                if (Game.characters[sel_target].health > 0) {
+                                    dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
-                                if (characters[sel_target].health > 0 && characters[sel_target] != cycle[0]) {
-                                    dmg = Skills.useSkill(cycle[0], skill, characters[sel_target]);
+                                if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
+                                    dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
-                                if (characters[sel_target].health > 0 && characters[sel_target] != cycle[0]) {
-                                    dmg = Skills.useSkill(cycle[0], skill, characters[sel_target]);
+                                if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
+                                    dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     sel_phase = -2;
                                 }
                             }
@@ -647,7 +627,7 @@ public class Battle : MonoBehaviour
 
     private bool isPlayerTurn() {
         string p = cycle[0].character;
-        foreach (Character c in characters) {
+        foreach (Character c in Game.characters) {
             if (p == c.character) {
                 return true;
             }
@@ -720,7 +700,7 @@ public class Battle : MonoBehaviour
 
     public void checkGameStatus() {
         int alive = 0;
-        foreach (Character c in characters) {
+        foreach (Character c in Game.characters) {
             if (c.health > 0) {
                 alive++;
             }

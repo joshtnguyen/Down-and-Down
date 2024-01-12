@@ -25,7 +25,7 @@ public class Enemy : Character
     public static Character selectTarget(bool isCharacter) {
         if (isCharacter) {
             List<Character> selection = new List<Character>();
-            foreach (Character c in Battle.characters) {
+            foreach (Character c in Game.characters) {
                 if (c.health > 0) {
                     selection.Add(c);
                 }
@@ -39,7 +39,7 @@ public class Enemy : Character
             return selection[rand.Next(selection.Count)];
         }
 
-        return Battle.characters[0];
+        return Game.characters[0];
     }
 
     // Start is called before the first frame update
