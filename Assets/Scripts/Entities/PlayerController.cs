@@ -57,7 +57,6 @@ public class PlayerController : MonoBehaviour
                 
                 if (IsWalkable(targetPos)) {
                     StartCoroutine(Move(targetPos));
-                    Game.getRoom();
                 } else {
                     var pos = transform.position;
                     if (goingNorth(targetPos)) {

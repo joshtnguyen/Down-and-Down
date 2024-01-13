@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
@@ -229,11 +230,11 @@ public class Game : MonoBehaviour
         updateRoom();
 
         if (updateEnemies) {
-            updateMap();
             EnemyAI.emptyTrash();
             EnemyAI.CreateEnemy(originalEnemy, map[row, col].enemiesLeft);
             updateEnemies = false;
             map[row, col].hasEntered = true;
+            updateMap();
         }
     }
 
@@ -256,9 +257,37 @@ public class Game : MonoBehaviour
                 if (room.hasEntered) {
 
                     if (room.north) {
-                        GameObject directionIndicatorClone = Instantiate(directionIndicator, new Vector3(directionIndicator.transform.position.x + (j * 75), directionIndicator.transform.position.y + (i * -75)), new Quaternion(roomIndicator.transform.rotation.x, roomIndicator.transform.rotation.y, 90, roomIndicator.transform.rotation.w));
-                        directionIndicatorClone.transform.SetParent(directionIndicator.transform);
-                        directionIndicatorClone.name = "directionIndicatorClone" + i + "-" + j;
+                        GameObject directionIndicatorClone = Instantiate(directionIndicator, new Vector3(directionIndicator.transform.position.x + (j * 75), directionIndicator.transform.position.y + (i * -75) + (75 / 2)), directionIndicator.transform.rotation);
+                        directionIndicatorClone.transform.Rotate(0, 0, 90);
+                        directionIndicatorClone.transform.SetParent(directionIndicatorContainer.transform);
+                        directionIndicatorClone.name = "directionIndicatorCloneN" + i + "-" + j;
+                        directionIndicatorClone.SetActive(true);
+                        mapObjects.Add(directionIndicatorClone);
+                    }
+
+                    if (room.south) {
+                        GameObject directionIndicatorClone = Instantiate(directionIndicator, new Vector3(directionIndicator.transform.position.x + (j * 75), directionIndicator.transform.position.y + (i * -75) - (75 / 2)), directionIndicator.transform.rotation);
+                        directionIndicatorClone.transform.Rotate(0, 0, 90);
+                        directionIndicatorClone.transform.SetParent(directionIndicatorContainer.transform);
+                        directionIndicatorClone.name = "directionIndicatorCloneS" + i + "-" + j;
+                        directionIndicatorClone.SetActive(true);
+                        mapObjects.Add(directionIndicatorClone);
+                    }
+
+                    if (room.east) {
+                        GameObject directionIndicatorClone = Instantiate(directionIndicator, new Vector3(directionIndicator.transform.position.x + (j * 75) + (75 / 2), directionIndicator.transform.position.y + (i * -75)), directionIndicator.transform.rotation);
+                        directionIndicatorClone.transform.Rotate(0, 0, 0);
+                        directionIndicatorClone.transform.SetParent(directionIndicatorContainer.transform);
+                        directionIndicatorClone.name = "directionIndicatorCloneE" + i + "-" + j;
+                        directionIndicatorClone.SetActive(true);
+                        mapObjects.Add(directionIndicatorClone);
+                    }
+
+                    if (room.west) {
+                        GameObject directionIndicatorClone = Instantiate(directionIndicator, new Vector3(directionIndicator.transform.position.x + (j * 75) - (75 / 2), directionIndicator.transform.position.y + (i * -75)), directionIndicator.transform.rotation);
+                        directionIndicatorClone.transform.Rotate(0, 0, 0);
+                        directionIndicatorClone.transform.SetParent(directionIndicatorContainer.transform);
+                        directionIndicatorClone.name = "directionIndicatorCloneW" + i + "-" + j;
                         directionIndicatorClone.SetActive(true);
                         mapObjects.Add(directionIndicatorClone);
                     }
@@ -268,33 +297,12 @@ public class Game : MonoBehaviour
                     roomIndicatorClone.transform.SetParent(roomIndicatorContainer.transform);
                     roomIndicatorClone.name = "roomIndicatorClone" + i + "-" + j;
                     roomIndicatorClone.SetActive(true);
+                    if (i == row && j == col) {
+                        roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 255, 0, 255);
+                    }
                     mapObjects.Add(roomIndicatorClone);
                 }
             }
-        }
-    }
-
-    public static void getRoom() {
-        Debug.Log("Room: " + row + " / " + col);
-        for (int i = 0; i < mapLength; i++) {
-            string r1 = "";
-            string r2 = "";
-            for (int j = 0; j < mapLength; j++) {
-                if (map[i, j].east) {
-                    r1 += "X - ";
-                } else if (map[i, j].ToString() == null) {
-                    r1 += "O   ";
-                } else {
-                    r1 += "X   ";
-                }
-                if (map[i, j].south) {
-                    r2 += j + "    ";
-                } else {
-                    r2 += "       ";
-                }
-            }
-            Debug.Log(r1);
-            Debug.Log(r2);
         }
     }
 
