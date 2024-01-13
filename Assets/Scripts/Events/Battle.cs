@@ -68,6 +68,9 @@ public class Battle : MonoBehaviour
     public GameObject DescriptionBox;
     public GameObject DamageBox;
 
+    public GameObject GameDescriptionBox;
+    public Text GameDescription;
+
     public static bool firstRun = false;
     public static int battleSP;
     public static int battleSPMAX;
@@ -75,6 +78,7 @@ public class Battle : MonoBehaviour
     public static int sel_action_last = -1;
     public static int sel_action = 0;
     public static int sel_target = 0;
+    public static int levelCheck = 0;
     public static bool buttonCooldown = false;
     public static bool animationCooldown = false;
     public static float moveSpeed = 4000;
@@ -87,6 +91,7 @@ public class Battle : MonoBehaviour
     public static void StartBattle(GameObject enemy, int numEnemies) {
         Game.gameEvent = "Battle";
         Game.gameMovementFreeze = true;
+        Game.showMap = false;
         lastTurn = "NOBODY";
         sel_phase = 1;
         sel_action_last = -1;
@@ -403,7 +408,7 @@ public class Battle : MonoBehaviour
         turnOrderDisplay.text = displayCycle;
 
         // CYCLE UPDATE
-        if (!buttonCooldown && !animationCooldown) {
+        if (!buttonCooldown && !animationCooldown && sel_phase >= -5) {
             if (isPlayerTurn()) {
                 if (lastTurn != turn) {
                     sel_phase = 2;
@@ -593,6 +598,32 @@ public class Battle : MonoBehaviour
                 cycle[0].endTurn();
                 StartCoroutine(SuspendCycleChange(0));
             }
+        } else if (sel_phase == -10) {
+            levelCheck++;
+            if (levelCheck >= Game.characters.Count) {
+                sel_phase = -12;
+                GameDescriptionBox.SetActive(false);
+                StartCoroutine(SuspendSceneChange(2, "Overworld Scene"));
+            } else if (levelCheck == -1) {
+                int gold = 2 * enemies.Count;
+                Game.gold += gold;
+                GameDescription.text = "You earned " + gold + "G!";
+                GameDescriptionBox.SetActive(true);
+                sel_phase = -11;
+            } else {
+                Game.characters[levelCheck].xp += enemies.Count();
+                int levelChange = Game.characters[levelCheck].checkLevelChange();
+                if (levelChange > 0) {
+                    GameDescription.text = Game.characters[levelCheck].character + " leveled up!\nLevel " + (Game.characters[levelCheck].level - levelChange) + " >> " + Game.characters[levelCheck].level;
+                    GameDescriptionBox.SetActive(true);
+                    sel_phase = -11;
+                }
+            }
+        } else if (sel_phase == -11) {
+            int confirm = getConfirmation();
+            if (confirm != 0) {
+                sel_phase = -10;
+            }
         }
 
     }
@@ -699,29 +730,33 @@ public class Battle : MonoBehaviour
     }
 
     public void checkGameStatus() {
-        int alive = 0;
-        foreach (Character c in Game.characters) {
-            if (c.health > 0) {
-                alive++;
+        if (sel_phase > -5) {
+            int alive = 0;
+            foreach (Character c in Game.characters) {
+                if (c.health > 0) {
+                    alive++;
+                }
+            }
+
+            if (alive <= 0) {
+                StartCoroutine(SuspendSceneChange(2, "End Scene"));
+            }
+
+            alive = 0;
+            foreach (Character c in enemies) {
+                if (c.health > 0) {
+                    alive++;
+                }
+            }
+
+            if (alive <= 0) {
+                buttonCooldown = true;
+                animationCooldown = true;
+                levelCheck = -2;
+                sel_phase = -10;
+                //StartCoroutine(SuspendSceneChange(2, "Overworld Scene"));
             }
         }
-
-        if (alive <= 0) {
-            StartCoroutine(SuspendSceneChange(2, "End Scene"));
-        }
-
-        alive = 0;
-        foreach (Character c in enemies) {
-            if (c.health > 0) {
-                alive++;
-            }
-        }
-
-        if (alive <= 0) {
-            StartCoroutine(SuspendSceneChange(2, "Overworld Scene"));
-        }
-
-        
     }
 
     IEnumerator SuspendSceneChange(int seconds, string scene)

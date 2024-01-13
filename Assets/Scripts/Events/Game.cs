@@ -29,6 +29,7 @@ public class Game : MonoBehaviour
     public static int col = 0;
     public static int floorNumber = 0;
     public static int disruptions = 0;
+    public static int gold = 0;
 
     public static Room[,] map = new Room[7, 7];
     public static List<int[]> combos = new List<int[]>();
@@ -222,7 +223,7 @@ public class Game : MonoBehaviour
     void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.Tab)) {
+        if (Input.GetKeyDown(KeyCode.Z)) {
             showMap = !showMap;
             updateMap();
         }

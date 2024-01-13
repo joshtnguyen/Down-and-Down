@@ -27,9 +27,16 @@ public class Mod {
 public class Character
 {
 
+    private static int L_UP_REQ = 1;
+
+    private static int L_UP_HP = 3;
+    private static int L_UP_ATK = 2;
+    private static int L_UP_DEF = 4;
+
     public string character;
 
     public int level;
+    public int xp;
     public int sp;
 
     public int health;
@@ -198,7 +205,7 @@ public class Character
         double val = 0;
         double per = 100;
 
-        val = baseHP;
+        val = baseHP + (L_UP_HP * (level-1));
         per = 100;
         if (hp_mod[0].Any()) {
             foreach (Mod m in hp_mod[0]) {
@@ -216,7 +223,7 @@ public class Character
         }
         maxhealth = (int)(val * (per / 100));
 
-        val = baseATK;
+        val = baseATK + (L_UP_ATK * (level-1));
         per = 100;
         if (atk_mod[0].Any()) {
             foreach (Mod m in atk_mod[0]) {
@@ -234,7 +241,7 @@ public class Character
         }
         currentATK = val * (per / 100);
 
-        val = baseDEF;
+        val = baseDEF + (L_UP_DEF * (level-1));
         per = 100;
         if (def_mod[0].Any()) {
             foreach (Mod m in def_mod[0]) {
@@ -287,6 +294,16 @@ public class Character
             health = maxhealth;
         }
 
+    }
+
+    public int checkLevelChange() {
+        int up = 0;
+        while (xp >= L_UP_REQ * level) {
+            xp -= L_UP_REQ * level;
+            level++;
+            up++;
+        }
+        return up;
     }
 
     // Start is called before the first frame update
