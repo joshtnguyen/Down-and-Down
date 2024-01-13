@@ -31,7 +31,7 @@ public class Game : MonoBehaviour
     public static int disruptions = 0;
     public static int gold = 0;
 
-    public static Room[,] map = new Room[7, 7];
+    public static Room[,] map = new Room[mapLength, mapLength];
     public static List<int[]> combos = new List<int[]>();
 
     public GameObject northBlocker;
@@ -107,9 +107,83 @@ public class Game : MonoBehaviour
 
         }
 
+        bool[,] checker = new bool[mapLength, mapLength];
+        int check = 0;
+
+        while (check < mapLength * mapLength) {
+            check = 0;
+            for (int i = 0; i < mapLength; i++) {
+                for (int j = 0; j < mapLength; j++) {
+                    checker[i, j] = false;
+                }
+            }
+            verifyRooms(row, col, ref checker, ref check);
+            Debug.Log(check);
+            if (check != mapLength * mapLength) {
+                bool changedRoom = false;
+                for (int i = 0; i < mapLength && !changedRoom; i++) {
+                    for (int j = 0; j < mapLength && !changedRoom; j++) {
+                        if (!checker[i, j]) {
+                            if (i > 0) {
+                                    if (checker[i - 1, j]) {
+                                    map[i, j].north = true;
+                                    map[i - 1, j].south = true;
+                                    changedRoom = true;
+                                }
+                            }
+                            
+                            if (i < mapLength - 1) {
+                                if (checker[i + 1, j]) {
+                                    map[i, j].south = true;
+                                    map[i + 1, j].north = true;
+                                    changedRoom = true;
+                                }
+                            }
+
+                            if (j < mapLength - 1) {
+                                if (checker[i, j + 1]) {
+                                    map[i, j].east = true;
+                                    map[i, j + 1].west = true;
+                                    changedRoom = true;
+                                }
+                            }
+
+                            if (j > 0) {
+                                if (checker[i, j - 1]) {
+                                    map[i, j].west = true;
+                                    map[i, j - 1].east = true;
+                                    changedRoom = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         updateEnemies = true;
         
+    }
 
+    public static bool verifyRooms(int row, int col, ref bool[,] checker, ref int check) {
+        if (!checker[row, col]) {
+            checker[row, col] = true;
+            check++;
+            if (map[row, col].north) {
+                verifyRooms(row - 1, col, ref checker, ref check);
+            }
+            if (map[row, col].south) {
+                verifyRooms(row + 1, col, ref checker, ref check);
+            }
+            if (map[row, col].east) {
+                verifyRooms(row, col + 1, ref checker, ref check);
+            }
+            if (map[row, col].west) {
+                verifyRooms(row, col - 1, ref checker, ref check);
+            }
+        }
+
+        return false;
     }
 
     public static bool setRoom(int row, int col, string blockedDirection) {
@@ -189,7 +263,6 @@ public class Game : MonoBehaviour
                 }
             }
         }
-        Debug.Log("ROOMS SET!");
         return true;
     }
 
