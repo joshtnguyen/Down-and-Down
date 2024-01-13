@@ -37,6 +37,14 @@ public class Game : MonoBehaviour
     public GameObject southBlocker;
     public GameObject westBlocker;
 
+    public static bool showMap = false;
+    public static List<GameObject> mapObjects = new List<GameObject>();
+    public GameObject mapObject;
+    public GameObject roomIndicator;
+    public GameObject roomIndicatorContainer;
+    public GameObject directionIndicatorContainer;
+    public GameObject directionIndicator;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -212,13 +220,57 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Tab)) {
+            showMap = !showMap;
+            updateMap();
+        }
+
         updateRoom();
 
         if (updateEnemies) {
+            updateMap();
             EnemyAI.emptyTrash();
             EnemyAI.CreateEnemy(originalEnemy, map[row, col].enemiesLeft);
             updateEnemies = false;
             map[row, col].hasEntered = true;
+        }
+    }
+
+    public void updateMap() {
+        if (!showMap) {
+            mapObject.SetActive(false);
+            return;
+        }
+
+        mapObject.SetActive(true);
+        while (mapObjects.Any()) {
+            GameObject t = mapObjects[0];
+            mapObjects.RemoveAt(0);
+            Destroy(t);
+        }
+
+        for (int i = 0; i < mapLength; i++) {
+            for (int j = 0; j < mapLength; j++) {
+                var room = map[i, j];
+                if (room.hasEntered) {
+
+                    if (room.north) {
+                        GameObject directionIndicatorClone = Instantiate(directionIndicator, new Vector3(directionIndicator.transform.position.x + (j * 75), directionIndicator.transform.position.y + (i * -75)), new Quaternion(roomIndicator.transform.rotation.x, roomIndicator.transform.rotation.y, 90, roomIndicator.transform.rotation.w));
+                        directionIndicatorClone.transform.SetParent(directionIndicator.transform);
+                        directionIndicatorClone.name = "directionIndicatorClone" + i + "-" + j;
+                        directionIndicatorClone.SetActive(true);
+                        mapObjects.Add(directionIndicatorClone);
+                    }
+
+
+                    GameObject roomIndicatorClone = Instantiate(roomIndicator, new Vector3(roomIndicatorContainer.transform.position.x + (j * 75), roomIndicatorContainer.transform.position.y + (i * -75)), roomIndicator.transform.rotation);
+                    roomIndicatorClone.transform.SetParent(roomIndicatorContainer.transform);
+                    roomIndicatorClone.name = "roomIndicatorClone" + i + "-" + j;
+                    roomIndicatorClone.SetActive(true);
+                    mapObjects.Add(roomIndicatorClone);
+                }
+            }
         }
     }
 

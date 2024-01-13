@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -141,7 +142,9 @@ public class EnemyAI : MonoBehaviour
     }
 
     public static void emptyTrash() {
-        foreach(GameObject t in trashCan) {
+        while (trashCan.Any()) {
+            GameObject t = trashCan[0];
+            trashCan.RemoveAt(0);
             Destroy(t);
         }
     }
