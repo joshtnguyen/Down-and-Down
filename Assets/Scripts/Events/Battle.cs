@@ -608,14 +608,22 @@ public class Battle : MonoBehaviour
             } else if (levelCheck == -1) {
                 int gold = 2 * enemies.Count;
                 Game.gold += gold;
+                Game.enemiesKilled += enemies.Count;
                 GameDescription.text = "You earned " + gold + "G!";
                 GameDescriptionBox.SetActive(true);
                 sel_phase = -11;
             } else {
-                Game.characters[levelCheck].xp += enemies.Count();
-                int levelChange = Game.characters[levelCheck].checkLevelChange();
-                if (levelChange > 0) {
-                    GameDescription.text = Game.characters[levelCheck].character + " leveled up!\nLevel " + (Game.characters[levelCheck].level - levelChange) + " >> " + Game.characters[levelCheck].level;
+                if (Game.characters[levelCheck].health > 0) {
+                    Game.characters[levelCheck].xp += enemies.Count();
+                    int levelChange = Game.characters[levelCheck].checkLevelChange();
+                    if (levelChange > 0) {
+                        GameDescription.text = Game.characters[levelCheck].character + " leveled up!\nLevel " + (Game.characters[levelCheck].level - levelChange) + " >> " + Game.characters[levelCheck].level;
+                        GameDescriptionBox.SetActive(true);
+                        sel_phase = -11;
+                    }
+                } else {
+                    Game.timesDowned++;
+                    GameDescription.text = Game.characters[levelCheck].character + " was downed and did not get any XP.";
                     GameDescriptionBox.SetActive(true);
                     sel_phase = -11;
                 }

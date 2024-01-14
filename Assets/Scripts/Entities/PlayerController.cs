@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class PlayerController : MonoBehaviour
 {
@@ -17,10 +19,13 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     public LayerMask solidObjectsLayer;
+    public LayerMask teleporterLayer;
     public LayerMask northLayer;
     public LayerMask eastLayer;
     public LayerMask southLayer;
     public LayerMask westLayer;
+
+    public GameObject UI;
 
     private void Awake() {
         animator = GetComponent<Animator>();
@@ -37,51 +42,63 @@ public class PlayerController : MonoBehaviour
         if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze)
         {
 
-            lastPos = transform.position;
+            int confirm = getConfirmation();
 
-            input.x = Input.GetAxisRaw("Horizontal");
-            input.y = Input.GetAxisRaw("Vertical");
-
-            if (input.x != 0) {
-                input.y = 0;
+            if (confirm == 1) {
+                if (Game.map[Game.row, Game.col].roomType == "Exit" && Game.map[Game.row, Game.col].enemiesLeft <= 0 && IsOnTeleporter()) {
+                    UI.GetComponent<GameUIManager>().openMenu("Teleporter");
+                }
             }
 
-            if (input != Vector2.zero)
-            {
-                animator.SetFloat("moveX", input.x);
-                animator.SetFloat("moveY", input.y);
-                var targetPos = transform.position;
-                targetPos.x += input.x;
-                targetPos.y += input.y;
 
-                
-                if (IsWalkable(targetPos)) {
-                    StartCoroutine(Move(targetPos));
-                } else {
-                    var pos = transform.position;
-                    if (goingNorth(targetPos)) {
-                        pos.y = -9;
-                        transform.position = pos;
-                        Game.row--;
-                        Game.updateEnemies = true;
-                    }
-                    if (goingSouth(targetPos)) {
-                        pos.y = 10;
-                        transform.position = pos;
-                        Game.row++;
-                        Game.updateEnemies = true;
-                    }
-                    if (goingEast(targetPos)) {
-                        pos.x = -11;
-                        transform.position = pos;
-                        Game.col++;
-                        Game.updateEnemies = true;
-                    }
-                    if (goingWest(targetPos)) {
-                        pos.x = 11;
-                        transform.position = pos;
-                        Game.col--;
-                        Game.updateEnemies = true;
+            if (Game.gameEvent == "Roaming" && !isMoving && !Game.gameMovementFreeze) {
+                lastPos = transform.position;
+
+                input.x = Input.GetAxisRaw("Horizontal");
+                input.y = Input.GetAxisRaw("Vertical");
+
+                if (input.x != 0) {
+                    input.y = 0;
+                }
+
+                if (input != Vector2.zero)
+                {
+                    animator.SetFloat("moveX", input.x);
+                    animator.SetFloat("moveY", input.y);
+                    var targetPos = transform.position;
+                    targetPos.x += input.x;
+                    targetPos.y += input.y;
+
+                    
+                    if (IsWalkable(targetPos)) {
+                        Game.steps++;
+                        StartCoroutine(Move(targetPos));
+                    } else {
+                        var pos = transform.position;
+                        if (goingNorth(targetPos)) {
+                            pos.y = -9;
+                            transform.position = pos;
+                            Game.row--;
+                            Game.updateEnemies = true;
+                        }
+                        if (goingSouth(targetPos)) {
+                            pos.y = 10;
+                            transform.position = pos;
+                            Game.row++;
+                            Game.updateEnemies = true;
+                        }
+                        if (goingEast(targetPos)) {
+                            pos.x = -11;
+                            transform.position = pos;
+                            Game.col++;
+                            Game.updateEnemies = true;
+                        }
+                        if (goingWest(targetPos)) {
+                            pos.x = 11;
+                            transform.position = pos;
+                            Game.col--;
+                            Game.updateEnemies = true;
+                        }
                     }
                 }
             }
@@ -108,6 +125,12 @@ public class PlayerController : MonoBehaviour
             return false;
         }
         return true;
+    }
+    private bool IsOnTeleporter() {
+        if (Physics2D.OverlapCircle(transform.position, 0.1f, teleporterLayer) != null) {
+            return true;
+        }
+        return false;
     }
 
     private bool goingNorth(Vector3 targetPos) {
@@ -136,6 +159,16 @@ public class PlayerController : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    private int getConfirmation() {
+        if (Input.GetKeyDown(KeyCode.C)) {
+            return 1;
+        } else if (Input.GetKeyDown(KeyCode.X)) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
 }

@@ -32,6 +32,11 @@ public class Game : MonoBehaviour
     public static int disruptions = 0;
     public static int gold = 0;
 
+    // FLOOR INFO
+    public static int steps = 0;
+    public static int enemiesKilled = 0;
+    public static int timesDowned = 0;
+
     public static Room[,] map = new Room[mapLength, mapLength];
     public static List<int[]> combos = new List<int[]>();
 
@@ -86,14 +91,16 @@ public class Game : MonoBehaviour
     }
 
     public static void createFloor() {
+
+        steps = 0;
+        enemiesKilled = 0;
+        timesDowned = 0;
         
         for (int i = 0; i < mapLength; i++) {
             for (int j = 0; j < mapLength; j++) {
-                if (map[i, j].ToString() == null) {
-                    map[i, j].Reset();
-                    int[] c = {i, j};
-                    combos.Add(c);
-                }
+                map[i, j].Reset();
+                int[] c = {i, j};
+                combos.Add(c);
             }
         }
 
@@ -141,6 +148,7 @@ public class Game : MonoBehaviour
                             map[i, j].enemiesLeft = 1;
                             break;
                         case "Exit":
+                            Debug.Log(i + "/" + j);
                             map[i, j].enemiesLeft = 1;
                             break;
                     }

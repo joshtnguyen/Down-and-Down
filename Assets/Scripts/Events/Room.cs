@@ -27,7 +27,7 @@ public class Room
     }
 
     public void Reset() {
-        hasEntered = false;
+        hasEntered = true;
         north = false;
         east = false;
         south = false;
