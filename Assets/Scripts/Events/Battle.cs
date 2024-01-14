@@ -604,6 +604,7 @@ public class Battle : MonoBehaviour
                 sel_phase = -12;
                 GameDescriptionBox.SetActive(false);
                 StartCoroutine(SuspendSceneChange(2, "Overworld Scene"));
+                Game.updateEnemies = true;
             } else if (levelCheck == -1) {
                 int gold = 2 * enemies.Count;
                 Game.gold += gold;

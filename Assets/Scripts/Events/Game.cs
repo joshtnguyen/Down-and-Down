@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
@@ -27,7 +28,7 @@ public class Game : MonoBehaviour
     public static int mapLength = 7;
     public static int row = 0;
     public static int col = 0;
-    public static int floorNumber = 0;
+    public static int floorNumber = -1;
     public static int disruptions = 0;
     public static int gold = 0;
 
@@ -46,6 +47,10 @@ public class Game : MonoBehaviour
     public GameObject roomIndicatorContainer;
     public GameObject directionIndicatorContainer;
     public GameObject directionIndicator;
+    public Text floorIndicator;
+
+    public GameObject teleporterArea;
+    public GameObject teleporter;
 
     // Start is called before the first frame update
     void Start()
@@ -97,6 +102,51 @@ public class Game : MonoBehaviour
         setRoom(row, col, "null");
         setRoom(row, col, "null");
         setRoom(row, col, "null");
+
+        map[row, col].roomType = "Entrance";
+
+        List<string> roomTypes = new List<string>();
+        for (int i = 0; i < 1; i++) {
+            roomTypes.Add("Exit");
+        }
+        for (int i = 0; i < 2; i++) {
+            roomTypes.Add("Wizard Room");
+        }
+        for (int i = 0; i < 15; i++) {
+            roomTypes.Add("Normal Enemy Room");
+        }
+        for (int i = 0; i < 9; i++) {
+            roomTypes.Add("Treasure Room");
+        }
+        for (int i = 0; i < 1; i++) {
+            roomTypes.Add("Mimic Room");
+        }
+        for (int i = 0; i < 1; i++) {
+            roomTypes.Add("Break Room");
+        }
+        for (int i = 0; i < 19; i++) {
+            roomTypes.Add("Empty Room");
+        }
+
+        for (int i = 0; i < mapLength; i++) {
+            for (int j = 0; j < mapLength; j++) {
+                if (map[i, j].roomType == null) {
+                    int type = Random.Range(0, roomTypes.Count);
+                    string room = roomTypes[type];
+                    map[i, j].roomType = roomTypes[type];
+                    roomTypes.RemoveAt(type);
+
+                    switch (room) {
+                        case "Normal Enemy Room":
+                            map[i, j].enemiesLeft = 1;
+                            break;
+                        case "Exit":
+                            map[i, j].enemiesLeft = 1;
+                            break;
+                    }
+                }
+            }
+        }
 
         for (int i = 0; i < mapLength * mapLength; i++) {
 
@@ -304,11 +354,29 @@ public class Game : MonoBehaviour
         updateRoom();
 
         if (updateEnemies) {
-            EnemyAI.emptyTrash();
-            EnemyAI.CreateEnemy(originalEnemy, map[row, col].enemiesLeft);
+            teleporterArea.SetActive(false);
             updateEnemies = false;
+            EnemyAI.emptyTrash();
             map[row, col].hasEntered = true;
+
+            switch (map[row, col].roomType) {
+                case "Entrance":
+                    teleporterArea.SetActive(true);
+                    teleporter.GetComponent<Tilemap>().color = new Color32(255, 0, 0, 64);
+                    break;
+                case "Exit":
+                    teleporterArea.SetActive(true);
+                    teleporter.GetComponent<Tilemap>().color = new Color32(0, 255, 255, 255);
+                    EnemyAI.CreateBoss(originalEnemy, map[row, col].enemiesLeft);
+                    break;
+                case "Normal Enemy Room":
+                    EnemyAI.CreateEnemy(originalEnemy, map[row, col].enemiesLeft);
+                    break;
+            }
+            
+            
             updateMap();
+
         }
     }
 
@@ -324,6 +392,8 @@ public class Game : MonoBehaviour
             mapObjects.RemoveAt(0);
             Destroy(t);
         }
+
+        floorIndicator.text = "Floor " + floorNumber;
 
         for (int i = 0; i < mapLength; i++) {
             for (int j = 0; j < mapLength; j++) {

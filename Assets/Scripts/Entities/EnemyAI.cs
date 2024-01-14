@@ -14,6 +14,8 @@ public class EnemyAI : MonoBehaviour
 
     private bool isMoving;
 
+    public bool canMove;
+
     private Animator animator;
 
     public LayerMask solidObjectsLayer;
@@ -29,6 +31,18 @@ public class EnemyAI : MonoBehaviour
             EnemyAI obj = EnemyClone.GetComponent<EnemyAI>();
             obj.GetComponent<Renderer>().enabled = true;
             obj.isAlive = true;
+            trashCan.Add(EnemyClone);
+        }
+    }
+
+    public static void CreateBoss(GameObject originalEnemy, int num) {
+        for (int i = 0; i < num; i++) {
+            GameObject EnemyClone = Instantiate(originalEnemy, new Vector3(originalEnemy.transform.position.x, originalEnemy.transform.position.y), originalEnemy.transform.rotation);
+            EnemyClone.name = "EnemyClone" + (i + 1);
+            EnemyAI obj = EnemyClone.GetComponent<EnemyAI>();
+            obj.GetComponent<Renderer>().enabled = true;
+            obj.isAlive = true;
+            obj.canMove = false;
             trashCan.Add(EnemyClone);
         }
     }
@@ -108,14 +122,16 @@ public class EnemyAI : MonoBehaviour
 
     IEnumerator Move(Vector3 targetPos)
     {
-        isMoving = true;
-        while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
-            yield return null;
+        if (canMove) {
+            isMoving = true;
+            while ((targetPos - transform.position).sqrMagnitude > Mathf.Epsilon)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+                yield return null;
+            }
+            transform.position = targetPos;
+            isMoving = false;
         }
-        transform.position = targetPos;
-        isMoving = false;
     }
 
     private bool IsWalkable(Vector3 targetPos) {

@@ -33,7 +33,7 @@ public class Room
         south = false;
         west = false;
         roomType = null;
-        enemiesLeft = 1;
+        enemiesLeft = 0;
     }
 
     public override string ToString() {
