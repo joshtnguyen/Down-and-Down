@@ -57,6 +57,9 @@ public class Game : MonoBehaviour
     public GameObject teleporterArea;
     public GameObject teleporter;
 
+    public GameObject wizardArea;
+    public GameObject breakArea;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -148,8 +151,14 @@ public class Game : MonoBehaviour
                             map[i, j].enemiesLeft = 1;
                             break;
                         case "Exit":
-                            Debug.Log(i + "/" + j);
+                            Debug.Log("EXIT: " + i + "/" + j);
                             map[i, j].enemiesLeft = 1;
+                            break;
+                        case "Break Room":
+                            Debug.Log("BREAK: " + i + "/" + j);
+                            break;
+                        case "Wizard Room":
+                            Debug.Log("WIZARD: " + i + "/" + j);
                             break;
                     }
                 }
@@ -363,6 +372,8 @@ public class Game : MonoBehaviour
 
         if (updateEnemies) {
             teleporterArea.SetActive(false);
+            wizardArea.SetActive(false);
+            breakArea.SetActive(false);
             updateEnemies = false;
             EnemyAI.emptyTrash();
             map[row, col].hasEntered = true;
@@ -379,6 +390,12 @@ public class Game : MonoBehaviour
                     break;
                 case "Normal Enemy Room":
                     EnemyAI.CreateEnemy(originalEnemy, map[row, col].enemiesLeft);
+                    break;
+                case "Wizard Room":
+                    wizardArea.SetActive(true);
+                    break;
+                case "Break Room":
+                    breakArea.SetActive(true);
                     break;
             }
             

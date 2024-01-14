@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
 
     public LayerMask solidObjectsLayer;
     public LayerMask teleporterLayer;
+    public LayerMask wizardLayer;
+    public LayerMask breakLayer;
     public LayerMask northLayer;
     public LayerMask eastLayer;
     public LayerMask southLayer;
@@ -48,6 +50,16 @@ public class PlayerController : MonoBehaviour
                 if (Game.map[Game.row, Game.col].roomType == "Exit" && Game.map[Game.row, Game.col].enemiesLeft <= 0 && IsOnTeleporter()) {
                     UI.GetComponent<GameUIManager>().openMenu("Teleporter");
                 }
+
+                if (Game.map[Game.row, Game.col].roomType == "Wizard Room" && IsOnWizard()) {
+                    Debug.Log("Yo!");
+                    UI.GetComponent<GameUIManager>().openMenu("Wizard");
+                }
+
+                if (Game.map[Game.row, Game.col].roomType == "Break Room" && IsOnBreak()) {
+                    UI.GetComponent<GameUIManager>().openMenu("Break");
+                }
+
             }
 
 
@@ -128,6 +140,20 @@ public class PlayerController : MonoBehaviour
     }
     private bool IsOnTeleporter() {
         if (Physics2D.OverlapCircle(transform.position, 0.1f, teleporterLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsOnWizard() {
+        if (Physics2D.OverlapCircle(transform.position, 1f, wizardLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsOnBreak() {
+        if (Physics2D.OverlapCircle(transform.position, 1f, breakLayer) != null) {
             return true;
         }
         return false;

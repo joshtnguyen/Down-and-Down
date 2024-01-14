@@ -9,6 +9,7 @@ public class Skills
     public string description;
     public int spConsumption;
     public int stacks;
+    public int maxStacks;
     public string targetType;
 
     public Skills(string n, string d, int c, int s, string t) {
@@ -16,6 +17,16 @@ public class Skills
         description = d;
         spConsumption = c;
         stacks = s;
+        maxStacks = 1;
+        targetType = t;
+    }
+
+    public Skills(string n, string d, int c, int s, int m, string t) {
+        skillName = n;
+        description = d;
+        spConsumption = c;
+        stacks = s;
+        maxStacks = m;
         targetType = t;
     }
 

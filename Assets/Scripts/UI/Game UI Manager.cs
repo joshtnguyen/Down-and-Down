@@ -50,8 +50,47 @@ public class GameUIManager : MonoBehaviour
                 menu_type = "Highlight";
                 menu_phase = 1;
                 menu_selection = -1;
+                menu_selection_limit = -1;
                 action_selection = 1;
                 action_selection_limit = 1;
+                Game.gameMovementFreeze = true;
+                break;
+            case "Wizard":
+                OptionBox.SetActive(true);
+                ActionBox.transform.position = DescriptionBox.transform.position;
+                D_1.text = "Welcome to my humble shop. I can teach you some skills for your future battles. For a price that is...";
+                D_2.text = "";
+                D_3.text = "";
+                D_4.text = "";
+                A_1.text = ">> ";
+                A_2.text = ">> ";
+                A_3.text = ">> ";
+                A_4.text = ">> ";
+                menu_type = "Highlight";
+                menu_phase = 1;
+                menu_selection = -1;
+                menu_selection_limit = -1;
+                action_selection = 0;
+                action_selection_limit = 3;
+                Game.gameMovementFreeze = true;
+                break;
+            case "Break":
+                OptionBox.SetActive(true);
+                ActionBox.transform.position = DescriptionBox.transform.position;
+                D_1.text = ">> Heal an Ally";
+                D_2.text = ">> Change Skills";
+                D_3.text = "";
+                D_4.text = "";
+                A_1.text = ">> ";
+                A_2.text = ">> ";
+                A_3.text = ">> ";
+                A_4.text = ">> ";
+                menu_type = "Highlight";
+                menu_phase = 0;
+                menu_selection = 0;
+                menu_selection_limit = 1;
+                action_selection = 0;
+                action_selection_limit = 3;
                 Game.gameMovementFreeze = true;
                 break;
         }
@@ -153,7 +192,7 @@ public class GameUIManager : MonoBehaviour
                 case 2:
                     D_3.fontStyle = FontStyle.Bold;
                     break;
-                case 4:
+                case 3:
                     D_4.fontStyle = FontStyle.Bold;
                     break;
             }
@@ -167,7 +206,7 @@ public class GameUIManager : MonoBehaviour
                 case 2:
                     A_3.fontStyle = FontStyle.Bold;
                     break;
-                case 4:
+                case 3:
                     A_4.fontStyle = FontStyle.Bold;
                     break;
             }
@@ -176,6 +215,24 @@ public class GameUIManager : MonoBehaviour
         if (!slideCooldown && !animationCooldown) {
             if (menu_phase == 0) {
                 ActionBox.transform.position = DescriptionBox.transform.position;
+                updateSelection(ref menu_selection, menu_selection_limit);
+
+                int confirm = getConfirmation();
+                switch (menu_name) {
+                    case "Break":
+                        if (confirm == 1) {
+                            if (action_selection == 0) {
+                                
+                            } else if (action_selection == 1) {
+                                
+                            }
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+                }
             } else if (menu_phase == 1) {
                 var targetPos = DescriptionBox.transform.position;
                 ActionBox.transform.position = DescriptionBox.transform.position;
@@ -192,6 +249,28 @@ public class GameUIManager : MonoBehaviour
                                 SceneManager.LoadScene("Debrief Scene");
                             } else if (action_selection == 1) {
                                 confirm = -1;
+                            }
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+                    case "Wizard":
+                        if (confirm == 1) {
+                            switch (action_selection == 0) {
+
+                            }
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+                    case "Break":
+                        if (confirm == 1) {
+                            switch (action_selection == 0) {
+                                
                             }
                         }
                         if (confirm == -1) {

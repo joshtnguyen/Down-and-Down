@@ -15,10 +15,10 @@ TagManager:
   - Player
   - SolidObjects
   - Teleporter
-  - 
-  - 
-  - 
-  - 
+  - Wizard
+  - Break
+  - Treasure
+  - Mimic
   - 
   - 
   - 
