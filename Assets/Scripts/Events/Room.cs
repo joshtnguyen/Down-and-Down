@@ -42,7 +42,9 @@ public class Room
         }
 
         for (int i = 0; i < 4; i++) {
-            skillList[i] = SkillsRegistry.registry[Random.Range(0, temp.Count)];
+            int chosenSkill = Random.Range(0, temp.Count);
+            skillList[i] = SkillsRegistry.registry[temp[chosenSkill]];
+            temp.RemoveAt(chosenSkill);
             Debug.Log(skillList[i].skillName);
         }
     }

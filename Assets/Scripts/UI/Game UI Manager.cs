@@ -5,12 +5,13 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 using System.Data;
+using System.Linq;
 
 public class GameUIManager : MonoBehaviour
 {
 
     public static float moveSpeed = 2000;
-
+    public static float fastMoveSpeed = 3000;
 
     public GameObject MoneyBox;
     public Text MoneyIndicator;
@@ -30,6 +31,8 @@ public class GameUIManager : MonoBehaviour
     public Text T_2;
     public Text T_3;
     public Text T_4;
+    public GameObject InfoBox;
+    public Text InfoIndicator;
 
     public static string menu_name;
     public static string menu_type;
@@ -44,8 +47,11 @@ public class GameUIManager : MonoBehaviour
     public static int target_selection_limit;
     public static int target_page;
 
+    public bool updateOptions;
     public bool slideCooldown;
     public bool animationCooldown;
+
+    List<GameObject> trashCan = new List<GameObject>();
 
     public void openMenu(string menuType) {
         menu_name = menuType;
@@ -117,6 +123,13 @@ public class GameUIManager : MonoBehaviour
                 Game.gameMovementFreeze = true;
                 break;
         }
+
+        while (trashCan.Any()) {
+            GameObject t = trashCan[0];
+            trashCan.RemoveAt(0);
+            Destroy(t);
+        }
+
     }
 
     public void closeMenu() {
@@ -138,6 +151,13 @@ public class GameUIManager : MonoBehaviour
         target_selection = -1;
         target_selection_limit = -1;
         MoneyBox.SetActive(false);
+
+        while (trashCan.Any()) {
+            GameObject t = trashCan[0];
+            trashCan.RemoveAt(0);
+            Destroy(t);
+        }
+
     }
 
     private void updateSelection(ref int option, int optionLimit) {
@@ -149,11 +169,13 @@ public class GameUIManager : MonoBehaviour
             if (option > optionLimit) {
                 option = 0;
             }
+            updateOptions = true;
         } else if (hx < 0 || hy < 0) {
             option--;
             if (option < 0) {
                 option = optionLimit;
             }
+            updateOptions = true;
         }
 
     }
@@ -263,6 +285,15 @@ public class GameUIManager : MonoBehaviour
                 ActionBox.transform.position = DescriptionBox.transform.position;
                 targetPos.x += 517;
                 StartCoroutine(Slide(ActionBox, targetPos));
+                
+                updateOptions = true;
+
+                while (trashCan.Any()) {
+                    GameObject t = trashCan[0];
+                    trashCan.RemoveAt(0);
+                    Destroy(t);
+                }
+
             } else if (menu_phase == 2) {
 
                 TargetBox.transform.position = DescriptionBox.transform.position;
@@ -293,6 +324,24 @@ public class GameUIManager : MonoBehaviour
                             closeMenu();
                             Game.gameMovementFreeze = false;
                         }
+
+                        if (updateOptions) {
+                            while (trashCan.Any()) {
+                                GameObject t = trashCan[0];
+                                trashCan.RemoveAt(0);
+                                Destroy(t);
+                            }
+                            GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                            InfoBoxClone.transform.SetParent(InfoBox.transform);
+                            InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                            InfoBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillShop(Game.map[Game.row, Game.col].skillList[action_selection]);
+                            trashCan.Add(InfoBoxClone);
+                            var targetPos = ActionBox.transform.position;
+                            targetPos.x += 517;
+                            StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                            updateOptions = false;
+                        }
+
                         break;
                     case "Break":
                         if (confirm == 1) {
@@ -325,6 +374,15 @@ public class GameUIManager : MonoBehaviour
                 TargetBox.transform.position = ActionBox.transform.position;
                 targetPos.x += 517;
                 StartCoroutine(Slide(TargetBox, targetPos));
+
+                updateOptions = true;
+
+                while (trashCan.Any()) {
+                    GameObject t = trashCan[0];
+                    trashCan.RemoveAt(0);
+                    Destroy(t);
+                }
+                
             } else if (menu_phase == 4) {
                 updateSelection(ref target_selection, target_selection_limit);
 
@@ -360,6 +418,21 @@ public class GameUIManager : MonoBehaviour
             menu_phase = 2;
         } else if (menu_phase == 3) {
             menu_phase = 4;
+        }
+        slideCooldown = false;
+    }
+
+    public IEnumerator Slide(GameObject item, Vector3 targetPos, bool isMenu)
+    {
+        slideCooldown = true;
+        while (item != null && (targetPos - item.transform.position).sqrMagnitude > Mathf.Epsilon)
+        {
+            item.transform.position = Vector3.MoveTowards(item.transform.position, targetPos, fastMoveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        if (item != null) {
+            item.transform.position = targetPos;
         }
         slideCooldown = false;
     }

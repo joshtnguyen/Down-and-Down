@@ -47,5 +47,35 @@ public class TextManager : MonoBehaviour
         return r;
     }
 
+    public static string convertSkillShop(Skills s) {
+
+        Character ch = Character.GetCharacter(s.skillUser);
+
+        Skills skill = null;
+
+        foreach (Skills sk in ch.skills) {
+            if (sk.skillName == s.skillName) {
+                skill = sk;
+            }
+        }
+
+        string st = s.skillUser + " Skill";
+        string desc = s.description;
+        int cost = 1;
+        if (skill != null) {
+            st += " (x" + (skill.stacks + 1) + ")";
+            cost = skill.stacks + 1;
+        } else {
+            st += " (x1)";
+        }
+        if (s.spConsumption > 0) {
+            st += " - " + s.spConsumption + " SP"; 
+        }
+        st += " - " + cost + "G";
+
+        string r = st + "\n" + desc + "\n";
+        return r;
+    }
+
     
 }
