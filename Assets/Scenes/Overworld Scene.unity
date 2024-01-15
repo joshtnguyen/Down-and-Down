@@ -22163,6 +22163,8 @@ MonoBehaviour:
   T_2: {fileID: 626848776}
   T_3: {fileID: 941895615}
   T_4: {fileID: 223720939}
+  InfoBox: {fileID: 632277237}
+  InfoIndicator: {fileID: 1116682186}
   updateOptions: 0
   slideCooldown: 0
   animationCooldown: 0
