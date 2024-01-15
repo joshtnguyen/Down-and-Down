@@ -80,10 +80,6 @@ public class Character
         baseSPD = spd;
         baseCR = cr;
         baseCD = cd;
-
-        skills.Add(SkillsRegistry.getSkill("Attack"));
-        skills.Add(SkillsRegistry.getSkill("Ally Thing"));
-
     }
 
     public void resetMod() {
@@ -316,6 +312,15 @@ public class Character
     void Update()
     {
         
+    }
+
+    public static Character GetCharacter(string name) {
+        foreach (Character c in Game.characters) {
+            if (c.character == name) {
+                return c;
+            }
+        }
+        return null;
     }
 
     public virtual bool isEnemy() {

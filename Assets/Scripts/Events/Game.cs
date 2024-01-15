@@ -30,7 +30,7 @@ public class Game : MonoBehaviour
     public static int col = 0;
     public static int floorNumber = -1;
     public static int disruptions = 0;
-    public static int gold = 0;
+    public static int gold = 500;
 
     // FLOOR INFO
     public static int steps = 0;
@@ -75,8 +75,6 @@ public class Game : MonoBehaviour
             foreach (Character c in characters) {
                 c.skills.Add(SkillsRegistry.getSkill("Attack"));
                 c.skills.Add(SkillsRegistry.getSkill("Block"));
-                c.skills.Add(SkillsRegistry.getSkill("Test"));
-                c.skills.Add(SkillsRegistry.getSkill("Ally Thing"));
                 c.verifyMod();
             }
 
@@ -159,6 +157,7 @@ public class Game : MonoBehaviour
                             break;
                         case "Wizard Room":
                             Debug.Log("WIZARD: " + i + "/" + j);
+                            map[i, j].ResetSkills();
                             break;
                     }
                 }

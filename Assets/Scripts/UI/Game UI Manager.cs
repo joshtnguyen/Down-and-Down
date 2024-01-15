@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
+using System.Data;
 
 public class GameUIManager : MonoBehaviour
 {
 
     public static float moveSpeed = 2000;
 
+
+    public GameObject MoneyBox;
+    public Text MoneyIndicator;
     public GameObject OptionBox;
     public GameObject DescriptionBox;
     public Text D_1;
@@ -20,6 +25,11 @@ public class GameUIManager : MonoBehaviour
     public Text A_2;
     public Text A_3;
     public Text A_4;
+    public GameObject TargetBox;
+    public Text T_1;
+    public Text T_2;
+    public Text T_3;
+    public Text T_4;
 
     public static string menu_name;
     public static string menu_type;
@@ -29,6 +39,10 @@ public class GameUIManager : MonoBehaviour
 
     public static int action_selection;
     public static int action_selection_limit;
+
+    public static int target_selection;
+    public static int target_selection_limit;
+    public static int target_page;
 
     public bool slideCooldown;
     public bool animationCooldown;
@@ -53,44 +67,53 @@ public class GameUIManager : MonoBehaviour
                 menu_selection_limit = -1;
                 action_selection = 1;
                 action_selection_limit = 1;
+                target_selection = -1;
+                target_selection_limit = -1;
                 Game.gameMovementFreeze = true;
                 break;
             case "Wizard":
+                Room r = Game.map[Game.row, Game.col];
                 OptionBox.SetActive(true);
                 ActionBox.transform.position = DescriptionBox.transform.position;
                 D_1.text = "Welcome to my humble shop. I can teach you some skills for your future battles. For a price that is...";
                 D_2.text = "";
                 D_3.text = "";
                 D_4.text = "";
-                A_1.text = ">> ";
-                A_2.text = ">> ";
-                A_3.text = ">> ";
-                A_4.text = ">> ";
+                A_1.text = ">> Skill: " + r.skillList[0].skillName;
+                A_2.text = ">> Skill: " + r.skillList[1].skillName;
+                A_3.text = ">> Skill: " + r.skillList[2].skillName;
+                A_4.text = ">> Skill: " + r.skillList[3].skillName;
                 menu_type = "Highlight";
                 menu_phase = 1;
                 menu_selection = -1;
                 menu_selection_limit = -1;
                 action_selection = 0;
                 action_selection_limit = 3;
+                target_selection = -1;
+                target_selection_limit = -1;
+                MoneyBox.SetActive(true);
                 Game.gameMovementFreeze = true;
                 break;
             case "Break":
                 OptionBox.SetActive(true);
                 ActionBox.transform.position = DescriptionBox.transform.position;
-                D_1.text = ">> Heal an Ally";
-                D_2.text = ">> Change Skills";
-                D_3.text = "";
-                D_4.text = "";
-                A_1.text = ">> ";
-                A_2.text = ">> ";
-                A_3.text = ">> ";
-                A_4.text = ">> ";
+                D_1.text = ">> " + Game.characters[0].character + " (HP: " + Game.characters[0].health + "/" + Game.characters[0].maxhealth + ")";
+                D_2.text = ">> " + Game.characters[1].character + " (HP: " + Game.characters[1].health + "/" + Game.characters[1].maxhealth + ")";
+                D_3.text = ">> " + Game.characters[2].character + " (HP: " + Game.characters[2].health + "/" + Game.characters[2].maxhealth + ")";
+                D_4.text = ">> " + Game.characters[3].character + " (HP: " + Game.characters[3].health + "/" + Game.characters[3].maxhealth + ")";
+                A_1.text = ">> Heal";
+                A_2.text = ">> Change Skill 1";
+                A_3.text = ">> Change Skill 2";
+                A_4.text = "";
                 menu_type = "Highlight";
                 menu_phase = 0;
                 menu_selection = 0;
-                menu_selection_limit = 1;
+                menu_selection_limit = 3;
                 action_selection = 0;
-                action_selection_limit = 3;
+                action_selection_limit = 2;
+                target_selection = -1;
+                target_selection_limit = -1;
+                MoneyBox.SetActive(true);
                 Game.gameMovementFreeze = true;
                 break;
         }
@@ -112,6 +135,9 @@ public class GameUIManager : MonoBehaviour
         menu_selection = -1;
         action_selection = -1;
         action_selection_limit = -1;
+        target_selection = -1;
+        target_selection_limit = -1;
+        MoneyBox.SetActive(false);
     }
 
     private void updateSelection(ref int option, int optionLimit) {
@@ -172,6 +198,7 @@ public class GameUIManager : MonoBehaviour
     void Update()
     {
 
+        MoneyIndicator.text = Game.gold + " G";
         D_1.fontStyle = FontStyle.Normal;
         D_2.fontStyle = FontStyle.Normal;
         D_3.fontStyle = FontStyle.Normal;
@@ -215,17 +242,15 @@ public class GameUIManager : MonoBehaviour
         if (!slideCooldown && !animationCooldown) {
             if (menu_phase == 0) {
                 ActionBox.transform.position = DescriptionBox.transform.position;
+                TargetBox.transform.position = DescriptionBox.transform.position;
                 updateSelection(ref menu_selection, menu_selection_limit);
 
                 int confirm = getConfirmation();
                 switch (menu_name) {
                     case "Break":
                         if (confirm == 1) {
-                            if (action_selection == 0) {
-                                
-                            } else if (action_selection == 1) {
-                                
-                            }
+                            A_1.text = ">> Heal for " + (5 * Game.characters[menu_selection].level) + "G";
+                            menu_phase = 1;
                         }
                         if (confirm == -1) {
                             closeMenu();
@@ -239,6 +264,8 @@ public class GameUIManager : MonoBehaviour
                 targetPos.x += 517;
                 StartCoroutine(Slide(ActionBox, targetPos));
             } else if (menu_phase == 2) {
+
+                TargetBox.transform.position = DescriptionBox.transform.position;
                 updateSelection(ref action_selection, action_selection_limit);
 
                 int confirm = getConfirmation();
@@ -269,13 +296,46 @@ public class GameUIManager : MonoBehaviour
                         break;
                     case "Break":
                         if (confirm == 1) {
-                            switch (action_selection == 0) {
-                                
+                            switch (action_selection) {
+                                case 0:
+                                    if (Game.gold >= 5 * Game.characters[menu_selection].level) {
+                                        Game.gold += 5 * Game.characters[menu_selection].level;
+                                        Game.characters[menu_selection].health = Game.characters[menu_selection].maxhealth;
+                                        D_1.text = ">> " + Game.characters[0].character + " (HP: " + Game.characters[0].health + "/" + Game.characters[0].maxhealth + ")";
+                                        D_2.text = ">> " + Game.characters[1].character + " (HP: " + Game.characters[1].health + "/" + Game.characters[1].maxhealth + ")";
+                                        D_3.text = ">> " + Game.characters[2].character + " (HP: " + Game.characters[2].health + "/" + Game.characters[2].maxhealth + ")";
+                                        D_4.text = ">> " + Game.characters[3].character + " (HP: " + Game.characters[3].health + "/" + Game.characters[3].maxhealth + ")";
+                                    }
+                                    break;
+                                case 1:
+                                    menu_phase = 3;
+                                    break;
+                                case 2:
+                                    menu_phase = 3;
+                                    break;
                             }
                         }
                         if (confirm == -1) {
-                            closeMenu();
-                            Game.gameMovementFreeze = false;
+                            menu_phase = 0;
+                        }
+                        break;
+                }
+            } else if (menu_phase == 3) {
+                var targetPos = ActionBox.transform.position;
+                TargetBox.transform.position = ActionBox.transform.position;
+                targetPos.x += 517;
+                StartCoroutine(Slide(TargetBox, targetPos));
+            } else if (menu_phase == 4) {
+                updateSelection(ref target_selection, target_selection_limit);
+
+                int confirm = getConfirmation();
+                switch (menu_name) {
+                    case "Break":
+                        if (confirm == 1) {
+                            
+                        }
+                        if (confirm == -1) {
+                            menu_phase = 2;
                         }
                         break;
                 }
@@ -296,7 +356,11 @@ public class GameUIManager : MonoBehaviour
             item.transform.position = targetPos;
         }
 
-        menu_phase = 2;
+        if (menu_phase == 1) {
+            menu_phase = 2;
+        } else if (menu_phase == 3) {
+            menu_phase = 4;
+        }
         slideCooldown = false;
     }
 }

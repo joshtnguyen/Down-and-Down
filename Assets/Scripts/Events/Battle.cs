@@ -459,11 +459,11 @@ public class Battle : MonoBehaviour
                         if (confirm == 1) {
 
                             selectedAction = selectedAction.Substring(4);
-                            Skills skill = SkillsRegistry.getSkill(selectedAction);
+                            Skills skill = SkillsRegistry.getSkill(cycle[0].skills, selectedAction);
                             if (skill == null) {
-                                if (selectedAction.IndexOf("Skill: ")  >= 0) {
+                                if (selectedAction.IndexOf("Skill: ") >= 0) {
                                     selectedAction = selectedAction.Substring(7);
-                                    skill = SkillsRegistry.getSkill(selectedAction);
+                                    skill = SkillsRegistry.getSkill(cycle[0].skills, selectedAction);
                                 }
                             }
 
@@ -477,6 +477,13 @@ public class Battle : MonoBehaviour
                                     if (skill.targetType == "Self") {
                                         Skills.useSkill(cycle[0], skill);
                                         sel_phase = -2;
+                                    } else if (skill.targetType == "Team") {
+                                        foreach (Character c in Game.characters) {
+                                            if (c.health > 0) {
+                                                Skills.useSkill(c, skill);
+                                                sel_phase = -2;
+                                            }
+                                        }
                                     } else if (skill.targetType == "Enemy" || skill.targetType == "Ally" || skill.targetType == "Non-Self Ally" || skill.targetType == "Dead") {
                                         if (skill.targetType == "Enemy") {
                                             targetTypeIsEnemy = true;
@@ -523,11 +530,11 @@ public class Battle : MonoBehaviour
                     }
 
                     selectedAction = selectedAction.Substring(4);
-                    Skills skill = SkillsRegistry.getSkill(selectedAction);
+                    Skills skill = SkillsRegistry.getSkill(cycle[0].skills, selectedAction);
                     if (skill == null) {
                         if (selectedAction.IndexOf("Skill: ")  >= 0) {
                             selectedAction = selectedAction.Substring(7);
-                            skill = SkillsRegistry.getSkill(selectedAction);
+                            skill = SkillsRegistry.getSkill(cycle[0].skills, selectedAction);
                         }
                     }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Room
 {
@@ -12,6 +13,7 @@ public class Room
     public bool east = false;
     public bool south = false;
     public bool west = false;
+    public Skills[] skillList = new Skills[4];
 
 
     // Start is called before the first frame update
@@ -26,6 +28,25 @@ public class Room
         
     }
 
+    public void ResetSkills() {
+        List<int> temp = new List<int>();
+        for (int i = 2; i < SkillsRegistry.registry.Count; i++) {
+            if (SkillsRegistry.registry[i].maxStacks >= 0) {
+                Skills testSkill = SkillsRegistry.getSkill(Character.GetCharacter(SkillsRegistry.registry[i].skillUser).skills, SkillsRegistry.registry[i].skillName);
+                if (testSkill.stacks < SkillsRegistry.registry[i].maxStacks) {
+                    temp.Add(i);
+                }
+            } else {
+                temp.Add(i);
+            }
+        }
+
+        for (int i = 0; i < 4; i++) {
+            skillList[i] = SkillsRegistry.registry[Random.Range(0, temp.Count)];
+            Debug.Log(skillList[i].skillName);
+        }
+    }
+
     public void Reset() {
         hasEntered = true;
         north = false;
@@ -34,6 +55,9 @@ public class Room
         west = false;
         roomType = null;
         enemiesLeft = 0;
+        for (int i = 0; i < 4; i++) {
+            skillList[i] = null;
+        }
     }
 
     public override string ToString() {

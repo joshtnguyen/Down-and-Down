@@ -11,6 +11,7 @@ public class Skills
     public int stacks;
     public int maxStacks;
     public string targetType;
+    public string skillUser;
 
     public Skills(string n, string d, int c, int s, string t) {
         skillName = n;
@@ -19,15 +20,17 @@ public class Skills
         stacks = s;
         maxStacks = 1;
         targetType = t;
+        skillUser = null;
     }
 
-    public Skills(string n, string d, int c, int s, int m, string t) {
+    public Skills(string n, string d, int c, int s, int m, string t, string u) {
         skillName = n;
         description = d;
         spConsumption = c;
         stacks = s;
         maxStacks = m;
         targetType = t;
+        skillUser = u;
     }
 
     public static int useSkill(Character c, Skills s, Character t) {

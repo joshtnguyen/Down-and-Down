@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
                 }
 
                 if (Game.map[Game.row, Game.col].roomType == "Wizard Room" && IsOnWizard()) {
-                    Debug.Log("Yo!");
                     UI.GetComponent<GameUIManager>().openMenu("Wizard");
                 }
 
