@@ -68,6 +68,8 @@ public class Character
     public List<List<Mod>> cd_mod = new List<List<Mod>>();
 
     public List<Skills> skills = new List<Skills>();
+    public Skills skill1;
+    public Skills skill2;
 
     public Character(string name, int le, int hp, double atk, double def, int spd, double cr, double cd) {
         character = name;
@@ -80,6 +82,8 @@ public class Character
         baseSPD = spd;
         baseCR = cr;
         baseCD = cd;
+        skill1 = null;
+        skill2 = null;
     }
 
     public void resetMod() {
@@ -300,6 +304,27 @@ public class Character
             up++;
         }
         return up;
+    }
+
+    public static void addSkill(Skills s) {
+        Character c = GetCharacter(s.skillUser);
+        bool hasAdded = false;
+        foreach (Skills skill in c.skills) {
+            if (s.skillName == skill.skillName) {
+                skill.stacks += s.stacks + 1;
+                hasAdded = true;
+            }
+        }
+
+        if (!hasAdded) {
+            c.skills.Add(s);
+        }
+
+        Debug.Log("==");
+        foreach (Skills skill in c.skills) {
+            Debug.Log(skill.skillName);
+        }
+        Debug.Log("==");
     }
 
     // Start is called before the first frame update

@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 using System.Data;
 using System.Linq;
+using UnityEditor.Search;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -85,18 +86,38 @@ public class GameUIManager : MonoBehaviour
                 D_2.text = "";
                 D_3.text = "";
                 D_4.text = "";
-                A_1.text = ">> Skill: " + r.skillList[0].skillName;
-                A_2.text = ">> Skill: " + r.skillList[1].skillName;
-                A_3.text = ">> Skill: " + r.skillList[2].skillName;
-                A_4.text = ">> Skill: " + r.skillList[3].skillName;
+                if (r.skillList[0] != null) {
+                    A_1.text = ">> Skill: " + r.skillList[0].skillName;
+                } else {
+                    A_1.text = ">> [PURCHASED!]";
+                }
+                if (r.skillList[1] != null) {
+                    A_2.text = ">> Skill: " + r.skillList[1].skillName;
+                } else {
+                    A_2.text = ">> [PURCHASED!]";
+                }
+                if (r.skillList[2] != null) {
+                    A_3.text = ">> Skill: " + r.skillList[2].skillName;
+                } else {
+                    A_3.text = ">> [PURCHASED!]";
+                }
+                if (r.skillList[3] != null) {
+                    A_4.text = ">> Skill: " + r.skillList[3].skillName;
+                } else {
+                    A_4.text = ">> [PURCHASED!]";
+                }
+                T_1.text = ">> Confirm Purchase";
+                T_2.text = ">> Cancel Purchase";
+                T_3.text = "";
+                T_4.text = "";
                 menu_type = "Highlight";
                 menu_phase = 1;
                 menu_selection = -1;
                 menu_selection_limit = -1;
                 action_selection = 0;
                 action_selection_limit = 3;
-                target_selection = -1;
-                target_selection_limit = -1;
+                target_selection = 0;
+                target_selection_limit = 1;
                 MoneyBox.SetActive(true);
                 Game.gameMovementFreeze = true;
                 break;
@@ -143,6 +164,10 @@ public class GameUIManager : MonoBehaviour
         A_2.text = "";
         A_3.text = "";
         A_4.text = "";
+        T_1.text = "";
+        T_2.text = "";
+        T_3.text = "";
+        T_4.text = "";
         menu_type = "";
         menu_phase = -1;
         menu_selection = -1;
@@ -229,6 +254,10 @@ public class GameUIManager : MonoBehaviour
         A_2.fontStyle = FontStyle.Normal;
         A_3.fontStyle = FontStyle.Normal;
         A_4.fontStyle = FontStyle.Normal;
+        T_1.fontStyle = FontStyle.Normal;
+        T_2.fontStyle = FontStyle.Normal;
+        T_3.fontStyle = FontStyle.Normal;
+        T_4.fontStyle = FontStyle.Normal;
 
         if (menu_type == "Highlight") {
             switch (menu_selection) {
@@ -257,6 +286,20 @@ public class GameUIManager : MonoBehaviour
                     break;
                 case 3:
                     A_4.fontStyle = FontStyle.Bold;
+                    break;
+            }
+            switch (target_selection) {
+                case 0:
+                    T_1.fontStyle = FontStyle.Bold;
+                    break;
+                case 1:
+                    T_2.fontStyle = FontStyle.Bold;
+                    break;
+                case 2:
+                    T_3.fontStyle = FontStyle.Bold;
+                    break;
+                case 3:
+                    T_4.fontStyle = FontStyle.Bold;
                     break;
             }
         }
@@ -316,31 +359,39 @@ public class GameUIManager : MonoBehaviour
                         break;
                     case "Wizard":
                         if (confirm == 1) {
-                            switch (action_selection == 0) {
-
+                            if (Game.map[Game.row, Game.col].skillList[action_selection] != null) {
+                                int cost = TextManager.getSkillCost(Game.map[Game.row, Game.col].skillList[action_selection]);
+                                if (Game.gold >= cost) {
+                                    menu_phase = 3;
+                                    T_1.text = ">> Confirm Purchase for " + cost + "G";
+                                }
                             }
+                            
                         }
                         if (confirm == -1) {
                             closeMenu();
                             Game.gameMovementFreeze = false;
                         }
 
-                        if (updateOptions) {
+                        if (updateOptions && menu_phase == 2) {
                             while (trashCan.Any()) {
                                 GameObject t = trashCan[0];
                                 trashCan.RemoveAt(0);
                                 Destroy(t);
                             }
-                            GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
-                            InfoBoxClone.transform.SetParent(InfoBox.transform);
-                            InfoBoxClone.name = "TEMP InfoBox" + action_selection;
-                            InfoBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillShop(Game.map[Game.row, Game.col].skillList[action_selection]);
-                            trashCan.Add(InfoBoxClone);
-                            var targetPos = ActionBox.transform.position;
-                            targetPos.x += 517;
-                            StartCoroutine(Slide(InfoBoxClone, targetPos, false));
-                            updateOptions = false;
+                            if (Game.map[Game.row, Game.col].skillList[action_selection] != null) {
+                                GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                InfoBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillShop(Game.map[Game.row, Game.col].skillList[action_selection]);
+                                trashCan.Add(InfoBoxClone);
+                                var targetPos = ActionBox.transform.position;
+                                targetPos.x += 517;
+                                StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                updateOptions = false;
+                            }
                         }
+
 
                         break;
                     case "Break":
@@ -348,7 +399,7 @@ public class GameUIManager : MonoBehaviour
                             switch (action_selection) {
                                 case 0:
                                     if (Game.gold >= 5 * Game.characters[menu_selection].level) {
-                                        Game.gold += 5 * Game.characters[menu_selection].level;
+                                        Game.gold -= 5 * Game.characters[menu_selection].level;
                                         Game.characters[menu_selection].health = Game.characters[menu_selection].maxhealth;
                                         D_1.text = ">> " + Game.characters[0].character + " (HP: " + Game.characters[0].health + "/" + Game.characters[0].maxhealth + ")";
                                         D_2.text = ">> " + Game.characters[1].character + " (HP: " + Game.characters[1].health + "/" + Game.characters[1].maxhealth + ")";
@@ -367,6 +418,48 @@ public class GameUIManager : MonoBehaviour
                         if (confirm == -1) {
                             menu_phase = 0;
                         }
+
+                        if (updateOptions && menu_phase == 2) {
+                            while (trashCan.Any()) {
+                                GameObject t = trashCan[0];
+                                trashCan.RemoveAt(0);
+                                Destroy(t);
+                            }
+
+                            if (action_selection == 1 || action_selection == 2) {
+                                Character c = Game.characters[menu_selection];
+                                Skills s = null;
+                                if (action_selection == 1 && c.skill1 != null) {
+                                    s = c.skill1;
+                                }
+                                if (action_selection == 2 && c.skill2 != null) {
+                                    s = c.skill1;
+                                }
+
+                                if (s != null) {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillDescription(c, s.skillName);
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                } else {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = "This skill has not been selected yet. Learn skills from the Wizard and equip them here!";
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }
+                            }
+                        }
+
                         break;
                 }
             } else if (menu_phase == 3) {
@@ -382,12 +475,52 @@ public class GameUIManager : MonoBehaviour
                     trashCan.RemoveAt(0);
                     Destroy(t);
                 }
-                
+
             } else if (menu_phase == 4) {
                 updateSelection(ref target_selection, target_selection_limit);
 
                 int confirm = getConfirmation();
                 switch (menu_name) {
+                    case "Wizard":
+                        if (confirm == 1) {
+                            switch (target_selection) {
+                                case 0:
+                                    Room r = Game.map[Game.row, Game.col];
+                                    int cost = TextManager.getSkillCost(r.skillList[action_selection]);
+                                    Game.gold -= cost;
+                                    Character.addSkill(r.skillList[action_selection]);
+                                    r.skillList[action_selection] = null;
+                                    if (r.skillList[0] != null) {
+                                        A_1.text = ">> Skill: " + r.skillList[0].skillName;
+                                    } else {
+                                        A_1.text = ">> [PURCHASED!]";
+                                    }
+                                    if (r.skillList[1] != null) {
+                                        A_2.text = ">> Skill: " + r.skillList[1].skillName;
+                                    } else {
+                                        A_2.text = ">> [PURCHASED!]";
+                                    }
+                                    if (r.skillList[2] != null) {
+                                        A_3.text = ">> Skill: " + r.skillList[2].skillName;
+                                    } else {
+                                        A_3.text = ">> [PURCHASED!]";
+                                    }
+                                    if (r.skillList[3] != null) {
+                                        A_4.text = ">> Skill: " + r.skillList[3].skillName;
+                                    } else {
+                                        A_4.text = ">> [PURCHASED!]";
+                                    }
+                                    menu_phase = 2;
+                                    break;
+                                case 1:
+                                    confirm = -1;
+                                    break;
+                            }
+                        }
+                        if (confirm == -1) {
+                            menu_phase = 2;
+                        }
+                        break;
                     case "Break":
                         if (confirm == 1) {
                             

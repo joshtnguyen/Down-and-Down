@@ -61,12 +61,11 @@ public class TextManager : MonoBehaviour
 
         string st = s.skillUser + " Skill";
         string desc = s.description;
-        int cost = 1;
+        int cost = getSkillCost(s);
         if (skill != null) {
             st += " (x" + (skill.stacks + 1) + ")";
-            cost = skill.stacks + 1;
         } else {
-            st += " (x1)";
+            st += " (x" + s.stacks + ")";
         }
         if (s.spConsumption > 0) {
             st += " - " + s.spConsumption + " SP"; 
@@ -75,6 +74,24 @@ public class TextManager : MonoBehaviour
 
         string r = st + "\n" + desc + "\n";
         return r;
+    }
+
+    public static int getSkillCost(Skills s) {
+        Character ch = Character.GetCharacter(s.skillUser);
+
+        Skills skill = null;
+
+        foreach (Skills sk in ch.skills) {
+            if (sk.skillName == s.skillName) {
+                skill = sk;
+            }
+        }
+        int cost = 1;
+        if (skill != null) {
+            cost = skill.stacks + 2;
+        }
+
+        return cost * 3;
     }
 
     
