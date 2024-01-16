@@ -13,7 +13,7 @@ public class Game : MonoBehaviour
     public static List<Character> characters = new List<Character>();
     public static Character walter = new Character("Walter", 1, 100, 15, 10, 10, 5, 12);
     public static Character benedict = new Character("Benedict", 1, 95, 10, 12, 11, 8, 8);
-    public static Character sherri = new Character("Sherri", 1, 120, 7 * 100, 12, 12, 8, 3);
+    public static Character sherri = new Character("Sherri", 1, 120, 7, 12, 12, 8, 3);
     public static Character jade = new Character("Jade", 1, 150, 5, 18, 9, 2, 3);
 
     public static bool firstRun = false;

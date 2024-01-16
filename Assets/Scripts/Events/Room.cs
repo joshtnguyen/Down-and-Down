@@ -45,7 +45,6 @@ public class Room
             int chosenSkill = Random.Range(0, temp.Count);
             skillList[i] = SkillsRegistry.registry[temp[chosenSkill]];
             temp.RemoveAt(chosenSkill);
-            Debug.Log(skillList[i].skillName);
         }
     }
 

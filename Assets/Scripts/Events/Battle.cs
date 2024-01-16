@@ -127,7 +127,7 @@ public class Battle : MonoBehaviour
         }
 
         for (int i = 0; i < Game.characters.Count; i++) {
-            if (Game.characters[i].health > 0) {
+            if (Game.characters[i].health > 0 && !Game.characters[i].skipTurn) {
                 bool flag = true;
                 for (int j = 0; j < cycle.Count; j++) {
                     if (Game.characters[i].currentSPD > cycle[j].currentSPD) {
@@ -140,11 +140,12 @@ public class Battle : MonoBehaviour
                     cycle.Add(Game.characters[i]);
                 }
             }
+            Game.characters[i].skipTurn = false;
         }
         
         if (enemies.Any()) {
             for (int i = 0; i < enemies.Count; i++) {
-                if (enemies[i].health > 0) {
+                if (enemies[i].health > 0 && !Game.characters[i].skipTurn) {
                     bool flag = true;
                     for (int j = 0; j < cycle.Count; j++) {
                         if (enemies[i].currentSPD > cycle[j].currentSPD) {
@@ -157,6 +158,7 @@ public class Battle : MonoBehaviour
                         cycle.Add(enemies[i]);
                     }
                 }
+                enemies[i].skipTurn = false;
             }
         }
 
@@ -245,6 +247,22 @@ public class Battle : MonoBehaviour
             case 3:
                 action_OP4.fontStyle = FontStyle.Bold;
                 break;
+        }
+
+        if (cycle.Any()) {
+            if (cycle[0] != null) {
+                if (cycle[0].skill1 != null) {
+                    action_OP2.text = ">>  Skill: " + cycle[0].skill1.skillName;
+                } else {
+                    action_OP2.text = ">>  Skill Not Set";
+                }
+
+                if (cycle[0].skill2 != null) {
+                    action_OP3.text = ">>  Skill: " + cycle[0].skill2.skillName;
+                } else {
+                    action_OP3.text = ">>  Skill Not Set";
+                }
+            } 
         }
 
         tar_BOX_1.SetActive(false);

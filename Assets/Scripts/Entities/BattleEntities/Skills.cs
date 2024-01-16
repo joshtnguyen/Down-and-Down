@@ -53,7 +53,7 @@ public class Skills
 
         switch (s.skillName) {
             case "Attack":
-                dmg = c.damage(t, 100, false);
+                dmg = c.damage(t, 100);
                 if (c.isEnemy()) {
                     c.sp += s.spConsumption;
                 } else {
@@ -66,13 +66,26 @@ public class Skills
                 c.def_p_mod[1].Add(m);
                 c.spd_mod[1].Add(m2);
                 break;
-            case "Test":
-                m = new Mod(s.skillName, -50, true);
-                t.atk_p_mod[0].Add(m);
-                t.atk_p_mod[1].Add(m);
+            case "Heavy Slice":
+                dmg = c.damage(t, 150 + (8 * s.stacks));
                 break;
-            case "Ally Thing":
-                dmg = c.damage(t, 300, false);
+            case "Multi Slice":
+                for (int i = 0; i < convertToLoops(150 + (15 * s.stacks)); i++) {
+                    dmg += c.damage(t, 80);
+                }
+                break;
+            case "Axe Swing":
+                m = new Mod(s.skillName, 20 + (2.5 * s.stacks), false);
+                c.cd_mod[1].Add(m);
+                c.cd_mod[2].Add(m);
+                break;
+            case "Fist to the Face":
+                dmg = c.damage(t, 125 + (7 * s.stacks));
+                break;
+            case "Taunt":
+                m = new Mod(s.skillName, c.currentDEF * (0.08 + 0.02 * s.stacks) * -1, true);
+                t.def_mod[1].Add(m);
+                t.def_mod[2].Add(m);
                 break;
         }
 
@@ -85,6 +98,19 @@ public class Skills
 
     public static int useSkill(Character c, Skills s) {
         return useSkill(c, s, null);
+    }
+
+    public static int convertToLoops(double chance) {
+        var rand = new System.Random();
+        int times = 0;
+        while (chance >= 100) {
+            chance -= 100;
+            times++;
+        }
+        if ((rand.NextDouble() * 100.0) <= chance) {
+            times++;
+        }
+        return times;
     }
 
     // Start is called before the first frame update

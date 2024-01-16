@@ -71,6 +71,8 @@ public class Character
     public Skills skill1;
     public Skills skill2;
 
+    public bool skipTurn;
+
     public Character(string name, int le, int hp, double atk, double def, int spd, double cr, double cd) {
         character = name;
         level = le;
@@ -96,6 +98,7 @@ public class Character
         spd_mod.Clear();
         cr_mod.Clear();
         cd_mod.Clear();
+        skipTurn = false;
     }
 
     public void endTurn() {
@@ -130,7 +133,7 @@ public class Character
         
     }
 
-    public int damage(Character ch, double multiplier, bool isMultiple) {
+    public int damage(Character ch, double multiplier) {
 
         double dmg = 0;
 
@@ -319,12 +322,6 @@ public class Character
         if (!hasAdded) {
             c.skills.Add(s);
         }
-
-        Debug.Log("==");
-        foreach (Skills skill in c.skills) {
-            Debug.Log(skill.skillName);
-        }
-        Debug.Log("==");
     }
 
     // Start is called before the first frame update

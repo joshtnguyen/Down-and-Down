@@ -34,7 +34,7 @@ public class TextManager : MonoBehaviour
                 if (skill != null) {
                     if (s == skill.skillName) {
                         desc = skill.description;
-                        if (skill.stacks > 0)
+                        if (skill.stacks > -1)
                             s += " (x" + skill.stacks + ")";
                         if (skill.spConsumption > 0)
                             s += " - " + skill.spConsumption + " SP"; 

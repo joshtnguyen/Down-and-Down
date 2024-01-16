@@ -20,6 +20,8 @@ public class Enemy : Character
         health = hp;
         id = identifier;
         sp = 2;
+        skill1 = null;
+        skill2 = null;
     }
 
     public static Character selectTarget(bool isCharacter) {
