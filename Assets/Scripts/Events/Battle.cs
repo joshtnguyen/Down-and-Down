@@ -71,6 +71,8 @@ public class Battle : MonoBehaviour
     public GameObject GameDescriptionBox;
     public Text GameDescription;
 
+    public GameObject SkillUsageBox;
+
     public static bool firstRun = false;
     public static int battleSP;
     public static int battleSPMAX;
@@ -82,6 +84,7 @@ public class Battle : MonoBehaviour
     public static bool buttonCooldown = false;
     public static bool animationCooldown = false;
     public static float moveSpeed = 4000;
+    public static float slowerMoveSpeed = 1000;
     public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
 
@@ -494,11 +497,13 @@ public class Battle : MonoBehaviour
                                     }
                                     if (skill.targetType == "Self") {
                                         Skills.useSkill(cycle[0], skill);
+                                        StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                         sel_phase = -2;
                                     } else if (skill.targetType == "Team") {
                                         foreach (Character c in Game.characters) {
                                             if (c.health > 0) {
                                                 Skills.useSkill(c, skill);
+                                                StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                                 sel_phase = -2;
                                             }
                                         }
@@ -577,21 +582,25 @@ public class Battle : MonoBehaviour
                             if (skill.targetType == "Enemy") {
                                 if (enemies[sel_target].health > 0) {
                                     dmg = Skills.useSkill(cycle[0], skill, enemies[sel_target]);
+                                    StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Ally") {
                                 if (Game.characters[sel_target].health > 0) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
+                                    StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
+                                    StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
+                                    StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             }
@@ -620,6 +629,7 @@ public class Battle : MonoBehaviour
                 if (dmg > 0) {
                     StartCoroutine(Damage(dmg));
                 }
+                StartCoroutine(ShowSkillUse(1, cycle[0], SkillsRegistry.getSkill("Attack")));
                 cycle[0].endTurn();
                 StartCoroutine(SuspendCycleChange(0));
             }
@@ -803,5 +813,31 @@ public class Battle : MonoBehaviour
         animationCooldown = false;
         
     }
+
+    IEnumerator ShowSkillUse(int seconds, Character character, Skills skill)
+    {
+        GameObject InfoClone = Instantiate(SkillUsageBox, new Vector3(CharacterBox.transform.position.x, CharacterBox.transform.position.y), CharacterBox.transform.rotation);
+        InfoClone.transform.SetParent(SkillUsageBox.transform);
+        InfoClone.name = "TEMP InfoBox";
+        InfoClone.GetComponent<TextManager>().text = character.character + " uses " + skill.skillName + "!";
+        InfoClone.SetActive(true);
+        InfoClone.transform.position = CharacterBox.transform.position;
+        var targetPos = CharacterBox.transform.position;
+        targetPos.y += 200;
+        while (InfoClone != null && (targetPos - InfoClone.transform.position).sqrMagnitude > Mathf.Epsilon)
+        {
+            InfoClone.transform.position = Vector3.MoveTowards(InfoClone.transform.position, targetPos, slowerMoveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(seconds);
+
+        if (InfoClone != null) {
+            InfoClone.transform.position = targetPos;
+        }
+        Destroy(InfoClone);
+    }
+
+    
     
 }
