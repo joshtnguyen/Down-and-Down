@@ -26,6 +26,7 @@ public class Game : MonoBehaviour
     public static bool updateEnemies = false;
 
     public static int mapLength = 7;
+    public static int mapEasing = 10;
     public static int row = 0;
     public static int col = 0;
     public static int floorNumber = -1;
@@ -224,6 +225,47 @@ public class Game : MonoBehaviour
                         }
                     }
                 }
+            }
+        }
+
+        for (int i = 0; i < mapEasing; i++) {
+            List<string> directions = new List<string>();
+            int changeRow = Random.Range(0, mapLength);
+            int changeCol = Random.Range(0, mapLength);
+            if (changeRow > 0) {
+                directions.Add("North");
+            }
+            
+            if (changeRow < mapLength - 1) {
+                directions.Add("South");
+            }
+
+            if (changeCol < mapLength - 1) {
+                directions.Add("East");
+            }
+
+            if (changeCol > 0) {
+                directions.Add("West");
+            }
+
+            string direction = directions[Random.Range(0, directions.Count)];
+            switch (direction) {
+                case "North":
+                    map[changeRow, changeCol].north = true;
+                    map[changeRow - 1, changeCol].south = true;
+                    break;
+                case "South":
+                    map[changeRow, changeCol].south = true;
+                    map[changeRow + 1, changeCol].north = true;
+                    break;
+                case "East":
+                    map[changeRow, changeCol].east = true;
+                    map[changeRow, changeCol + 1].west = true;
+                    break;
+                case "West":
+                    map[changeRow, changeCol].west = true;
+                    map[changeRow, changeCol - 1].east = true;
+                    break;
             }
         }
 
