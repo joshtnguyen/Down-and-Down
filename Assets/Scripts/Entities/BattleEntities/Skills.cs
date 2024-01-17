@@ -149,7 +149,7 @@ public class Skills
                 break;
 
             case "Drunken Charge":
-                dmg = c.damage(t, 50 + (3 * s.stacks));
+                dmg = c.damage(t, 35 + (3 * s.stacks));
                 break;
 
             case "Sand Spray":

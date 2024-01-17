@@ -132,7 +132,7 @@ public class Battle : MonoBehaviour
                     break;
                 case "Sandbat":
                     e = new Enemy("Sandbat", i + 1, level, 60, 7, 22, 8, 5, 7, 2);
-                    s = SkillsRegistry.getSkill("Drunken Charge");
+                    s = SkillsRegistry.getSkill("Sand Spray");
                     s.stacks = (int) (Game.floorNumber * -1 / 3);
                     break;
                 default:
@@ -186,7 +186,7 @@ public class Battle : MonoBehaviour
         
         if (enemies.Any()) {
             for (int i = 0; i < enemies.Count; i++) {
-                if (enemies[i].health > 0 && !Game.characters[i].skipTurn) {
+                if (enemies[i].health > 0 && !enemies[i].skipTurn) {
                     bool flag = true;
                     for (int j = 0; j < cycle.Count; j++) {
                         if (enemies[i].currentSPD > cycle[j].currentSPD) {
@@ -721,7 +721,12 @@ public class Battle : MonoBehaviour
                 sel_phase = -11;
             } else {
                 if (Game.characters[levelCheck].health > 0) {
-                    Game.characters[levelCheck].xp += enemies.Count();
+                    int xpGained = 0;
+                    foreach (Enemy e in enemies) {
+                        xpGained += e.level;
+                    }
+                    xpGained = xpGained / 4 + 1;
+                    Game.characters[levelCheck].xp += xpGained;
                     int levelChange = Game.characters[levelCheck].checkLevelChange();
                     if (levelChange > 0) {
                         GameDescription.text = Game.characters[levelCheck].character + " leveled up!\nLevel " + (Game.characters[levelCheck].level - levelChange) + " >> " + Game.characters[levelCheck].level;

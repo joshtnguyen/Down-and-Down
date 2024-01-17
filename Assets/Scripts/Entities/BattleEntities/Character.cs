@@ -27,7 +27,7 @@ public class Mod {
 public class Character
 {
 
-    private static int L_UP_REQ = 5;
+    public static int L_UP_REQ = 5;
 
     private static int L_UP_HP = 3;
     private static int L_UP_ATK = 2;

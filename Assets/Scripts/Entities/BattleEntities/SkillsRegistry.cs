@@ -28,7 +28,7 @@ public class SkillsRegistry
         
         // Enemy Skills
         registry_E.Add(new Skills("Goo Shot", "Deals 120% of the user's attack, decreases SPD by 2 (+1 per stack), and decreases DEF by 20% (+2% per stack) on a single target for 2 turns.", 2, 0, -1, "Enemy", "Slime"));
-        registry_E.Add(new Skills("Drunken Charge", "Deals 50% (+3% per stack) of the user's attack to all enemies.", 3, 0, -1, "Enemies", "Cave Bull"));
+        registry_E.Add(new Skills("Drunken Charge", "Deals 35% (+3% per stack) of the user's attack to all enemies.", 3, 0, -1, "Enemies", "Cave Bull"));
         registry_E.Add(new Skills("Sand Spray", "Deals 130% of the user's attack and decreases ATK by 2% (+1% per stack) to all enemies for 1 turn.", 2, 0, -1, "Enemies", "Sandbat"));
     }
 

@@ -31,7 +31,7 @@ public class Game : MonoBehaviour
     public static int col = 0;
     public static int floorNumber = -1;
     public static int disruptions = 0;
-    public static int gold = 500;
+    public static int gold = 20;
 
     // FLOOR INFO
     public static int steps = 0;
