@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using Unity.VisualScripting;
-using System;
 
 public class Mod {
     public string modName;

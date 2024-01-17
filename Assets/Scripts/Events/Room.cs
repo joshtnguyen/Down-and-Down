@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Room
 {
@@ -49,7 +48,7 @@ public class Room
     }
 
     public void Reset() {
-        hasEntered = true;
+        hasEntered = false;
         north = false;
         east = false;
         south = false;

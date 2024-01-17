@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
-using System.Data;
 using System.Linq;
-using UnityEditor.Search;
 
 public class TitleUIManager : MonoBehaviour
 {

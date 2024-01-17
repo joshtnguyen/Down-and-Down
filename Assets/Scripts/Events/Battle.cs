@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Runtime.CompilerServices;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEngine.AI;
 
 public class Battle : MonoBehaviour
 {
