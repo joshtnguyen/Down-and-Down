@@ -367,6 +367,7 @@ public class GameUIManager : MonoBehaviour
                                 if (Game.gold >= cost) {
                                     menu_phase = 3;
                                     T_1.text = ">> Confirm Purchase for " + cost + "G";
+                                    target_selection = 1;
                                 }
                             }
                             

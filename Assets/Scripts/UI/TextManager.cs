@@ -53,11 +53,9 @@ public class TextManager : MonoBehaviour
 
         Skills skill = null;
 
-        if (ch.skills.Any()) {
-            foreach (Skills sk in ch.skills) {
-                if (sk.skillName == s.skillName) {
-                    skill = sk;
-                }
+        foreach (Skills sk in ch.skills) {
+            if (sk.skillName == s.skillName) {
+                skill = sk;
             }
         }
 
@@ -83,12 +81,12 @@ public class TextManager : MonoBehaviour
 
         Skills skill = null;
 
+        int cost = 1;
         foreach (Skills sk in ch.skills) {
             if (sk.skillName == s.skillName) {
                 skill = sk;
             }
         }
-        int cost = 1;
         if (skill != null) {
             cost = skill.stacks + 2;
         }

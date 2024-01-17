@@ -77,8 +77,11 @@ public class Skills
                 m2 = new Mod(s.skillName, 20 + (2.5 * s.stacks), false);
                 c.cr_mod[1].Add(m);
                 c.cr_mod[2].Add(m);
+                c.cr_mod[3].Add(m);
                 c.cd_mod[1].Add(m2);
                 c.cd_mod[2].Add(m2);
+                c.cd_mod[3].Add(m2);
+                c.skipTurn = true;
                 break;
             case "Fist to the Face":
                 dmg = c.damage(t, 125 + (7 * s.stacks));
@@ -133,6 +136,26 @@ public class Skills
                 t.spd_mod[0].Add(m);
                 t.spd_mod[1].Add(m);
                 t.health += (int)(c.maxhealth * (0.06 + 0.015 * s.stacks));
+                break;
+
+            case "Goo Shot":
+                dmg = c.damage(t, 120);
+                m = new Mod(s.skillName, -2 - s.stacks, true);
+                m2 = new Mod(s.skillName, -20 - (2 * s.stacks), true);
+                t.spd_mod[0].Add(m);
+                t.spd_mod[1].Add(m);
+                t.def_p_mod[0].Add(m);
+                t.def_p_mod[1].Add(m);
+                break;
+
+            case "Drunken Charge":
+                dmg = c.damage(t, 50 + (3 * s.stacks));
+                break;
+
+            case "Sand Spray":
+                dmg = c.damage(t, 90 + (3 * s.stacks));
+                m = new Mod(s.skillName, -2 - (1 * s.stacks), true);
+                t.atk_p_mod[1].Add(m);
                 break;
         }
 

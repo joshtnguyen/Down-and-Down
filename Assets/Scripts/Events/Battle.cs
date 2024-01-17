@@ -106,9 +106,47 @@ public class Battle : MonoBehaviour
         cycle.Clear();
         enemies.Clear();
 
+        int level = Game.floorNumber * -1;
+        
+        if (Game.map[Game.row, Game.col].roomType == "Exit") {
+            numEnemies += 2;
+            level += 2;
+
+        }
+
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8, 1));
-            enemies[i].verifyMod();
+            string enemyType = Game.enemies[Random.Range(0, enemies.Count)];
+            Enemy e;
+            Skills s;
+            switch (enemyType) {
+                // NAME / ID / LEVEL / HP / ATK / DEF / SPD / CR / CD / SP
+                case "Slime":
+                    e = new Enemy("Slime", i + 1, level, 45, 12, 8, 11, 5, 8, 1);
+                    s = SkillsRegistry.getSkill("Goo Shot");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                case "Cave Bull":
+                    e = new Enemy("Cave Bull", i + 1, level, 52, 14, 2, 9, 7, 20, 1);
+                    s = SkillsRegistry.getSkill("Drunken Charge");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                case "Sandbat":
+                    e = new Enemy("Sandbat", i + 1, level, 60, 7, 22, 8, 5, 7, 2);
+                    s = SkillsRegistry.getSkill("Drunken Charge");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                default:
+                    e = new Enemy("Slime", i + 1, level, 45, 12, 8, 11, 5, 8, 1);
+                    s = SkillsRegistry.getSkill("Goo Shot");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+
+            }
+            e.skills.Add(s);
+            e.skill1 = s;
+            e.verifyMod();
+            e.health = e.maxhealth;
+            enemies.Add(e);
         }
         
         foreach (Character c in Game.characters) {
@@ -631,11 +669,39 @@ public class Battle : MonoBehaviour
                     StartCoroutine(SuspendCycleChange(0));
                 }
             } else {
-                int dmg = Skills.useSkill(cycle[0], SkillsRegistry.getSkill("Attack"), Enemy.selectTarget(true));
+                int dmg = 0;
+                bool usedSkill = false;
+                Skills skillUsed = null;
+                if (cycle[0].skill1 != null) {
+                    skillUsed = cycle[0].skill1;
+                    if (cycle[0].sp >= skillUsed.spConsumption) {
+                        cycle[0].sp -= skillUsed.spConsumption;
+                        if (skillUsed.targetType == "Enemy") {
+                            dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                        } else if (skillUsed.targetType == "Self") {
+                            dmg = Skills.useSkill(cycle[0], skillUsed);
+                        } else if (skillUsed.targetType == "Enemies") {
+                            foreach (Character t in Game.characters) {
+                                if (t.health > 0) {
+                                    dmg += Skills.useSkill(cycle[0], skillUsed, t);
+                                }
+                            }
+                        }
+                        usedSkill = true;
+                    }
+                }
+
+                if (!usedSkill) {
+                    skillUsed = SkillsRegistry.getSkill("Attack");
+                    cycle[0].sp++;
+                    dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                }
+                if (skillUsed != null) {
+                    StartCoroutine(ShowSkillUse(1, cycle[0], skillUsed));
+                }
                 if (dmg > 0) {
                     StartCoroutine(Damage(dmg));
                 }
-                StartCoroutine(ShowSkillUse(1, cycle[0], SkillsRegistry.getSkill("Attack")));
                 cycle[0].endTurn();
                 StartCoroutine(SuspendCycleChange(0));
             }
@@ -829,7 +895,7 @@ public class Battle : MonoBehaviour
         InfoClone.SetActive(true);
         InfoClone.transform.position = CharacterBox.transform.position;
         var targetPos = CharacterBox.transform.position;
-        targetPos.y += 200;
+        targetPos.y = CharacterBox.transform.position.y + 200;
         while (InfoClone != null && (targetPos - InfoClone.transform.position).sqrMagnitude > Mathf.Epsilon)
         {
             InfoClone.transform.position = Vector3.MoveTowards(InfoClone.transform.position, targetPos, slowerMoveSpeed * Time.deltaTime);

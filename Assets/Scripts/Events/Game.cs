@@ -40,6 +40,8 @@ public class Game : MonoBehaviour
 
     public static Room[,] map = new Room[mapLength, mapLength];
     public static List<int[]> combos = new List<int[]>();
+    public static List<string> enemies = new List<string>();
+    public static string[] enemyList = {"Slime", "Cave Bull", "Sandbat"};
 
     public GameObject northBlocker;
     public GameObject eastBlocker;
@@ -97,6 +99,11 @@ public class Game : MonoBehaviour
         steps = 0;
         enemiesKilled = 0;
         timesDowned = 0;
+
+        enemies.Clear();
+        for (int i = 0; i < 3; i++) {
+            enemies.Add(enemyList[Random.Range(0, enemyList.Length)]);
+        }
         
         for (int i = 0; i < mapLength; i++) {
             for (int j = 0; j < mapLength; j++) {
