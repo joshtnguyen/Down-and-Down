@@ -8,7 +8,7 @@ public class Enemy : Character
 
     public int id;
 
-    public Enemy(string name, int identifier, int le, int hp, double atk, double def, int spd, double cr, double cd) : base(name, le, hp, atk, def, spd, cr, cd) {
+    public Enemy(string name, int identifier, int le, int hp, double atk, double def, int spd, double cr, double cd, int s) : base(name, le, hp, atk, def, spd, cr, cd) {
         character = name;
         level = le;
         baseHP = hp;
@@ -19,7 +19,7 @@ public class Enemy : Character
         baseCD = cd;
         health = hp;
         id = identifier;
-        sp = 2;
+        sp = s;
         skill1 = null;
         skill2 = null;
     }

@@ -107,7 +107,7 @@ public class Battle : MonoBehaviour
         enemies.Clear();
 
         for (int i = 0; i < numEnemies; i++) {
-            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8));
+            enemies.Add(new Enemy("Slime", i + 1, 1, 45, 12, 8, 11, 5, 8, 1));
             enemies[i].verifyMod();
         }
         
@@ -496,17 +496,19 @@ public class Battle : MonoBehaviour
                                         Destroy(t);
                                     }
                                     if (skill.targetType == "Self") {
+                                        battleSP -= skill.spConsumption;
                                         Skills.useSkill(cycle[0], skill);
                                         StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                         sel_phase = -2;
                                     } else if (skill.targetType == "Team") {
+                                        battleSP -= skill.spConsumption;
                                         foreach (Character c in Game.characters) {
                                             if (c.health > 0) {
                                                 Skills.useSkill(c, skill);
-                                                StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                                sel_phase = -2;
                                             }
                                         }
+                                        StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                        sel_phase = -2;
                                     } else if (skill.targetType == "Enemy" || skill.targetType == "Ally" || skill.targetType == "Non-Self Ally" || skill.targetType == "Dead") {
                                         if (skill.targetType == "Enemy") {
                                             targetTypeIsEnemy = true;
@@ -581,23 +583,27 @@ public class Battle : MonoBehaviour
                         if (skill != null) {
                             if (skill.targetType == "Enemy") {
                                 if (enemies[sel_target].health > 0) {
+                                    battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, enemies[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Ally") {
                                 if (Game.characters[sel_target].health > 0) {
+                                    battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
+                                battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
+                                battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));

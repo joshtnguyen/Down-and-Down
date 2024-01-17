@@ -49,18 +49,6 @@ public class Skills
         Mod m5;
         Mod m6;
 
-        if (c.isEnemy()) {
-            c.sp -= s.spConsumption;
-        } else {
-            if (s.targetType == "Team") {
-                if (s.skillUser == c.character) {
-                    Battle.battleSP -= s.spConsumption;
-                }
-            } else {
-                Battle.battleSP -= s.spConsumption;
-            }
-        }
-
         switch (s.skillName) {
             case "Attack":
                 dmg = c.damage(t, 100);

@@ -8,6 +8,7 @@ public class SkillsRegistry
     public static List<Skills> registry = new List<Skills>();
 
     public static void firstRun() {
+        // Player Skills
         registry.Add(new Skills("Attack", "Deals 100% of the user's attack on a single target. Recovers 1 SP.", 0, -1, -1, "Enemy", null));
         registry.Add(new Skills("Block", "Increases DEF % by 200% and reduces SPD by their base SPD for 1 turn.", 0, -1, -1, "Self", null));
         registry.Add(new Skills("Heavy Slice", "Deals 150% (+8% per stack) of the user's attack on a single target.", 2, 0, -1, "Enemy", "Walter"));
@@ -24,6 +25,8 @@ public class SkillsRegistry
         registry.Add(new Skills("Dedicated Meal", "Heals an ally by 12% (+2% per stack) of the ally's Max HP.", 2, 0, -1, "Ally", "Jade"));
         registry.Add(new Skills("Energy Bar", "Heals an ally by 6% (+1.5% per stack) of the user's Max HP and increases SPD by 1 (+1 per stack) for 2 turns.", 3, 0, -1, "Ally", "Jade"));
         
+        // Enemy Skills
+        registry.Add(new Skills("Goo Shot", "Deals 120% of the user's attack, decreases SPD by 2 (+1 per stack), and decreases DEF by 20% (+2% per stack) on a single target.", 2, 0, -1, "Enemy", "Slime"));
     }
 
     public static Skills getSkill(List<Skills> skills, string skill) {

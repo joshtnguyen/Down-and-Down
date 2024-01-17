@@ -53,9 +53,11 @@ public class TextManager : MonoBehaviour
 
         Skills skill = null;
 
-        foreach (Skills sk in ch.skills) {
-            if (sk.skillName == s.skillName) {
-                skill = sk;
+        if (ch.skills.Any()) {
+            foreach (Skills sk in ch.skills) {
+                if (sk.skillName == s.skillName) {
+                    skill = sk;
+                }
             }
         }
 

@@ -619,7 +619,7 @@ public class GameUIManager : MonoBehaviour
                                     }
 
                                 }
-                                if (confirm == 1) {
+                                if (confirm == 1 && target_selection >= 0) {
                                     switch (action_selection) {
                                         case 0:
                                             c.skill1 = c.skills[target_page * 4 + target_selection + 2];
