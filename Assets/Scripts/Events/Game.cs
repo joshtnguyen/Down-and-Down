@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class Game : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class Game : MonoBehaviour
     public static bool updateEnemies = false;
 
     public static int mapLength = 7;
-    public static int mapEasing = 10;
+    public static int mapEasing = 13;
     public static int row = 0;
     public static int col = 0;
     public static int floorNumber = -1;
@@ -514,8 +515,26 @@ public class Game : MonoBehaviour
                     roomIndicatorClone.transform.SetParent(roomIndicatorContainer.transform);
                     roomIndicatorClone.name = "roomIndicatorClone" + i + "-" + j;
                     roomIndicatorClone.SetActive(true);
+
+                    switch (room.roomType) {
+                        case "Entrance" or "Exit":
+                            roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 0, 0, 255);
+                            break;
+                        case "Wizard Room":
+                            roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 0, 255, 255);
+                            break;
+                        case "Break Room":
+                            roomIndicatorClone.GetComponent<Image>().color = new Color32(255, 0, 255, 255);
+                            break;
+                        case "Normal Enemy Room":
+                            if (room.enemiesLeft > 0) {
+                                roomIndicatorClone.GetComponent<Image>().color = new Color32(141, 141, 141, 255);
+                            }
+                            break;
+                    }
+
                     if (i == row && j == col) {
-                        roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 255, 0, 255);
+                        roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 141, 0, 255);
                     }
                     mapObjects.Add(roomIndicatorClone);
                 }

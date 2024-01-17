@@ -318,9 +318,9 @@ public class TitleUIManager : MonoBehaviour
                         int v = GetVertical();
                         if (target_selection == 0) {
                             if (h > 0 || v < 0) {
-                                Game.gold++;
+                                Game.gold += 5;
                             } else if (h < 0 || v > 0) {
-                                Game.gold--;
+                                Game.gold -= 5;
                             }
                             if (Game.gold < 0) {
                                 Game.gold = 0;

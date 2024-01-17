@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 public class Battle : MonoBehaviour
 {
@@ -525,6 +526,8 @@ public class Battle : MonoBehaviour
                             }
 
                             if (skill != null) {
+                                int dmg = 0;
+                                bool usedSkill = false;
                                 if (battleSP >= skill.spConsumption) {
                                     while (trashCan.Any()) {
                                         GameObject t = trashCan[0];
@@ -533,18 +536,18 @@ public class Battle : MonoBehaviour
                                     }
                                     if (skill.targetType == "Self") {
                                         battleSP -= skill.spConsumption;
-                                        Skills.useSkill(cycle[0], skill);
+                                        dmg = Skills.useSkill(cycle[0], skill);
                                         StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                        sel_phase = -2;
+                                        usedSkill = true;
                                     } else if (skill.targetType == "Team") {
                                         battleSP -= skill.spConsumption;
                                         foreach (Character c in Game.characters) {
                                             if (c.health > 0) {
-                                                Skills.useSkill(c, skill);
+                                                dmg += Skills.useSkill(c, skill);
                                             }
                                         }
                                         StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                        sel_phase = -2;
+                                        usedSkill = true;
                                     } else if (skill.targetType == "Enemy" || skill.targetType == "Ally" || skill.targetType == "Non-Self Ally" || skill.targetType == "Dead") {
                                         if (skill.targetType == "Enemy") {
                                             targetTypeIsEnemy = true;
@@ -566,9 +569,17 @@ public class Battle : MonoBehaviour
                                         StartCoroutine(Move(TargetBox, targetPos));
                                     }
                                 }
+                                if (usedSkill) {
+                                    if (dmg > 0) {
+                                        StartCoroutine(Damage(dmg));
+                                        sel_phase = -2;
+                                    } else {
+                                        StartCoroutine(Sleep(2));
+                                        sel_phase = -2;
+                                    }
+                                }
                             }
                         }
-
                     }
                 } else if (sel_phase == 3) {
 
@@ -622,37 +633,37 @@ public class Battle : MonoBehaviour
                                     battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, enemies[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                    sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Ally") {
                                 if (Game.characters[sel_target].health > 0) {
                                     battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                    sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                    sel_phase = -2;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
-                                    sel_phase = -2;
                                 }
                             }
+
+                            if (dmg > 0) {
+                                StartCoroutine(Damage(dmg));
+                                sel_phase = -2;
+                            } else {
+                                StartCoroutine(Sleep(2));
+                                sel_phase = -2;
+                            }
+
                         }
                     }
-
-                    if (dmg > 0) {
-                        StartCoroutine(Damage(dmg));
-                    }
-
                 } else if (sel_phase == -2) {
                     while (trashCan.Any()) {
                         GameObject t = trashCan[0];
@@ -699,6 +710,8 @@ public class Battle : MonoBehaviour
                 }
                 if (dmg > 0) {
                     StartCoroutine(Damage(dmg));
+                } else {
+                    StartCoroutine(Sleep(2));
                 }
                 cycle[0].endTurn();
                 StartCoroutine(SuspendCycleChange(0));
@@ -711,7 +724,11 @@ public class Battle : MonoBehaviour
                 StartCoroutine(SuspendSceneChange(2, "Overworld Scene"));
                 Game.updateEnemies = true;
             } else if (levelCheck == -1) {
-                int gold = 2 * enemies.Count;
+                int gold = 0;
+                foreach (Enemy e in enemies) {
+                    gold += e.level;
+                }
+                gold = gold / 2 + 2;
                 Game.gold += gold;
                 Game.enemiesKilled += enemies.Count;
                 GameDescription.text = "You earned " + gold + "G!";
