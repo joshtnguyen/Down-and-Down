@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System;
+using Unity.VisualScripting;
 
 public class GameUIManager : MonoBehaviour
 {
@@ -53,6 +55,12 @@ public class GameUIManager : MonoBehaviour
 
     public void openMenu(string menuType) {
         menu_name = menuType;
+        Room r = Game.map[Game.row, Game.col];
+
+        ActionBox.transform.position = DescriptionBox.transform.position;
+        TargetBox.transform.position = DescriptionBox.transform.position;
+        emptyTrash();
+
         switch(menuType) {
             case "Teleporter":
                 OptionBox.SetActive(true);
@@ -76,7 +84,6 @@ public class GameUIManager : MonoBehaviour
                 Game.gameMovementFreeze = true;
                 break;
             case "Wizard":
-                Room r = Game.map[Game.row, Game.col];
                 OptionBox.SetActive(true);
                 ActionBox.transform.position = DescriptionBox.transform.position;
                 D_1.text = "Welcome to my humble shop. I can teach you some skills for your future battles. For a price that is...";
@@ -142,6 +149,64 @@ public class GameUIManager : MonoBehaviour
                 target_selection = -1;
                 target_selection_limit = -1;
                 MoneyBox.SetActive(true);
+                Game.gameMovementFreeze = true;
+                break;
+            case "Shrine":
+                OptionBox.SetActive(true);
+                ActionBox.transform.position = DescriptionBox.transform.position;
+                if (r.wishes <= 0) {
+                    D_1.text = "The remanants of a shrine stands before you. It calls for you to wish upon it.";
+                    A_1.text = ">> Wish Upon It";
+                    T_1.text = ">> Confirm Wish";
+                    MoneyBox.SetActive(false);
+                } else {
+                    D_1.text = "The remanants of a shrine stands before you once again. It imposes a price this time.";
+                    A_1.text = ">> Wish Upon It for " + getShrineCost() + "G";
+                    T_1.text = ">> Confirm Wish for " + getShrineCost() + "G";
+                    MoneyBox.SetActive(true);
+                }
+                D_2.text = "";
+                D_3.text = "";
+                D_4.text = "";
+                A_2.text = ">> Leave";
+                A_3.text = "";
+                A_4.text = "";
+                T_2.text = ">> Leave";
+                T_3.text = "";
+                T_4.text = "";
+                menu_type = "Highlight";
+                menu_phase = 1;
+                menu_selection = -1;
+                menu_selection_limit = -1;
+                action_selection = 1;
+                action_selection_limit = 1;
+                target_selection = 1;
+                target_selection_limit = 1;
+                Game.gameMovementFreeze = true;
+                break;
+            case "Demon":
+                OptionBox.SetActive(true);
+                ActionBox.transform.position = DescriptionBox.transform.position;
+                D_1.text = "You were fooled by a trap set up by the cave itself. Brace yourself for battle!";
+                D_2.text = "";
+                D_3.text = "";
+                D_4.text = "";
+                A_1.text = ">> No other choice but to fight!";
+                A_2.text = ">> No other choice but to fight!";
+                A_3.text = ">> No other choice but to fight!";
+                A_4.text = ">> No other choice but to fight!";
+                T_1.text = "";
+                T_2.text = "";
+                T_3.text = "";
+                T_4.text = "";
+                menu_type = "Highlight";
+                menu_phase = 1;
+                menu_selection = -1;
+                menu_selection_limit = -1;
+                action_selection = 0;
+                action_selection_limit = 3;
+                target_selection = -1;
+                target_selection_limit = -1;
                 Game.gameMovementFreeze = true;
                 break;
         }
@@ -499,6 +564,34 @@ public class GameUIManager : MonoBehaviour
                         }
 
                         break;
+                    case "Shrine":
+                        if (confirm == 1) {
+                            switch (action_selection) {
+                                case 0:
+                                    if (Game.gold >= getShrineCost()) {
+                                        menu_phase = 3;
+                                    }
+                                    break;
+                                case 1:
+                                    confirm = -1;
+                                    break;
+                            }
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+                    case "Demon":
+                        if (confirm == 1) {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = true;
+                            Battle.StartBattle(Game.enemiesPerBattle);
+                            Game.map[Game.row, Game.col].roomType = "Empty Room";
+                        }
+                        break;
                 }
             } else if (menu_phase == 3) {
                 var targetPos = ActionBox.transform.position;
@@ -683,8 +776,57 @@ public class GameUIManager : MonoBehaviour
                                 }
                                 break;
                         }
-
                         break;
+                    case "Shrine":
+                        if (confirm == 1) {
+                            switch (target_selection) {
+                                case 0:
+                                    if (Game.gold >= getShrineCost()) {
+                                        Game.gold -= getShrineCost();
+                                        Game.map[Game.row, Game.col].wishes++;
+
+                                        string text = "";
+                                        List<string> shrines = new List<string>();
+                                        shrines.Add("Nothing");
+
+                                        string shrine = shrines[UnityEngine.Random.Range(0, shrines.Count)];
+
+                                        switch (shrine) {
+                                            case "Nothing":
+                                                text = "You offer to the shrine, but gain nothing.";
+                                                break;
+                                        }
+
+                                        GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
+                                        InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                        InfoBoxClone.name = "TEMP InfoBox" + target_selection;
+                                        InfoBoxClone.GetComponent<TextManager>().text = text;
+                                        trashCan.Add(InfoBoxClone);
+                                        var targetPos = TargetBox.transform.position;
+                                        targetPos.y += 260;
+                                        StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+
+                                        menu_phase = 20;
+                                    }
+                                    break;
+                                case 1:
+                                    confirm = -1;
+                                    break;
+                            }
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+                }
+            } else if (menu_phase == 20) {
+                int confirm = getConfirmation();
+                if (confirm != 0) {
+                    closeMenu();
+                    emptyTrash();
+                    Game.gameMovementFreeze = false;
                 }
             }
         }
@@ -732,6 +874,15 @@ public class GameUIManager : MonoBehaviour
             item.transform.position = targetPos;
         }
         slideCooldown = false;
+    }
+
+    public int getShrineCost() {
+        Room r = Game.map[Game.row, Game.col];
+        if (r.wishes <= 0){
+            return 0;
+        } 
+        int cost = (int)(-4 * Game.floorNumber * Math.Pow(2, r.wishes));
+        return cost;
     }
     
 }

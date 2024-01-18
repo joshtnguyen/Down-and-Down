@@ -34,6 +34,9 @@ public class Game : MonoBehaviour
     public static int disruptions = 0;
     public static int gold = 20;
 
+    // Disruptions
+    public static int enemiesPerBattle = 1;
+
     // FLOOR INFO
     public static int steps = 0;
     public static int enemiesKilled = 0;
@@ -42,7 +45,7 @@ public class Game : MonoBehaviour
     public static Room[,] map = new Room[mapLength, mapLength];
     public static List<int[]> combos = new List<int[]>();
     public static List<string> enemies = new List<string>();
-    public static string[] enemyList = {"Slime", "Cave Bull", "Sandbat"};
+    public static string[] enemyList = {"Slime", "Cave Bull", "Sandbat", "Koy Vamp", "Sledger", "Big Tox", "Unskilled"};
 
     public GameObject northBlocker;
     public GameObject eastBlocker;
@@ -63,6 +66,7 @@ public class Game : MonoBehaviour
 
     public GameObject wizardArea;
     public GameObject breakArea;
+    public GameObject shrineArea;
 
     // Start is called before the first frame update
     void Start()
@@ -132,16 +136,16 @@ public class Game : MonoBehaviour
         for (int i = 0; i < 15; i++) {
             roomTypes.Add("Normal Enemy Room");
         }
-        for (int i = 0; i < 9; i++) {
-            roomTypes.Add("Treasure Room");
+        for (int i = 0; i < 3; i++) {
+            roomTypes.Add("Shrine Room");
         }
         for (int i = 0; i < 1; i++) {
-            roomTypes.Add("Mimic Room");
+            roomTypes.Add("Demon Room");
         }
         for (int i = 0; i < 1; i++) {
             roomTypes.Add("Break Room");
         }
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 25; i++) {
             roomTypes.Add("Empty Room");
         }
 
@@ -423,6 +427,7 @@ public class Game : MonoBehaviour
             teleporterArea.SetActive(false);
             wizardArea.SetActive(false);
             breakArea.SetActive(false);
+            shrineArea.SetActive(false);
             updateEnemies = false;
             EnemyAI.emptyTrash();
             map[row, col].hasEntered = true;
@@ -445,6 +450,9 @@ public class Game : MonoBehaviour
                     break;
                 case "Break Room":
                     breakArea.SetActive(true);
+                    break;
+                case "Shrine Room" or "Demon Room":
+                    shrineArea.SetActive(true);
                     break;
             }
             
@@ -526,6 +534,9 @@ public class Game : MonoBehaviour
                         case "Break Room":
                             roomIndicatorClone.GetComponent<Image>().color = new Color32(255, 0, 255, 255);
                             break;
+                        case "Shrine Room" or "Demon Room":
+                            roomIndicatorClone.GetComponent<Image>().color = new Color32(255, 255, 0, 255);
+                            break;   
                         case "Normal Enemy Room":
                             if (room.enemiesLeft > 0) {
                                 roomIndicatorClone.GetComponent<Image>().color = new Color32(141, 141, 141, 255);

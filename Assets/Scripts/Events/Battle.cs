@@ -90,7 +90,8 @@ public class Battle : MonoBehaviour
     public static List<Enemy> enemies = new List<Enemy>();
 
 
-    public static void StartBattle(GameObject enemy, int numEnemies) {
+    public static void StartBattle(int numEnemies) {
+        Room r = Game.map[Game.row, Game.col];
         Game.gameEvent = "Battle";
         Game.gameMovementFreeze = true;
         Game.showMap = false;
@@ -107,7 +108,7 @@ public class Battle : MonoBehaviour
 
         int level = Game.floorNumber * -1;
         
-        if (Game.map[Game.row, Game.col].roomType == "Exit") {
+        if (r.roomType == "Exit" || r.roomType == "Demon Room") {
             numEnemies += 2;
             level += 2;
 
@@ -132,6 +133,26 @@ public class Battle : MonoBehaviour
                 case "Sandbat":
                     e = new Enemy("Sandbat", i + 1, level, 60, 7, 22, 8, 5, 7, 2);
                     s = SkillsRegistry.getSkill("Sand Spray");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                case "Koy Vamp":
+                    e = new Enemy("Koy Vamp", i + 1, level, 40, 12, 9, 11, 3, 3, 2);
+                    s = SkillsRegistry.getSkill("Vampiric Gnaw");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                case "Sledger":
+                    e = new Enemy("Sledger", i + 1, level, 42, 13, 5, 10, 12, 6, 0);
+                    s = SkillsRegistry.getSkill("Hammer Down");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                case "Big Tox":
+                    e = new Enemy("Big Tox", i + 1, level, 55, 8, 16, 13, 16, 3, 2);
+                    s = SkillsRegistry.getSkill("Mysterious Dew-hickey");
+                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    break;
+                case "Unskilled":
+                    e = new Enemy("Unskilled", i + 1, level, 53, 10, 15, 11, 5, 4, 2);
+                    s = SkillsRegistry.getSkill("Skilln't");
                     s.stacks = (int) (Game.floorNumber * -1 / 3);
                     break;
                 default:
@@ -718,6 +739,9 @@ public class Battle : MonoBehaviour
             }
         } else if (sel_phase == -10) {
             levelCheck++;
+            if (Game.map[Game.row, Game.col].roomType == "Demon Room") {
+                levelCheck = Game.characters.Count;
+            }
             if (levelCheck >= Game.characters.Count) {
                 sel_phase = -12;
                 GameDescriptionBox.SetActive(false);

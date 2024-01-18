@@ -146,7 +146,7 @@ public class EnemyAI : MonoBehaviour
             Game.map[Game.row, Game.col].enemiesLeft--;
             Destroy(this);
             StartCoroutine(Sleep(1));
-            Battle.StartBattle(this.gameObject, 1);
+            Battle.StartBattle(Game.enemiesPerBattle);
             return true;
         }
         return false;

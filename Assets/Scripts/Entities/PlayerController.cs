@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask solidObjectsLayer;
     public LayerMask teleporterLayer;
     public LayerMask wizardLayer;
+    public LayerMask shrineLayer;
     public LayerMask breakLayer;
     public LayerMask northLayer;
     public LayerMask eastLayer;
@@ -56,6 +57,14 @@ public class PlayerController : MonoBehaviour
 
                 if (Game.map[Game.row, Game.col].roomType == "Break Room" && IsOnBreak()) {
                     UI.GetComponent<GameUIManager>().openMenu("Break");
+                }
+
+                if (Game.map[Game.row, Game.col].roomType == "Shrine Room" && IsOnShrine()) {
+                    UI.GetComponent<GameUIManager>().openMenu("Shrine");
+                }
+
+                if (Game.map[Game.row, Game.col].roomType == "Demon Room" && IsOnShrine()) {
+                    UI.GetComponent<GameUIManager>().openMenu("Demon");
                 }
 
             }
@@ -152,6 +161,13 @@ public class PlayerController : MonoBehaviour
 
     private bool IsOnBreak() {
         if (Physics2D.OverlapCircle(transform.position, 1f, breakLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsOnShrine() {
+        if (Physics2D.OverlapCircle(transform.position, 1.5f, shrineLayer) != null) {
             return true;
         }
         return false;

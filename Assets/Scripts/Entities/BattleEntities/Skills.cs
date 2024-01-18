@@ -142,8 +142,8 @@ public class Skills
                 m2 = new Mod(s.skillName, -20 - (2 * s.stacks), true);
                 t.spd_mod[0].Add(m);
                 t.spd_mod[1].Add(m);
-                t.def_p_mod[0].Add(m);
-                t.def_p_mod[1].Add(m);
+                t.def_p_mod[0].Add(m2);
+                t.def_p_mod[1].Add(m2);
                 break;
 
             case "Drunken Charge":
@@ -154,6 +154,35 @@ public class Skills
                 dmg = c.damage(t, 90 + (3 * s.stacks));
                 m = new Mod(s.skillName, -2 - (1 * s.stacks), true);
                 t.atk_p_mod[1].Add(m);
+                break;
+            case "Vampiric Gnaw":
+                dmg = c.damage(t, 100);
+                c.health += (int) (dmg * (0.5 + (0.05 * s.stacks)));
+                break;
+            case "Hammer Down":
+                m = new Mod(s.skillName, -10 - (2 * s.stacks), true);
+                t.def_p_mod[0].Add(m);
+                dmg = c.damage(t, 150 + (8 * s.stacks));
+                break;
+            case "Mysterious Dew-hickey":
+                m = new Mod(s.skillName, -8 - (2 * s.stacks), true);
+                m2 = new Mod(s.skillName, -12 - (1.5 * s.stacks), true);
+                m3 = new Mod(s.skillName, -1 - (0.5 * s.stacks), true);
+                t.atk_p_mod[0].Add(m);
+                t.def_p_mod[0].Add(m2);
+                t.spd_mod[0].Add(m3);
+                t.atk_p_mod[1].Add(m);
+                t.def_p_mod[1].Add(m2);
+                t.spd_mod[1].Add(m3);
+                break;
+            case "Skilln't":
+                dmg = c.damage(t, 65 + (8 * s.stacks));
+                int skillLost = (int) (0.25 * s.stacks);
+                skillLost += 1;
+                Battle.battleSP -= skillLost;
+                if (Battle.battleSP < 0) {
+                    Battle.battleSP = 0;
+                }
                 break;
         }
 

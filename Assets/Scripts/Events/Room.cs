@@ -8,6 +8,7 @@ public class Room
     public string roomType;
     public bool hasEntered;
     public int enemiesLeft;
+    public int wishes = 0;
     public bool north = false;
     public bool east = false;
     public bool south = false;
@@ -55,6 +56,7 @@ public class Room
         west = false;
         roomType = null;
         enemiesLeft = 0;
+        wishes = 0;
         for (int i = 0; i < 4; i++) {
             skillList[i] = null;
         }
