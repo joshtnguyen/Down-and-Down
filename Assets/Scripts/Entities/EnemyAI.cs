@@ -143,10 +143,18 @@ public class EnemyAI : MonoBehaviour
     private bool PlayerInCollision(Vector3 targetPos) {
         if (Physics2D.OverlapCircle(targetPos, 0.2f, playerObjectsLayer) != null && Game.gameEvent == "Roaming") {
             Game.gameMovementFreeze = true;
-            Game.map[Game.row, Game.col].enemiesLeft--;
+            Room r = Game.map[Game.row, Game.col];
+            r.enemiesLeft--;
             Destroy(this);
             StartCoroutine(Sleep(1));
-            Battle.StartBattle(Game.enemiesPerBattle);
+            switch (r.roomType) {
+                case "Exit":
+                    Battle.StartBattle(Game.enemiesPerBattle + 2, 2, 1);
+                    break;
+                default:
+                    Battle.StartBattle(Game.enemiesPerBattle, 0, 1);
+                    break;
+            }
             return true;
         }
         return false;

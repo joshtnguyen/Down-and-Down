@@ -86,16 +86,17 @@ public class Battle : MonoBehaviour
     public static float slowerMoveSpeed = 1000;
     public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
+    public static double multiplier = 0;
 
     public static List<Enemy> enemies = new List<Enemy>();
 
-
-    public static void StartBattle(int numEnemies) {
+    public static void StartBattle(int numEnemies, int difficulty,  double rewardMultiplier) {
         Room r = Game.map[Game.row, Game.col];
         Game.gameEvent = "Battle";
         Game.gameMovementFreeze = true;
         Game.showMap = false;
         lastTurn = "NOBODY";
+        multiplier = rewardMultiplier;
         sel_phase = 1;
         sel_action_last = -1;
         sel_action = 0;
@@ -106,13 +107,7 @@ public class Battle : MonoBehaviour
         cycle.Clear();
         enemies.Clear();
 
-        int level = Game.floorNumber * -1;
-        
-        if (r.roomType == "Exit" || r.roomType == "Demon Room") {
-            numEnemies += 2;
-            level += 2;
-
-        }
+        int level = Game.floorNumber * -1 + difficulty;
 
         for (int i = 0; i < numEnemies; i++) {
             string enemyType = Game.enemies[Random.Range(0, enemies.Count)];
@@ -174,6 +169,10 @@ public class Battle : MonoBehaviour
         }
 
         SceneManager.LoadScene("Battle Scene");
+    }
+
+    public static void StartBattle(int numEnemies) {
+        StartBattle(numEnemies, 0, 1);
     }
 
     private void NewCycle() {
@@ -648,39 +647,46 @@ public class Battle : MonoBehaviour
                         sel_phase = 2;
                         sel_action_last = -1;
                     } else if (confirm == 1) {
+                        bool usedSkill = false;
                         if (skill != null) {
                             if (skill.targetType == "Enemy") {
                                 if (enemies[sel_target].health > 0) {
                                     battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, enemies[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             } else if (skill.targetType == "Ally") {
                                 if (Game.characters[sel_target].health > 0) {
                                     battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             }
 
-                            if (dmg > 0) {
-                                StartCoroutine(Damage(dmg));
-                                sel_phase = -2;
-                            } else {
-                                StartCoroutine(Sleep(2));
-                                sel_phase = -2;
+                            if (usedSkill) {
+                                if (dmg > 0) {
+                                    StartCoroutine(Damage(dmg));
+                                    sel_phase = -2;
+                                } else {
+                                    StartCoroutine(Sleep(2));
+                                    sel_phase = -2;
+                                }
                             }
 
                         }
@@ -752,7 +758,7 @@ public class Battle : MonoBehaviour
                 foreach (Enemy e in enemies) {
                     gold += e.level;
                 }
-                gold = gold / 2 + 2;
+                gold = (int) ((gold / 2 + 2) * multiplier);
                 Game.gold += gold;
                 Game.enemiesKilled += enemies.Count;
                 GameDescription.text = "You earned " + gold + "G!";
@@ -764,7 +770,7 @@ public class Battle : MonoBehaviour
                     foreach (Enemy e in enemies) {
                         xpGained += e.level;
                     }
-                    xpGained = xpGained / 4 + 1;
+                    xpGained = (int) ((xpGained / 4 + 1) * multiplier);
                     Game.characters[levelCheck].xp += xpGained;
                     int levelChange = Game.characters[levelCheck].checkLevelChange();
                     if (levelChange > 0) {

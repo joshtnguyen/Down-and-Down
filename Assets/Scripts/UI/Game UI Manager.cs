@@ -47,6 +47,8 @@ public class GameUIManager : MonoBehaviour
     public static int target_selection_limit;
     public static int target_page;
 
+    public static string shrine;
+
     public bool updateOptions;
     public bool slideCooldown;
     public bool animationCooldown;
@@ -588,7 +590,7 @@ public class GameUIManager : MonoBehaviour
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = true;
-                            Battle.StartBattle(Game.enemiesPerBattle);
+                            Battle.StartBattle(Game.enemiesPerBattle + 2, 2, 0);
                             Game.map[Game.row, Game.col].roomType = "Empty Room";
                         }
                         break;
@@ -783,17 +785,54 @@ public class GameUIManager : MonoBehaviour
                                 case 0:
                                     if (Game.gold >= getShrineCost()) {
                                         Game.gold -= getShrineCost();
-                                        Game.map[Game.row, Game.col].wishes++;
 
                                         string text = "";
                                         List<string> shrines = new List<string>();
                                         shrines.Add("Nothing");
+                                        shrines.Add("Nothing");
+                                        shrines.Add("Refund");
+                                        shrines.Add("Battle x2");
+                                        shrines.Add("Battle x3");
+                                        shrines.Add("Skill Up");
+                                        shrines.Add("Heal");
 
-                                        string shrine = shrines[UnityEngine.Random.Range(0, shrines.Count)];
+                                        shrine = shrines[UnityEngine.Random.Range(0, shrines.Count)];
 
                                         switch (shrine) {
                                             case "Nothing":
                                                 text = "You offer to the shrine, but gain nothing.";
+                                                break;
+                                            case "Refund":
+                                                text = "It is unable to give anything in exchange, it simply gives you your money back.";
+                                                break;
+                                            case "Battle x2":
+                                                text = "The shrine urges you to partake in a trial and it shall compensate you handsomely. Get ready for battle!";
+                                                break;
+                                            case "Battle x3":
+                                                text = "The shrine's power overwhelms you. \"Fight this battle and you will see yourself in a greater light!\"";
+                                                break;
+                                            case "Skill Up":
+                                                List<Skills> skills = new List<Skills>();
+                                                foreach (Character c in Game.characters) {
+                                                    foreach (Skills s in c.skills) {
+                                                        if (s.skillName != "Attack" && s.skillName != "Block") {
+                                                            skills.Add(s);
+                                                        }
+                                                    }
+                                                }
+                                                if (skills.Any()) {
+                                                    Skills skillUp = skills[UnityEngine.Random.Range(0, skills.Count)];
+                                                    skillUp.stacks++;
+                                                    text = "The shrine in its generosity enhanced the understanding of " + skillUp.skillUser + "\'s " + skillUp.skillName + "! One stack has been added to it.";
+                                                } else {
+                                                    text = "The shrine in its generosity offers you a chance to understand your skills better, but you haven't learned any.";
+                                                }
+                                                break;
+                                            case "Heal":
+                                                foreach (Character c in Game.characters) {
+                                                    c.health = c.maxhealth;
+                                                }
+                                                text = "The shrine radiates with light. The next thing you know, all wounds you bore are gone.";
                                                 break;
                                         }
 
@@ -824,6 +863,15 @@ public class GameUIManager : MonoBehaviour
             } else if (menu_phase == 20) {
                 int confirm = getConfirmation();
                 if (confirm != 0) {
+                    switch (shrine) {
+                        case "Battle x2":
+                            Battle.StartBattle(Game.enemiesPerBattle + 2, 2, 2);
+                            break;
+                        case "Battle x3":
+                            Battle.StartBattle(Game.enemiesPerBattle + 2, 3, 3);
+                            break;
+                    }
+                    Game.map[Game.row, Game.col].wishes++;
                     closeMenu();
                     emptyTrash();
                     Game.gameMovementFreeze = false;
