@@ -110,7 +110,7 @@ public class Battle : MonoBehaviour
         int level = Game.floorNumber * -1 + difficulty;
 
         for (int i = 0; i < numEnemies; i++) {
-            string enemyType = Game.enemies[Random.Range(0, enemies.Count)];
+            string enemyType = Game.enemies[Random.Range(0, Game.enemies.Count)];
             Enemy e;
             Skills s;
             switch (enemyType) {

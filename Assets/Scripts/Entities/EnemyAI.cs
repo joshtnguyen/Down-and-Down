@@ -149,10 +149,10 @@ public class EnemyAI : MonoBehaviour
             StartCoroutine(Sleep(1));
             switch (r.roomType) {
                 case "Exit":
-                    Battle.StartBattle(Game.enemiesPerBattle + 2, 2, 1);
+                    Battle.StartBattle(Game.getEnemyCount() + 2, 2, 1);
                     break;
                 default:
-                    Battle.StartBattle(Game.enemiesPerBattle, 0, 1);
+                    Battle.StartBattle(Game.getEnemyCount(), 0, 1);
                     break;
             }
             return true;

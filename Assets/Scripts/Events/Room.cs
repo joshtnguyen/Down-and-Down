@@ -7,6 +7,7 @@ public class Room
 
     public string roomType;
     public bool hasEntered;
+    public bool imprisonment;
     public int enemiesLeft;
     public int wishes = 0;
     public bool north = false;
@@ -49,7 +50,8 @@ public class Room
     }
 
     public void Reset() {
-        hasEntered = false;
+        hasEntered = true;
+        imprisonment = false;
         north = false;
         east = false;
         south = false;

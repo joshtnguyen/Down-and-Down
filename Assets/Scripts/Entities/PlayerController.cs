@@ -174,6 +174,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingNorth(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, northLayer) != null) {
             return true;
         }
@@ -181,6 +184,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingEast(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, eastLayer) != null) {
             return true;
         }
@@ -188,6 +194,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingSouth(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, southLayer) != null) {
             return true;
         }
@@ -195,6 +204,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingWest(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, westLayer) != null) {
             return true;
         }

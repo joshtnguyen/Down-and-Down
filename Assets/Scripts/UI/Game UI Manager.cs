@@ -590,7 +590,7 @@ public class GameUIManager : MonoBehaviour
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = true;
-                            Battle.StartBattle(Game.enemiesPerBattle + 2, 2, 0);
+                            Battle.StartBattle(Game.getEnemyCount() + 2, 2, 0);
                             Game.map[Game.row, Game.col].roomType = "Empty Room";
                         }
                         break;
@@ -865,10 +865,10 @@ public class GameUIManager : MonoBehaviour
                 if (confirm != 0) {
                     switch (shrine) {
                         case "Battle x2":
-                            Battle.StartBattle(Game.enemiesPerBattle + 2, 2, 2);
+                            Battle.StartBattle(Game.getEnemyCount() + 2, 2, 2);
                             break;
                         case "Battle x3":
-                            Battle.StartBattle(Game.enemiesPerBattle + 2, 3, 3);
+                            Battle.StartBattle(Game.getEnemyCount() + 2, 3, 3);
                             break;
                     }
                     Game.map[Game.row, Game.col].wishes++;
