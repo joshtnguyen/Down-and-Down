@@ -86,6 +86,12 @@ public class Game : MonoBehaviour
 
         if (!firstRun) {
             firstRun = true;
+
+            Gear g = new Gear();
+            g.GetValues();
+            g.levelUp(5);
+            g.GetValues();
+
             SkillsRegistry.firstRun();
             characters.Add(walter);
             characters.Add(benedict);
@@ -111,8 +117,8 @@ public class Game : MonoBehaviour
             disruptions.Add(new Disruptions("Strengthening", 0, -1));
             disruptions.Add(new Disruptions("Polishing", 0, -1));
             disruptions.Add(new Disruptions("Heartiness", 0, -1));
-            //disruptions.Add(new Disruptions("Freeze", 0, -1));
-            //disruptions.Add(new Disruptions("Bleed", 0, -1));
+            disruptions.Add(new Disruptions("Bleed", 0, 200));
+            disruptions.Add(new Disruptions("Freeze", 0, 200));
             disruptions.Add(new Disruptions("Energy Drain", 0, 125));
 
             createFloor();
@@ -143,7 +149,7 @@ public class Game : MonoBehaviour
             chance -= 100;
             times++;
         }
-        if ((rand.NextDouble() * 100.0) <= chance) {
+        if ((rand.NextDouble() * 100.0) < chance) {
             times++;
         }
         return times;
@@ -227,13 +233,13 @@ public class Game : MonoBehaviour
                     var rand = new System.Random();
                     
                     // IMPRISONMENT
-                    if ((rand.NextDouble() * 100.0) <= getDisruption("Imprisonment").stacks) {
+                    if ((rand.NextDouble() * 100.0) < getDisruption("Imprisonment").stacks) {
                         map[i, j].imprisonment = true;
                     }
 
                     // ENEMY CORRUPTION
                     if (map[i, j].roomType == "Empty Room") {
-                        if ((rand.NextDouble() * 100.0) <= getDisruption("Enemy Corruption").stacks * 2) {
+                        if ((rand.NextDouble() * 100.0) < getDisruption("Enemy Corruption").stacks * 2) {
                             map[i, j].roomType = "Normal Enemy Room";
                         }
                     }

@@ -108,6 +108,11 @@ public class Battle : MonoBehaviour
         enemies.Clear();
 
         int level = Game.floorNumber * -1 + difficulty;
+        Game.getDisruption("Bleed").stacks = 200;
+
+        double hp_p = Game.getDisruption("Heartiness").stacks * 0.5;
+        double atk_p = Game.getDisruption("Strengthening").stacks * 0.5;
+        double def_p = Game.getDisruption("Polishing").stacks * 0.3;
 
         for (int i = 0; i < numEnemies; i++) {
             string enemyType = Game.enemies[Random.Range(0, Game.enemies.Count)];
@@ -157,6 +162,9 @@ public class Battle : MonoBehaviour
                     break;
 
             }
+            e.hp_ex += hp_p;
+            e.atk_ex += atk_p;
+            e.def_ex += def_p;
             e.skills.Add(s);
             e.skill1 = s;
             e.verifyMod();
@@ -489,12 +497,21 @@ public class Battle : MonoBehaviour
         if (!buttonCooldown && !animationCooldown && sel_phase >= -5) {
             if (isPlayerTurn()) {
                 if (lastTurn != turn) {
-                    sel_phase = 2;
+                    sel_phase = 0;
                     lastTurn = turn;
-                    var targetPos = CharacterBox.transform.position;
-                    ActionBox.transform.position = CharacterBox.transform.position;
-                    targetPos.x += 517;
-                    StartCoroutine(Move(ActionBox, targetPos));
+                    int dmg = cycle[0].startTurn();
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    }
+                    if (sel_phase != -2) {
+                        sel_phase = 2;
+                        var targetPos = CharacterBox.transform.position;
+                        ActionBox.transform.position = CharacterBox.transform.position;
+                        targetPos.x += 517;
+                        StartCoroutine(Move(ActionBox, targetPos));
+                    } else {
+                        StartCoroutine(ShowStatus(1, cycle[0].character + " is frozen and can't move!"));
+                    }
 
                 } else if (sel_phase == 2) {
                     updateSelection(ref sel_action, 3);
@@ -942,6 +959,30 @@ public class Battle : MonoBehaviour
         InfoClone.transform.SetParent(SkillUsageBox.transform);
         InfoClone.name = "TEMP InfoBox";
         InfoClone.GetComponent<TextManager>().text = character.character + " uses " + skill.skillName + "!";
+        InfoClone.SetActive(true);
+        InfoClone.transform.position = CharacterBox.transform.position;
+        var targetPos = CharacterBox.transform.position;
+        targetPos.y = CharacterBox.transform.position.y + 200;
+        while (InfoClone != null && (targetPos - InfoClone.transform.position).sqrMagnitude > Mathf.Epsilon)
+        {
+            InfoClone.transform.position = Vector3.MoveTowards(InfoClone.transform.position, targetPos, slowerMoveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(seconds);
+
+        if (InfoClone != null) {
+            InfoClone.transform.position = targetPos;
+        }
+        Destroy(InfoClone);
+    }
+
+    IEnumerator ShowStatus(int seconds, string status)
+    {
+        GameObject InfoClone = Instantiate(SkillUsageBox, new Vector3(CharacterBox.transform.position.x, CharacterBox.transform.position.y), CharacterBox.transform.rotation);
+        InfoClone.transform.SetParent(SkillUsageBox.transform);
+        InfoClone.name = "TEMP InfoBox";
+        InfoClone.GetComponent<TextManager>().text = status;
         InfoClone.SetActive(true);
         InfoClone.transform.position = CharacterBox.transform.position;
         var targetPos = CharacterBox.transform.position;
