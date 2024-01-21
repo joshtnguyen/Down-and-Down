@@ -108,7 +108,6 @@ public class Battle : MonoBehaviour
         enemies.Clear();
 
         int level = Game.floorNumber * -1 + difficulty;
-        Game.getDisruption("Bleed").stacks = 200;
 
         double hp_p = Game.getDisruption("Heartiness").stacks * 0.5;
         double atk_p = Game.getDisruption("Strengthening").stacks * 0.5;
@@ -500,6 +499,7 @@ public class Battle : MonoBehaviour
                     sel_phase = 0;
                     lastTurn = turn;
                     int dmg = cycle[0].startTurn();
+                    cycle[0].verifyMod();
                     if (dmg > 0) {
                         StartCoroutine(Damage(dmg));
                     }

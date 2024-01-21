@@ -512,6 +512,7 @@ public class Game : MonoBehaviour
             wizardArea.SetActive(false);
             breakArea.SetActive(false);
             shrineArea.SetActive(false);
+            gearArea.SetActive(false);
             updateEnemies = false;
             EnemyAI.emptyTrash();
             map[row, col].hasEntered = true;

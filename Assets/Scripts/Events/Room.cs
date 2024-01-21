@@ -50,7 +50,7 @@ public class Room
     }
 
     public void Reset() {
-        hasEntered = true;
+        hasEntered = false;
         imprisonment = false;
         north = false;
         east = false;

@@ -210,7 +210,7 @@ public class GameUIManager : MonoBehaviour
             case "Gear":
                 if (Game.map[Game.row, Game.col].wishes == 0) {
                     OptionBox.SetActive(true);
-                    D_1.text = "The lava acknowledges your power. For your first time arriving here, it gives you gear.";
+                    D_1.text = "The lava acknowledges your power. For your first time arriving here, it gives you gear and an upgrade point.";
                     D_2.text = "";
                     D_3.text = "";
                     D_4.text = "";
@@ -231,7 +231,8 @@ public class GameUIManager : MonoBehaviour
                     target_selection = -1;
                     target_selection_limit = -1;
                     Game.gameMovementFreeze = true;
-                    for (int i = 0; i < 20; i++){
+                    Gear.wallet += 1;
+                    for (int i = 0; i < 1; i++){
                         Game.gear.Add(new Gear(true));
                     }
                 } else {
@@ -240,9 +241,9 @@ public class GameUIManager : MonoBehaviour
                     D_2.text = "";
                     D_3.text = "";
                     D_4.text = "";
-                    A_1.text = "";
-                    A_2.text = "";
-                    A_3.text = "";
+                    A_1.text = ">> Equip to Character";
+                    A_2.text = ">> Power Up for 1 Point";
+                    A_3.text = ">> Discard Gear";
                     A_4.text = "";
                     T_1.text = "";
                     T_2.text = "";
@@ -254,7 +255,7 @@ public class GameUIManager : MonoBehaviour
                     menu_selection = 0;
                     menu_selection_limit = -1;
                     action_selection = 0;
-                    action_selection_limit = 3;
+                    action_selection_limit = 2;
                     target_selection = -1;
                     target_selection_limit = -1;
                     Game.gameMovementFreeze = true;
@@ -739,6 +740,46 @@ public class GameUIManager : MonoBehaviour
                             Game.map[Game.row, Game.col].roomType = "Empty Room";
                         }
                         break;
+                    case "Gear":
+                        if (confirm == 1) {
+                            switch (action_selection) {
+                                case 0:
+                                    T_1.text = ">> " + Game.characters[0].character;
+                                    T_2.text = ">> " + Game.characters[1].character;
+                                    T_3.text = ">> " + Game.characters[2].character;
+                                    T_4.text = ">> " + Game.characters[3].character;
+                                    target_selection = 0;
+                                    target_selection_limit = 3;
+                                    menu_phase = 3;
+                                    break;
+                                case 1:
+                                    if (Gear.wallet > 0) {
+                                        T_1.text = ">> Confirm Purchase for 1 Point";
+                                        T_2.text = ">> Cancel";
+                                        T_3.text = "";
+                                        T_4.text = "";
+                                        target_selection = 1;
+                                        target_selection_limit = 1;
+                                        menu_phase = 3;
+                                    }
+                                    break;
+                                case 2:
+                                    T_1.text = ">> Discard Item Forever";
+                                    T_2.text = ">> Cancel";
+                                    T_3.text = "";
+                                    T_4.text = "";
+                                    target_selection = 1;
+                                    target_selection_limit = 1;
+                                    menu_phase = 3;
+                                    break;
+                            }
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
                 }
             } else if (menu_phase == 3) {
                 var targetPos = ActionBox.transform.position;
@@ -1004,6 +1045,80 @@ public class GameUIManager : MonoBehaviour
                             Game.gameMovementFreeze = false;
                         }
                         break;
+                    case "Gear":
+                        Gear selectedGear = Game.gear[(menu_page * 4) + menu_selection];
+                        if (confirm == 1) {
+                            Character c = Game.characters[target_selection];
+                            if (action_selection == 0) {
+                                if (c.gear != null) {
+                                    c.gear.user = null;
+                                }
+                                if (selectedGear.user != null) {
+                                    selectedGear.user.gear = new Gear();
+                                }
+                                selectedGear.user = c;
+                                c.gear = selectedGear;
+
+                                GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
+                                InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                InfoBoxClone.name = "TEMP InfoBox" + target_selection;
+                                InfoBoxClone.GetComponent<TextManager>().text = "The gear is now equipped to " + c.character + "!";
+                                trashCan.Add(InfoBoxClone);
+                                var targetPos = TargetBox.transform.position;
+                                targetPos.y += 260;
+                                StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+
+                                menu_phase = 21;
+                                foreach (Character chars in Game.characters) {
+                                    Debug.Log(chars.gear.GetDisplayName());
+                                    }
+                            } else if (action_selection == 1) {
+                                if (target_selection == 0) {
+                                    if (Gear.wallet > 0) {
+                                        selectedGear.points++;
+                                        selectedGear.levelUp(1);
+                                        Gear.wallet--;
+
+                                        GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
+                                        InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                        InfoBoxClone.name = "TEMP InfoBox" + target_selection;
+                                        InfoBoxClone.GetComponent<TextManager>().text = "The gear has been leveled up!";
+                                        trashCan.Add(InfoBoxClone);
+                                        var targetPos = TargetBox.transform.position;
+                                        targetPos.y += 260;
+                                        StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+
+                                        menu_phase = 21;
+                                    }
+                                } else if (target_selection == 1) {
+                                    confirm = -1;
+                                }
+                                
+                            } else if (action_selection == 2) {
+                                if (target_selection == 0) {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + target_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = "The gear is now discarded. You got " + selectedGear.points + " points back!";
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = TargetBox.transform.position;
+                                    targetPos.y += 260;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+
+                                    Gear.wallet += selectedGear.points;
+                                    Game.gear.RemoveAt((menu_page * 4) + menu_selection);
+
+                                    menu_phase = 21;
+                                } else if (target_selection == 1) {
+                                    confirm = -1;
+                                }
+                            }
+                        }
+                        if (confirm == -1) {
+                            emptyTrash();
+                            menu_phase = 2;
+                        }
+                        break;
                 }
             } else if (menu_phase == 20) {
                 int confirm = getConfirmation();
@@ -1018,6 +1133,13 @@ public class GameUIManager : MonoBehaviour
                     }
                     shrine = null;
                     Game.map[Game.row, Game.col].wishes++;
+                    closeMenu();
+                    emptyTrash();
+                    Game.gameMovementFreeze = false;
+                }
+            } else if (menu_phase == 21) {
+                int confirm = getConfirmation();
+                if (confirm != 0) {
                     closeMenu();
                     emptyTrash();
                     Game.gameMovementFreeze = false;

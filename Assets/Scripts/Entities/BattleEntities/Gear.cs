@@ -6,6 +6,7 @@ public class Gear
 {
 
     public static int ids;
+    public static int wallet;
 
     public Character user = null;
     public string name;
@@ -184,6 +185,11 @@ public class Gear
 
     public string GetValues() {
 
+        string userName = "";
+        if (user != null) {
+            userName = " - " + user.character;
+        }
+
         string hp_ex = "";
         if (hp_up > 0) {
             hp_ex = " (+" + hp_up + ")";
@@ -222,7 +228,7 @@ public class Gear
         }
          
 
-        return name + "/" + id + "\n" + " (" + points + " POINTS)" + "\n" + 
+        return name + "/" + id + userName + " (" + points + " POINTS)" + "\n" + 
         "HP: " + hp + hp_ex + " / HP %: " + hp_p + hp_p_ex + "\n" +
         "ATK: " + atk + atk_ex + " / ATK %: " + atk_p + atk_p_ex + "\n" +
         "DEF: " + def + def_ex + " / DEF %: " + def_p + def_p_ex + "\n" +
