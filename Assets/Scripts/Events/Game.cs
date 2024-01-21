@@ -44,6 +44,7 @@ public class Game : MonoBehaviour
     public static int col = 0;
     public static int floorNumber = -1;
     public static int gold = 20;
+    public static List<Gear> gear = new List<Gear>();
 
     // Disruptions
     public static List<Disruptions> disruptions = new List<Disruptions>();
@@ -79,6 +80,7 @@ public class Game : MonoBehaviour
     public GameObject wizardArea;
     public GameObject breakArea;
     public GameObject shrineArea;
+    public GameObject gearArea;
 
     // Start is called before the first frame update
     void Start()
@@ -86,11 +88,6 @@ public class Game : MonoBehaviour
 
         if (!firstRun) {
             firstRun = true;
-
-            Gear g = new Gear();
-            g.GetValues();
-            g.levelUp(5);
-            g.GetValues();
 
             SkillsRegistry.firstRun();
             characters.Add(walter);
@@ -218,7 +215,10 @@ public class Game : MonoBehaviour
         for (int i = 0; i < 1; i++) {
             roomTypes.Add("Break Room");
         }
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 1; i++) {
+            roomTypes.Add("Gear Room");
+        }
+        for (int i = 0; i < 24; i++) {
             roomTypes.Add("Empty Room");
         }
 
@@ -538,6 +538,9 @@ public class Game : MonoBehaviour
                 case "Shrine Room" or "Demon Room":
                     shrineArea.SetActive(true);
                     break;
+                case "Gear Room":
+                    gearArea.SetActive(true);
+                    break;
             }
             
             
@@ -615,7 +618,7 @@ public class Game : MonoBehaviour
                         case "Wizard Room":
                             roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 0, 255, 255);
                             break;
-                        case "Break Room":
+                        case "Break Room" or "Gear Room":
                             roomIndicatorClone.GetComponent<Image>().color = new Color32(255, 0, 255, 255);
                             break;
                         case "Shrine Room" or "Demon Room":

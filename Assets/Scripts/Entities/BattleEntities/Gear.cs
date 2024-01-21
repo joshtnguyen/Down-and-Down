@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class Gear
 {
+
+    public static int ids;
+
+    public Character user = null;
     public string name;
-    public string gearAbility;
+    public int id;
     public List<string> upgradeList = new List<string>();
     public int points = 0;
     public double hp_up = 0;
@@ -29,12 +33,22 @@ public class Gear
     public double effect_bleed;
     public double effect_freeze;
 
-    public Gear(bool def) {
+    public Gear() {
         name = "Default Gear";
-        gearAbility = "Nothing";
+        id = 0;
     }
 
-    public Gear() {
+    public Gear(bool isReal) {
+        if (isReal) {
+            ids++;
+            id = ids;
+            List<string> names = new List<string>();
+            names.Add("Bloodshedder");
+            names.Add("Frostbyte");
+            name = names[UnityEngine.Random.Range(0, names.Count)];
+        } else {
+            id = 0;
+        }
         for (int i = 0; i < Game.floorNumber * -1; i++) {
             switch (UnityEngine.Random.Range(0, 9)) {
                 case 0:
@@ -109,8 +123,9 @@ public class Gear
     }
 
     public double Random(double lower, double upper) {
-        var rand = new System.Random();
-        return rand.NextDouble() * (upper - lower) + lower;
+        int rand = UnityEngine.Random.Range(0, (int) ((upper - lower) * 100));
+        return (double) (rand / 100.0) + lower;
+
     }
 
     public void levelUp(int times) {
@@ -163,8 +178,55 @@ public class Gear
         
     }
 
-    public void GetValues() {
-        Debug.Log(hp_up + " / " + hp_p_up + " / " + atk_up + " / " + atk_p_up + " / " + def_up + " / " + def_p_up + " / " + spd_up + " / " + cr_up + " / " + cd_up);
-        Debug.Log(hp + " / " + hp_p + " / " + atk + " / " + atk_p + " / " + def + " / " + def_p + " / " + spd + " / " + cr + " / " + cd);
+    public string GetDisplayName() {
+        return name + "/" + id;
+    }
+
+    public string GetValues() {
+
+        string hp_ex = "";
+        if (hp_up > 0) {
+            hp_ex = " (+" + hp_up + ")";
+        }
+        string hp_p_ex = "";
+        if (hp_p_up > 0) {
+            hp_p_ex = " (+" + hp_p_up + ")";
+        }
+        string atk_ex = "";
+        if (atk_up > 0) {
+            atk_ex = " (+" + atk_up + ")";
+        }
+        string atk_p_ex = "";
+        if (atk_p_up > 0) {
+            atk_p_ex = " (+" + atk_p_up + ")";
+        }
+        string def_ex = "";
+        if (def_up > 0) {
+            def_ex = " (+" + def_up + ")";
+        }
+        string def_p_ex = "";
+        if (def_p_up > 0) {
+            def_p_ex = " (+" + def_p_up + ")";
+        }
+        string cr_ex = "";
+        if (cr_up > 0) {
+            cr_ex = " (+" + cr_up + ")";
+        }
+        string cd_ex = "";
+        if (cd_up > 0) {
+            cd_ex = " (+" + cd_up + ")";
+        }
+        string spd_ex = "";
+        if (spd_up > 0) {
+            spd_ex = " (+" + spd_up + ")";
+        }
+         
+
+        return name + "/" + id + "\n" + " (" + points + " POINTS)" + "\n" + 
+        "HP: " + hp + hp_ex + " / HP %: " + hp_p + hp_p_ex + "\n" +
+        "ATK: " + atk + atk_ex + " / ATK %: " + atk_p + atk_p_ex + "\n" +
+        "DEF: " + def + def_ex + " / DEF %: " + def_p + def_p_ex + "\n" +
+        "CRIT.R %: " + cr + cr_ex + " / CRIT.D %: " + cd + cd_ex + "\n" +
+        "SPD: " + spd + spd_ex;
     }
 }

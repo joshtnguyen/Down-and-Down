@@ -39,6 +39,7 @@ public class GameUIManager : MonoBehaviour
     public static int menu_phase;
     public static int menu_selection;
     public static int menu_selection_limit;
+    public static int menu_page;
 
     public static int action_selection;
     public static int action_selection_limit;
@@ -66,7 +67,6 @@ public class GameUIManager : MonoBehaviour
         switch(menuType) {
             case "Teleporter":
                 OptionBox.SetActive(true);
-                ActionBox.transform.position = DescriptionBox.transform.position;
                 D_1.text = "Would you like to go further down? You will not be able to come back here later...";
                 D_2.text = "";
                 D_3.text = "";
@@ -87,7 +87,6 @@ public class GameUIManager : MonoBehaviour
                 break;
             case "Wizard":
                 OptionBox.SetActive(true);
-                ActionBox.transform.position = DescriptionBox.transform.position;
                 D_1.text = "Welcome to my humble shop. I can teach you some skills for your future battles. For a price that is...";
                 D_2.text = "";
                 D_3.text = "";
@@ -129,7 +128,6 @@ public class GameUIManager : MonoBehaviour
                 break;
             case "Break":
                 OptionBox.SetActive(true);
-                ActionBox.transform.position = DescriptionBox.transform.position;
                 D_1.text = ">> " + Game.characters[0].character + " (HP: " + Game.characters[0].health + "/" + Game.characters[0].maxhealth + ")";
                 D_2.text = ">> " + Game.characters[1].character + " (HP: " + Game.characters[1].health + "/" + Game.characters[1].maxhealth + ")";
                 D_3.text = ">> " + Game.characters[2].character + " (HP: " + Game.characters[2].health + "/" + Game.characters[2].maxhealth + ")";
@@ -155,7 +153,6 @@ public class GameUIManager : MonoBehaviour
                 break;
             case "Shrine":
                 OptionBox.SetActive(true);
-                ActionBox.transform.position = DescriptionBox.transform.position;
                 if (r.wishes <= 0) {
                     D_1.text = "The remanants of a shrine stands before you. It calls for you to wish upon it.";
                     A_1.text = ">> Wish Upon It";
@@ -188,7 +185,6 @@ public class GameUIManager : MonoBehaviour
                 break;
             case "Demon":
                 OptionBox.SetActive(true);
-                ActionBox.transform.position = DescriptionBox.transform.position;
                 D_1.text = "You were fooled by a trap set up by the cave itself. Brace yourself for battle!";
                 D_2.text = "";
                 D_3.text = "";
@@ -210,6 +206,59 @@ public class GameUIManager : MonoBehaviour
                 target_selection = -1;
                 target_selection_limit = -1;
                 Game.gameMovementFreeze = true;
+                break;
+            case "Gear":
+                if (Game.map[Game.row, Game.col].wishes == 0) {
+                    OptionBox.SetActive(true);
+                    D_1.text = "The lava acknowledges your power. For your first time arriving here, it gives you gear.";
+                    D_2.text = "";
+                    D_3.text = "";
+                    D_4.text = "";
+                    A_1.text = "";
+                    A_2.text = "";
+                    A_3.text = "";
+                    A_4.text = "";
+                    T_1.text = "";
+                    T_2.text = "";
+                    T_3.text = "";
+                    T_4.text = "";
+                    menu_type = "Highlight";
+                    menu_phase = 20;
+                    menu_selection = -1;
+                    menu_selection_limit = -1;
+                    action_selection = -1;
+                    action_selection_limit = -1;
+                    target_selection = -1;
+                    target_selection_limit = -1;
+                    Game.gameMovementFreeze = true;
+                    for (int i = 0; i < 20; i++){
+                        Game.gear.Add(new Gear(true));
+                    }
+                } else {
+                    OptionBox.SetActive(true);
+                    D_1.text = "";
+                    D_2.text = "";
+                    D_3.text = "";
+                    D_4.text = "";
+                    A_1.text = "";
+                    A_2.text = "";
+                    A_3.text = "";
+                    A_4.text = "";
+                    T_1.text = "";
+                    T_2.text = "";
+                    T_3.text = "";
+                    T_4.text = "";
+                    updateOptions = true;
+                    menu_type = "Highlight";
+                    menu_phase = 0;
+                    menu_selection = 0;
+                    menu_selection_limit = -1;
+                    action_selection = 0;
+                    action_selection_limit = 3;
+                    target_selection = -1;
+                    target_selection_limit = -1;
+                    Game.gameMovementFreeze = true;
+                }
                 break;
         }
 
@@ -256,6 +305,9 @@ public class GameUIManager : MonoBehaviour
                 if (menu_phase == 4) {
                     target_page++;
                 }
+                if (menu_phase == 0) {
+                    menu_page++;
+                }
                 return 1;
             }
         } else if (hx < 0 || hy < 0) {
@@ -265,6 +317,9 @@ public class GameUIManager : MonoBehaviour
                 option = optionLimit;
                 if (menu_phase == 4) {
                     target_page--;
+                }
+                if (menu_phase == 0) {
+                    menu_page--;
                 }
                 return -1;
             }
@@ -391,6 +446,96 @@ public class GameUIManager : MonoBehaviour
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = false;
+                        }
+                        break;
+                    case "Gear":
+                        int maxPage = 0;
+                        if (Game.gear.Count <= 0) {
+                            menu_selection = -2;
+                            menu_selection_limit = -2;
+                            D_1.text = "You have no gear to choose from. Come back when you have some!";
+                            D_2.text = "";
+                            D_3.text = "";
+                            D_4.text = "";
+                        } else if (Game.gear.Count > 0) {
+                            maxPage = (Game.gear.Count - 1) / 4;
+                            if (menu_page < 0) {
+                                menu_page = maxPage;
+                                menu_selection = (Game.gear.Count) % 4 - 1;
+                            } else if (menu_page > maxPage) {
+                                menu_page = 0;
+                                menu_selection = 0;
+                            }
+
+                            if ((Game.gear.Count) >= (menu_page * 4) + 1) {
+                                D_1.text = ">> " + Game.gear[(menu_page * 4) + 0].GetDisplayName();
+                                menu_selection_limit = 0;
+                                if (pageUpdate == -1) {
+                                    menu_selection = menu_selection_limit;
+                                }
+                            } else {
+                                D_1.text = "";
+                            }
+
+                            if ((Game.gear.Count) >= (menu_page * 4) + 2) {
+                                D_2.text = ">> " + Game.gear[(menu_page * 4) + 1].GetDisplayName();
+                                menu_selection_limit = 1;
+                                if (pageUpdate == -1) {
+                                    menu_selection = menu_selection_limit;
+                                }
+                            } else {
+                                D_2.text = "";
+                            }
+
+                            if ((Game.gear.Count) >= (menu_page * 4) + 3) {
+                                D_3.text = ">> " + Game.gear[(menu_page * 4) + 2].GetDisplayName();
+                                menu_selection_limit = 2;
+                                if (pageUpdate == -1) {
+                                    menu_selection = menu_selection_limit;
+                                }
+                            } else {
+                                D_3.text = "";
+                            }
+
+                            if ((Game.gear.Count) >= (menu_page * 4) + 4) {
+                                D_4.text = ">> " + Game.gear[(menu_page * 4) + 3].GetDisplayName();
+                                menu_selection_limit = 3;
+                                if (pageUpdate == -1) {
+                                    menu_selection = menu_selection_limit;
+                                }
+                            } else {
+                                D_4.text = "";
+                            }
+
+                        }
+                        if (confirm == 1 && menu_selection >= 0) {
+                            menu_phase = 1;
+                            action_selection = 0;
+                            break;
+                        }
+                        if (confirm == -1) {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+
+                        if (updateOptions && menu_phase == 0) {
+                            emptyTrash();
+
+                            if (Game.gear.Count > (menu_page * 4) + menu_selection && menu_selection >= 0) {
+                                if (Game.gear[(menu_page * 4) + menu_selection] != null) {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(DescriptionBox.transform.position.x, DescriptionBox.transform.position.y), DescriptionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + menu_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = Game.gear[menu_page * 4 + menu_selection].GetValues();
+                                    InfoBoxClone.GetComponent<TextManager>().textBox.lineSpacing = 0.8f;
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = DescriptionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }
+                            }
                         }
                         break;
                 }
@@ -871,6 +1016,7 @@ public class GameUIManager : MonoBehaviour
                             Battle.StartBattle(Game.getEnemyCount() + 2, 3, 3);
                             break;
                     }
+                    shrine = null;
                     Game.map[Game.row, Game.col].wishes++;
                     closeMenu();
                     emptyTrash();

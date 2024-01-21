@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask wizardLayer;
     public LayerMask shrineLayer;
     public LayerMask breakLayer;
+    public LayerMask gearLayer;
     public LayerMask northLayer;
     public LayerMask eastLayer;
     public LayerMask southLayer;
@@ -65,6 +66,10 @@ public class PlayerController : MonoBehaviour
 
                 if (Game.map[Game.row, Game.col].roomType == "Demon Room" && IsOnShrine()) {
                     UI.GetComponent<GameUIManager>().openMenu("Demon");
+                }
+
+                if (Game.map[Game.row, Game.col].roomType == "Gear Room" && IsOnGear()) {
+                    UI.GetComponent<GameUIManager>().openMenu("Gear");
                 }
 
             }
@@ -161,6 +166,13 @@ public class PlayerController : MonoBehaviour
 
     private bool IsOnBreak() {
         if (Physics2D.OverlapCircle(transform.position, 1f, breakLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsOnGear() {
+        if (Physics2D.OverlapCircle(transform.position, 1f, gearLayer) != null) {
             return true;
         }
         return false;

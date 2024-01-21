@@ -74,7 +74,7 @@ public class Character
     public double cd_ex;
     public List<List<Mod>> cd_mod = new List<List<Mod>>();
 
-    public Gear gear = new Gear(true);
+    public Gear gear = new Gear();
 
     public double effect_bleed = 0;
     public double effect_freeze = 0;
