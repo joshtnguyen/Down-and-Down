@@ -31,8 +31,8 @@ public class Gear
     public double spd = 0;
     public double cr = 0;
     public double cd = 0;
-    public double effect_bleed;
-    public double effect_freeze;
+    public double effect_bleed = 0;
+    public double effect_freeze = 0;
 
     public Gear() {
         name = "Default Gear";

@@ -280,7 +280,7 @@ public class Battle : MonoBehaviour
             NewCycle();
         }
 
-        string turn = cycle[0].character;
+        string turn = cycle[0].getName();
         switch(cycle[0].character) {
             case "Walter":
                 obj_NAME_1.fontStyle = FontStyle.Bold;
@@ -503,14 +503,18 @@ public class Battle : MonoBehaviour
                     if (dmg > 0) {
                         StartCoroutine(Damage(dmg));
                     }
-                    if (sel_phase != -2) {
-                        sel_phase = 2;
-                        var targetPos = CharacterBox.transform.position;
-                        ActionBox.transform.position = CharacterBox.transform.position;
-                        targetPos.x += 517;
-                        StartCoroutine(Move(ActionBox, targetPos));
+                    if (cycle[0].health > 0) {
+                        if (sel_phase != -2) {
+                            sel_phase = 2;
+                            var targetPos = CharacterBox.transform.position;
+                            ActionBox.transform.position = CharacterBox.transform.position;
+                            targetPos.x += 517;
+                            StartCoroutine(Move(ActionBox, targetPos));
+                        } else {
+                            StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                        }
                     } else {
-                        StartCoroutine(ShowStatus(1, cycle[0].character + " is frozen and can't move!"));
+                        sel_phase = -2;
                     }
 
                 } else if (sel_phase == 2) {
@@ -724,41 +728,66 @@ public class Battle : MonoBehaviour
             } else {
                 int dmg = 0;
                 bool usedSkill = false;
-                Skills skillUsed = null;
-                if (cycle[0].skill1 != null) {
-                    skillUsed = cycle[0].skill1;
-                    if (cycle[0].sp >= skillUsed.spConsumption) {
-                        cycle[0].sp -= skillUsed.spConsumption;
-                        if (skillUsed.targetType == "Enemy") {
-                            dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
-                        } else if (skillUsed.targetType == "Self") {
-                            dmg = Skills.useSkill(cycle[0], skillUsed);
-                        } else if (skillUsed.targetType == "Enemies") {
-                            foreach (Character t in Game.characters) {
-                                if (t.health > 0) {
-                                    dmg += Skills.useSkill(cycle[0], skillUsed, t);
-                                }
-                            }
-                        }
-                        usedSkill = true;
-                    }
+                if (lastTurn != turn) {
+                    lastTurn = turn;
+                    sel_phase = 0;
                 }
 
-                if (!usedSkill) {
-                    skillUsed = SkillsRegistry.getSkill("Attack");
-                    cycle[0].sp++;
-                    dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                if (sel_phase == 0) {
+                    dmg = cycle[0].startTurn();
+                    cycle[0].verifyMod();
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    }
+
+                    if (cycle[0].health > 0) {
+                        if (sel_phase != -2) {
+                            sel_phase = 2;
+                        } else {
+                            StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                        }
+                    } else {
+                        sel_phase = -2;
+                    }
+                } else if (sel_phase == 2) {
+                    Skills skillUsed = null;
+                    if (cycle[0].skill1 != null) {
+                        skillUsed = cycle[0].skill1;
+                        if (cycle[0].sp >= skillUsed.spConsumption) {
+                            cycle[0].sp -= skillUsed.spConsumption;
+                            if (skillUsed.targetType == "Enemy") {
+                                dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                            } else if (skillUsed.targetType == "Self") {
+                                dmg = Skills.useSkill(cycle[0], skillUsed);
+                            } else if (skillUsed.targetType == "Enemies") {
+                                foreach (Character t in Game.characters) {
+                                    if (t.health > 0) {
+                                        dmg += Skills.useSkill(cycle[0], skillUsed, t);
+                                    }
+                                }
+                            }
+                            usedSkill = true;
+                        }
+                    }
+
+                    if (!usedSkill) {
+                        skillUsed = SkillsRegistry.getSkill("Attack");
+                        cycle[0].sp++;
+                        dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                    }
+                    if (skillUsed != null) {
+                        StartCoroutine(ShowSkillUse(1, cycle[0], skillUsed));
+                    }
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    } else {
+                        StartCoroutine(Sleep(2));
+                    }
+                    sel_phase = -2;
+                } else if (sel_phase == -2) {
+                    cycle[0].endTurn();
+                    StartCoroutine(SuspendCycleChange(0));
                 }
-                if (skillUsed != null) {
-                    StartCoroutine(ShowSkillUse(1, cycle[0], skillUsed));
-                }
-                if (dmg > 0) {
-                    StartCoroutine(Damage(dmg));
-                } else {
-                    StartCoroutine(Sleep(2));
-                }
-                cycle[0].endTurn();
-                StartCoroutine(SuspendCycleChange(0));
             }
         } else if (sel_phase == -10) {
             levelCheck++;

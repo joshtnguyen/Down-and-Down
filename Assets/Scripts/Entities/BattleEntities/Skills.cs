@@ -194,7 +194,7 @@ public class Skills
             t.verifyMod();
             if (dmg > 0) {
                 if ((rand.NextDouble() * 100.0) < c.effect_bleed) {
-                    m = new Mod("Bleed", Game.getDisruption("Bleed").stacks * 0.15 * c.currentATK, true);
+                    m = new Mod("Bleed", Game.getDisruption("Bleed").stacks * 0.05 * c.currentATK, true);
                     t.bleed[0].Add(m);
                     t.bleed[1].Add(m);
                 }
