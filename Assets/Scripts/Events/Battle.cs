@@ -498,6 +498,17 @@ public class Battle : MonoBehaviour
                     StartCoroutine(Move(ActionBox, targetPos));
 
                 } else if (sel_phase == 2) {
+
+                    if (Input.GetKeyDown(KeyCode.K)) {
+                        int dmg = 0;
+                        for (int i = 0; i < enemies.Count(); i++) {
+                            dmg += enemies[i].damage(enemies[i], 1000000);
+                        }
+                        StartCoroutine(Damage(dmg));
+                        sel_phase = -2;
+                        return;
+                    }
+
                     updateSelection(ref sel_action, 3);
                     string selectedAction = null;
                     switch(sel_action) {
@@ -590,6 +601,7 @@ public class Battle : MonoBehaviour
                                         StartCoroutine(Move(TargetBox, targetPos));
                                     }
                                 }
+
                                 if (usedSkill) {
                                     if (dmg > 0) {
                                         StartCoroutine(Damage(dmg));
