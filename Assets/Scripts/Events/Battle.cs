@@ -86,16 +86,17 @@ public class Battle : MonoBehaviour
     public static float slowerMoveSpeed = 1000;
     public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
+    public static double multiplier = 0;
 
     public static List<Enemy> enemies = new List<Enemy>();
 
-
-    public static void StartBattle(int numEnemies) {
+    public static void StartBattle(int numEnemies, int difficulty,  double rewardMultiplier) {
         Room r = Game.map[Game.row, Game.col];
         Game.gameEvent = "Battle";
         Game.gameMovementFreeze = true;
         Game.showMap = false;
         lastTurn = "NOBODY";
+        multiplier = rewardMultiplier;
         sel_phase = 1;
         sel_action_last = -1;
         sel_action = 0;
@@ -106,16 +107,14 @@ public class Battle : MonoBehaviour
         cycle.Clear();
         enemies.Clear();
 
-        int level = Game.floorNumber * -1;
-        
-        if (r.roomType == "Exit" || r.roomType == "Demon Room") {
-            numEnemies += 2;
-            level += 2;
+        int level = Game.floorNumber * -1 + difficulty;
 
-        }
+        double hp_p = Game.getDisruption("Heartiness").stacks * 0.5;
+        double atk_p = Game.getDisruption("Strengthening").stacks * 0.5;
+        double def_p = Game.getDisruption("Polishing").stacks * 0.3;
 
         for (int i = 0; i < numEnemies; i++) {
-            string enemyType = Game.enemies[Random.Range(0, enemies.Count)];
+            string enemyType = Game.enemies[Random.Range(0, Game.enemies.Count)];
             Enemy e;
             Skills s;
             switch (enemyType) {
@@ -162,6 +161,9 @@ public class Battle : MonoBehaviour
                     break;
 
             }
+            e.hp_ex += hp_p;
+            e.atk_ex += atk_p;
+            e.def_ex += def_p;
             e.skills.Add(s);
             e.skill1 = s;
             e.verifyMod();
@@ -174,6 +176,10 @@ public class Battle : MonoBehaviour
         }
 
         SceneManager.LoadScene("Battle Scene");
+    }
+
+    public static void StartBattle(int numEnemies) {
+        StartBattle(numEnemies, 0, 1);
     }
 
     private void NewCycle() {
@@ -274,7 +280,7 @@ public class Battle : MonoBehaviour
             NewCycle();
         }
 
-        string turn = cycle[0].character;
+        string turn = cycle[0].getName();
         switch(cycle[0].character) {
             case "Walter":
                 obj_NAME_1.fontStyle = FontStyle.Bold;
@@ -490,12 +496,26 @@ public class Battle : MonoBehaviour
         if (!buttonCooldown && !animationCooldown && sel_phase >= -5) {
             if (isPlayerTurn()) {
                 if (lastTurn != turn) {
-                    sel_phase = 2;
+                    sel_phase = 0;
                     lastTurn = turn;
-                    var targetPos = CharacterBox.transform.position;
-                    ActionBox.transform.position = CharacterBox.transform.position;
-                    targetPos.x += 517;
-                    StartCoroutine(Move(ActionBox, targetPos));
+                    int dmg = cycle[0].startTurn();
+                    cycle[0].verifyMod();
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    }
+                    if (cycle[0].health > 0) {
+                        if (sel_phase != -2) {
+                            sel_phase = 2;
+                            var targetPos = CharacterBox.transform.position;
+                            ActionBox.transform.position = CharacterBox.transform.position;
+                            targetPos.x += 517;
+                            StartCoroutine(Move(ActionBox, targetPos));
+                        } else {
+                            StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                        }
+                    } else {
+                        sel_phase = -2;
+                    }
 
                 } else if (sel_phase == 2) {
 
@@ -660,39 +680,46 @@ public class Battle : MonoBehaviour
                         sel_phase = 2;
                         sel_action_last = -1;
                     } else if (confirm == 1) {
+                        bool usedSkill = false;
                         if (skill != null) {
                             if (skill.targetType == "Enemy") {
                                 if (enemies[sel_target].health > 0) {
                                     battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, enemies[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             } else if (skill.targetType == "Ally") {
                                 if (Game.characters[sel_target].health > 0) {
                                     battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
                                 battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
+                                    usedSkill = true;
                                 }
                             }
 
-                            if (dmg > 0) {
-                                StartCoroutine(Damage(dmg));
-                                sel_phase = -2;
-                            } else {
-                                StartCoroutine(Sleep(2));
-                                sel_phase = -2;
+                            if (usedSkill) {
+                                if (dmg > 0) {
+                                    StartCoroutine(Damage(dmg));
+                                    sel_phase = -2;
+                                } else {
+                                    StartCoroutine(Sleep(2));
+                                    sel_phase = -2;
+                                }
                             }
 
                         }
@@ -713,41 +740,66 @@ public class Battle : MonoBehaviour
             } else {
                 int dmg = 0;
                 bool usedSkill = false;
-                Skills skillUsed = null;
-                if (cycle[0].skill1 != null) {
-                    skillUsed = cycle[0].skill1;
-                    if (cycle[0].sp >= skillUsed.spConsumption) {
-                        cycle[0].sp -= skillUsed.spConsumption;
-                        if (skillUsed.targetType == "Enemy") {
-                            dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
-                        } else if (skillUsed.targetType == "Self") {
-                            dmg = Skills.useSkill(cycle[0], skillUsed);
-                        } else if (skillUsed.targetType == "Enemies") {
-                            foreach (Character t in Game.characters) {
-                                if (t.health > 0) {
-                                    dmg += Skills.useSkill(cycle[0], skillUsed, t);
-                                }
-                            }
-                        }
-                        usedSkill = true;
-                    }
+                if (lastTurn != turn) {
+                    lastTurn = turn;
+                    sel_phase = 0;
                 }
 
-                if (!usedSkill) {
-                    skillUsed = SkillsRegistry.getSkill("Attack");
-                    cycle[0].sp++;
-                    dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                if (sel_phase == 0) {
+                    dmg = cycle[0].startTurn();
+                    cycle[0].verifyMod();
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    }
+
+                    if (cycle[0].health > 0) {
+                        if (sel_phase != -2) {
+                            sel_phase = 2;
+                        } else {
+                            StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                        }
+                    } else {
+                        sel_phase = -2;
+                    }
+                } else if (sel_phase == 2) {
+                    Skills skillUsed = null;
+                    if (cycle[0].skill1 != null) {
+                        skillUsed = cycle[0].skill1;
+                        if (cycle[0].sp >= skillUsed.spConsumption) {
+                            cycle[0].sp -= skillUsed.spConsumption;
+                            if (skillUsed.targetType == "Enemy") {
+                                dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                            } else if (skillUsed.targetType == "Self") {
+                                dmg = Skills.useSkill(cycle[0], skillUsed);
+                            } else if (skillUsed.targetType == "Enemies") {
+                                foreach (Character t in Game.characters) {
+                                    if (t.health > 0) {
+                                        dmg += Skills.useSkill(cycle[0], skillUsed, t);
+                                    }
+                                }
+                            }
+                            usedSkill = true;
+                        }
+                    }
+
+                    if (!usedSkill) {
+                        skillUsed = SkillsRegistry.getSkill("Attack");
+                        cycle[0].sp++;
+                        dmg = Skills.useSkill(cycle[0], skillUsed, Enemy.selectTarget(true));
+                    }
+                    if (skillUsed != null) {
+                        StartCoroutine(ShowSkillUse(1, cycle[0], skillUsed));
+                    }
+                    if (dmg > 0) {
+                        StartCoroutine(Damage(dmg));
+                    } else {
+                        StartCoroutine(Sleep(2));
+                    }
+                    sel_phase = -2;
+                } else if (sel_phase == -2) {
+                    cycle[0].endTurn();
+                    StartCoroutine(SuspendCycleChange(0));
                 }
-                if (skillUsed != null) {
-                    StartCoroutine(ShowSkillUse(1, cycle[0], skillUsed));
-                }
-                if (dmg > 0) {
-                    StartCoroutine(Damage(dmg));
-                } else {
-                    StartCoroutine(Sleep(2));
-                }
-                cycle[0].endTurn();
-                StartCoroutine(SuspendCycleChange(0));
             }
         } else if (sel_phase == -10) {
             levelCheck++;
@@ -764,7 +816,7 @@ public class Battle : MonoBehaviour
                 foreach (Enemy e in enemies) {
                     gold += e.level;
                 }
-                gold = gold / 2 + 2;
+                gold = (int) ((gold / 2 + 2) * multiplier);
                 Game.gold += gold;
                 Game.enemiesKilled += enemies.Count;
                 GameDescription.text = "You earned " + gold + "G!";
@@ -776,7 +828,7 @@ public class Battle : MonoBehaviour
                     foreach (Enemy e in enemies) {
                         xpGained += e.level;
                     }
-                    xpGained = xpGained / 4 + 1;
+                    xpGained = (int) ((xpGained / 4 + 1) * multiplier);
                     Game.characters[levelCheck].xp += xpGained;
                     int levelChange = Game.characters[levelCheck].checkLevelChange();
                     if (levelChange > 0) {
@@ -948,6 +1000,30 @@ public class Battle : MonoBehaviour
         InfoClone.transform.SetParent(SkillUsageBox.transform);
         InfoClone.name = "TEMP InfoBox";
         InfoClone.GetComponent<TextManager>().text = character.character + " uses " + skill.skillName + "!";
+        InfoClone.SetActive(true);
+        InfoClone.transform.position = CharacterBox.transform.position;
+        var targetPos = CharacterBox.transform.position;
+        targetPos.y = CharacterBox.transform.position.y + 200;
+        while (InfoClone != null && (targetPos - InfoClone.transform.position).sqrMagnitude > Mathf.Epsilon)
+        {
+            InfoClone.transform.position = Vector3.MoveTowards(InfoClone.transform.position, targetPos, slowerMoveSpeed * Time.deltaTime);
+            yield return null;
+        }
+
+        yield return new WaitForSecondsRealtime(seconds);
+
+        if (InfoClone != null) {
+            InfoClone.transform.position = targetPos;
+        }
+        Destroy(InfoClone);
+    }
+
+    IEnumerator ShowStatus(int seconds, string status)
+    {
+        GameObject InfoClone = Instantiate(SkillUsageBox, new Vector3(CharacterBox.transform.position.x, CharacterBox.transform.position.y), CharacterBox.transform.rotation);
+        InfoClone.transform.SetParent(SkillUsageBox.transform);
+        InfoClone.name = "TEMP InfoBox";
+        InfoClone.GetComponent<TextManager>().text = status;
         InfoClone.SetActive(true);
         InfoClone.transform.position = CharacterBox.transform.position;
         var targetPos = CharacterBox.transform.position;

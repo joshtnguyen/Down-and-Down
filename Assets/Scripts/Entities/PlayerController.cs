@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask wizardLayer;
     public LayerMask shrineLayer;
     public LayerMask breakLayer;
+    public LayerMask gearLayer;
     public LayerMask northLayer;
     public LayerMask eastLayer;
     public LayerMask southLayer;
@@ -65,6 +66,10 @@ public class PlayerController : MonoBehaviour
 
                 if (Game.map[Game.row, Game.col].roomType == "Demon Room" && IsOnShrine()) {
                     UI.GetComponent<GameUIManager>().openMenu("Demon");
+                }
+
+                if (Game.map[Game.row, Game.col].roomType == "Gear Room" && IsOnGear()) {
+                    UI.GetComponent<GameUIManager>().openMenu("Gear");
                 }
 
             }
@@ -166,6 +171,13 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    private bool IsOnGear() {
+        if (Physics2D.OverlapCircle(transform.position, 1f, gearLayer) != null) {
+            return true;
+        }
+        return false;
+    }
+
     private bool IsOnShrine() {
         if (Physics2D.OverlapCircle(transform.position, 1.5f, shrineLayer) != null) {
             return true;
@@ -174,6 +186,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingNorth(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, northLayer) != null) {
             return true;
         }
@@ -181,6 +196,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingEast(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, eastLayer) != null) {
             return true;
         }
@@ -188,6 +206,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingSouth(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, southLayer) != null) {
             return true;
         }
@@ -195,6 +216,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool goingWest(Vector3 targetPos) {
+        if (Game.map[Game.row, Game.col].imprisonment && Game.map[Game.row, Game.col].enemiesLeft > 0) {
+            return false;
+        }
         if (Physics2D.OverlapCircle(targetPos, 0.2f, westLayer) != null) {
             return true;
         }

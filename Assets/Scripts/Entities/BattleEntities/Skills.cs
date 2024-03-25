@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using UnityEngine;
 
 public class Skills
 {
@@ -35,6 +36,8 @@ public class Skills
 
     public static int useSkill(Character c, Skills s, Character t) {
 
+        var rand = new System.Random();
+        
         c.verifyMod();
         if (t != null) 
             t.verifyMod();
@@ -187,8 +190,21 @@ public class Skills
         }
 
         c.verifyMod();
-        if (t != null) 
+        if (t != null) {
             t.verifyMod();
+            if (dmg > 0) {
+                if ((rand.NextDouble() * 100.0) < c.effect_bleed) {
+                    m = new Mod("Bleed", Game.getDisruption("Bleed").stacks * 0.05 * c.currentATK, true);
+                    t.bleed[0].Add(m);
+                    t.bleed[1].Add(m);
+                }
+                if ((rand.NextDouble() * 100.0) < c.effect_freeze) {
+                    m = new Mod("Freeze", 100, true);
+                    t.freeze[0].Add(m);
+                }
+            }
+            t.verifyMod();
+        }
         
         return dmg;
     }

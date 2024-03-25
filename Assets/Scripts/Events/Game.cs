@@ -8,6 +8,18 @@ using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using Unity.VisualScripting;
 
+public class Disruptions {
+    public string name;
+    public int stacks;
+    public int maxStacks;
+
+    public Disruptions(string n, int s, int m) {
+        name = n;
+        stacks = s;
+        maxStacks = m;
+    }
+}
+
 public class Game : MonoBehaviour
 {
 
@@ -31,11 +43,12 @@ public class Game : MonoBehaviour
     public static int row = 0;
     public static int col = 0;
     public static int floorNumber = -1;
-    public static int disruptions = 0;
     public static int gold = 20;
+    public static List<Gear> gear = new List<Gear>();
 
     // Disruptions
-    public static int enemiesPerBattle = 1;
+    public static List<Disruptions> disruptions = new List<Disruptions>();
+    public static int disruptionCount = -3;
 
     // FLOOR INFO
     public static int steps = 0;
@@ -67,6 +80,7 @@ public class Game : MonoBehaviour
     public GameObject wizardArea;
     public GameObject breakArea;
     public GameObject shrineArea;
+    public GameObject gearArea;
 
     // Start is called before the first frame update
     void Start()
@@ -74,6 +88,7 @@ public class Game : MonoBehaviour
 
         if (!firstRun) {
             firstRun = true;
+
             SkillsRegistry.firstRun();
             characters.Add(walter);
             characters.Add(benedict);
@@ -92,6 +107,17 @@ public class Game : MonoBehaviour
                 }
             }
 
+            disruptions.Add(new Disruptions("Imprisonment", 0, 100));
+            disruptions.Add(new Disruptions("Enemy Duplication", 0, -1));
+            disruptions.Add(new Disruptions("Enemy Corruption", 0, 45));
+            disruptions.Add(new Disruptions("Enemy Pack", 0, 250));
+            disruptions.Add(new Disruptions("Strengthening", 0, -1));
+            disruptions.Add(new Disruptions("Polishing", 0, -1));
+            disruptions.Add(new Disruptions("Heartiness", 0, -1));
+            disruptions.Add(new Disruptions("Bleed", 0, 200));
+            disruptions.Add(new Disruptions("Freeze", 0, 200));
+            disruptions.Add(new Disruptions("Energy Drain", 0, 125));
+
             createFloor();
 
         }
@@ -99,11 +125,55 @@ public class Game : MonoBehaviour
         gameEvent = "Roaming";
     }
 
+    public static Disruptions getDisruption(string disruption) {
+        foreach(Disruptions d in disruptions) {
+            if (d.name == disruption) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    public static int getEnemyCount() {
+        Disruptions d = getDisruption("Enemy Pack");
+        return convertToLoops(d.stacks * 2) + 1;
+    }
+
+    public static int convertToLoops(double chance) {
+        var rand = new System.Random();
+        int times = 0;
+        while (chance >= 100) {
+            chance -= 100;
+            times++;
+        }
+        if ((rand.NextDouble() * 100.0) < chance) {
+            times++;
+        }
+        return times;
+    }
+
     public static void createFloor() {
 
         steps = 0;
         enemiesKilled = 0;
         timesDowned = 0;
+        disruptionCount += 3;
+
+        List<Disruptions> usableDisruptions = new List<Disruptions>();
+        foreach(Disruptions d in disruptions) {
+            usableDisruptions.Add(d);
+            d.stacks = 0;
+        }
+
+        for (int i = 0; i < disruptionCount; i++) {
+            if (usableDisruptions.Any()) {
+                int d = UnityEngine.Random.Range(0, usableDisruptions.Count);
+                usableDisruptions[d].stacks++;
+                if (usableDisruptions[d].maxStacks >= 0 && usableDisruptions[d].stacks >= usableDisruptions[d].maxStacks) {
+                    usableDisruptions.RemoveAt(d);
+                }
+            }
+        }
 
         enemies.Clear();
         for (int i = 0; i < 3; i++) {
@@ -145,7 +215,10 @@ public class Game : MonoBehaviour
         for (int i = 0; i < 1; i++) {
             roomTypes.Add("Break Room");
         }
-        for (int i = 0; i < 25; i++) {
+        for (int i = 0; i < 1; i++) {
+            roomTypes.Add("Gear Room");
+        }
+        for (int i = 0; i < 24; i++) {
             roomTypes.Add("Empty Room");
         }
 
@@ -157,19 +230,31 @@ public class Game : MonoBehaviour
                     map[i, j].roomType = roomTypes[type];
                     roomTypes.RemoveAt(type);
 
-                    switch (room) {
+                    var rand = new System.Random();
+                    
+                    // IMPRISONMENT
+                    if ((rand.NextDouble() * 100.0) < getDisruption("Imprisonment").stacks) {
+                        map[i, j].imprisonment = true;
+                    }
+
+                    // ENEMY CORRUPTION
+                    if (map[i, j].roomType == "Empty Room") {
+                        if ((rand.NextDouble() * 100.0) < getDisruption("Enemy Corruption").stacks * 2) {
+                            map[i, j].roomType = "Normal Enemy Room";
+                        }
+                    }
+
+                    switch (map[i, j].roomType) {
                         case "Normal Enemy Room":
-                            map[i, j].enemiesLeft = 1;
+                            Disruptions enemyDuplication = getDisruption("Enemy Duplication");
+                            map[i, j].enemiesLeft = 1 + convertToLoops(enemyDuplication.stacks * 8);
                             break;
                         case "Exit":
-                            Debug.Log("EXIT: " + i + "/" + j);
                             map[i, j].enemiesLeft = 1;
                             break;
                         case "Break Room":
-                            Debug.Log("BREAK: " + i + "/" + j);
                             break;
                         case "Wizard Room":
-                            Debug.Log("WIZARD: " + i + "/" + j);
                             map[i, j].ResetSkills();
                             break;
                     }
@@ -197,7 +282,6 @@ public class Game : MonoBehaviour
                 }
             }
             verifyRooms(row, col, ref checker, ref check);
-            Debug.Log(check);
             if (check != mapLength * mapLength) {
                 bool changedRoom = false;
                 for (int i = 0; i < mapLength && !changedRoom; i++) {
@@ -428,6 +512,7 @@ public class Game : MonoBehaviour
             wizardArea.SetActive(false);
             breakArea.SetActive(false);
             shrineArea.SetActive(false);
+            gearArea.SetActive(false);
             updateEnemies = false;
             EnemyAI.emptyTrash();
             map[row, col].hasEntered = true;
@@ -453,6 +538,9 @@ public class Game : MonoBehaviour
                     break;
                 case "Shrine Room" or "Demon Room":
                     shrineArea.SetActive(true);
+                    break;
+                case "Gear Room":
+                    gearArea.SetActive(true);
                     break;
             }
             
@@ -531,7 +619,7 @@ public class Game : MonoBehaviour
                         case "Wizard Room":
                             roomIndicatorClone.GetComponent<Image>().color = new Color32(0, 0, 255, 255);
                             break;
-                        case "Break Room":
+                        case "Break Room" or "Gear Room":
                             roomIndicatorClone.GetComponent<Image>().color = new Color32(255, 0, 255, 255);
                             break;
                         case "Shrine Room" or "Demon Room":

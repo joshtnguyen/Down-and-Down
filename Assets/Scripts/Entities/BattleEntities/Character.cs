@@ -40,30 +40,46 @@ public class Character
     public int health;
     public int maxhealth;
     public int baseHP;
+    public double hp_ex;
+    public double hp_p_ex;
     public List<List<Mod>> hp_mod = new List<List<Mod>>();
     public List<List<Mod>> hp_p_mod = new List<List<Mod>>();
 
     public double currentATK;
     public double baseATK;
+    public double atk_ex;
+    public double atk_p_ex;
     public List<List<Mod>> atk_mod = new List<List<Mod>>();
     public List<List<Mod>> atk_p_mod = new List<List<Mod>>();
 
     public double currentDEF;
     public double baseDEF;
+    public double def_ex;
+    public double def_p_ex;
     public List<List<Mod>> def_mod = new List<List<Mod>>();
     public List<List<Mod>> def_p_mod = new List<List<Mod>>();
 
     public double currentSPD;
     public int baseSPD;
+    public double spd_ex;
     public List<List<Mod>> spd_mod = new List<List<Mod>>();
 
     public double currentCR;
     public double baseCR;
+    public double cr_ex;
     public List<List<Mod>> cr_mod = new List<List<Mod>>();
 
     public double currentCD;
     public double baseCD;
+    public double cd_ex;
     public List<List<Mod>> cd_mod = new List<List<Mod>>();
+
+    public Gear gear = new Gear();
+
+    public double effect_bleed = 0;
+    public double effect_freeze = 0;
+    public List<List<Mod>> bleed = new List<List<Mod>>();
+    public List<List<Mod>> freeze = new List<List<Mod>>();
 
     public List<Skills> skills = new List<Skills>();
     public Skills skill1;
@@ -99,6 +115,31 @@ public class Character
         skipTurn = false;
     }
 
+    public int startTurn() {
+
+        double dmg = 0;
+        var rand = new System.Random();
+
+        if (bleed.Any()) {
+            foreach(Mod m in bleed[0]) {
+                dmg += m.value;
+            }
+            bleed.RemoveAt(0);
+        }
+        if (freeze.Any()) {
+            double freezeChance = 0;
+            foreach(Mod m in freeze[0]) {
+                freezeChance += m.value;
+            }
+            if ((rand.NextDouble() * 100.0) < freezeChance) {
+                Battle.sel_phase = -2;
+            }
+            freeze.RemoveAt(0);
+        }
+        health -= (int) dmg;
+        return (int) dmg;
+    }
+    
     public void endTurn() {
         
         if (hp_mod.Any()) {
@@ -146,7 +187,7 @@ public class Character
 
             // CRIT MULTIPLIER
             double crit = 1;
-            if ((rand.NextDouble() * 100.0) <= currentCR) {
+            if ((rand.NextDouble() * 100.0) < currentCR) {
                 crit = currentCD;
             }
 
@@ -173,7 +214,19 @@ public class Character
     }
 
     public void verifyMod() {
+        effect_bleed = gear.effect_bleed;
+        effect_freeze = gear.effect_freeze;
+        if (isEnemy()) {
+            effect_bleed += Game.getDisruption("Bleed").stacks * 0.5;
+            effect_freeze += Game.getDisruption("Freeze").stacks * 0.375;
+        }
         for (int i = 0; i < 6; i++) {
+            if (bleed.Count < 5) {
+                bleed.Add(new List<Mod>());
+            }
+            if (freeze.Count < 5) {
+                freeze.Add(new List<Mod>());
+            }
             if (hp_mod.Count < 5) {
                 hp_mod.Add(new List<Mod>());
             }
@@ -206,14 +259,15 @@ public class Character
         double val = 0;
         double per = 100;
 
-        val = baseHP + (L_UP_HP * (level-1));
-        per = 100;
+        val = baseHP + hp_ex + gear.hp + (L_UP_HP * (level-1));
+        per = 100 + hp_p_ex + gear.hp_p;
         if (hp_mod[0].Any()) {
             foreach (Mod m in hp_mod[0]) {
                 if (m != null) {
                     val += m.value;
                 }
             }
+
         }
         if (hp_p_mod[0].Any()) {
             foreach (Mod m in hp_p_mod[0]) {
@@ -224,8 +278,8 @@ public class Character
         }
         maxhealth = (int)(val * (per / 100));
 
-        val = baseATK + (L_UP_ATK * (level-1));
-        per = 100;
+        val = baseATK + atk_ex + gear.atk + (L_UP_ATK * (level-1));
+        per = 100 + atk_p_ex + gear.atk_p;
         if (atk_mod[0].Any()) {
             foreach (Mod m in atk_mod[0]) {
                 if (m != null) {
@@ -242,8 +296,8 @@ public class Character
         }
         currentATK = val * (per / 100);
 
-        val = baseDEF + (L_UP_DEF * (level-1));
-        per = 100;
+        val = baseDEF + def_ex + gear.def + (L_UP_DEF * (level-1));
+        per = 100 + def_p_ex + gear.def_p;
         if (def_mod[0].Any()) {
             foreach (Mod m in def_mod[0]) {
                 if (m != null) {
@@ -260,8 +314,7 @@ public class Character
         }
         currentDEF = val * (per / 100);
 
-        val = baseSPD;
-        per = 100;
+        val = baseSPD + spd_ex + gear.spd;
         if (spd_mod[0].Any()) {
             foreach (Mod m in spd_mod[0]) {
                 if (m != null) {
@@ -271,7 +324,7 @@ public class Character
         }
         currentSPD = val * (per / 100);
 
-        val = baseCR;
+        val = baseCR + cr_ex + gear.cr;
         if (cr_mod[0].Any()) {
             foreach (Mod m in cr_mod[0]) {
                 if (m != null) {
@@ -281,7 +334,7 @@ public class Character
         }
         currentCR = val * (per / 100);
 
-        val = baseCD + 100;
+        val = baseCD + 100 + cd_ex + gear.cd;
         if (cd_mod[0].Any()) {
             foreach (Mod m in cd_mod[0]) {
                 if (m != null) {
