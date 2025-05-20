@@ -158,8 +158,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 169}
-  m_SizeDelta: {x: 1403.4036, y: 145.3912}
+  m_AnchoredPosition: {x: 0, y: 200}
+  m_SizeDelta: {x: 1403.4, y: 241.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &235606676
 MonoBehaviour:
@@ -208,8 +208,10 @@ MonoBehaviour:
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: Complete Exploration Results
+    m_LineSpacing: 0.7
+  m_Text: 'Game Over!
+
+    Complete Exploration Results'
 --- !u!222 &235606678
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2360,6 +2362,51 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1099700366
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1099700368}
+  - component: {fileID: 1099700367}
+  m_Layer: 0
+  m_Name: Gameplay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1099700367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099700366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3818fe37d790df64dad84748b5488aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Results: {fileID: 1898604600}
+--- !u!4 &1099700368
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1099700366}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 245.70786, y: 882.40936, z: -4.649229}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1133895680
 GameObject:
   m_ObjectHideFlags: 0
@@ -2493,7 +2540,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: b13271545cd67a24eab9a32cf0416075, type: 3}
-    m_FontSize: 100
+    m_FontSize: 77
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -2544,7 +2591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -162.43605}
+  m_AnchoredPosition: {x: 0, y: -150}
   m_SizeDelta: {x: 1403.4036, y: 517.4832}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1660057539 &9223372036854775807
@@ -2554,3 +2601,4 @@ SceneRoots:
   - {fileID: 1133895683}
   - {fileID: 392235120}
   - {fileID: 722476214}
+  - {fileID: 1099700368}

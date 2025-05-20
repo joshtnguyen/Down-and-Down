@@ -95,14 +95,40 @@ public class Game : MonoBehaviour
             characters.Add(sherri);
             characters.Add(jade);
 
-            foreach (Character c in characters) {
+            foreach (Character c in characters)
+            {
                 c.skills.Add(SkillsRegistry.getSkill("Attack"));
                 c.skills.Add(SkillsRegistry.getSkill("Block"));
                 c.verifyMod();
+                switch (c.character)
+                {
+                    case "Walter":
+                        Skills s1 = SkillsRegistry.getSkill("Heavy Slice");
+                        c.skills.Add(s1);
+                        c.skill1 = s1;
+                        break;
+                    case "Benedict":
+                        Skills s2 = SkillsRegistry.getSkill("Fist to the Face");
+                        c.skills.Add(s2);
+                        c.skill1 = s2;
+                        break;
+                    case "Sherri":
+                        Skills s3 = SkillsRegistry.getSkill("Motivating Touch");
+                        c.skills.Add(s3);
+                        c.skill1 = s3;
+                        break;
+                    case "Jade":
+                        Skills s4 = SkillsRegistry.getSkill("Loving Meal");
+                        c.skills.Add(s4);
+                        c.skill1 = s4;
+                        break;
+                }
             }
 
-            for (int i = 0; i < mapLength; i++) {
-                for (int j = 0; j < mapLength; j++) {
+            for (int i = 0; i < mapLength; i++)
+            {
+                for (int j = 0; j < mapLength; j++)
+                {
                     map[i, j] = new Room();
                 }
             }
@@ -503,6 +529,14 @@ public class Game : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Z)) {
             showMap = !showMap;
             updateMap();
+        }
+
+        if (Input.GetKeyDown(KeyCode.K)) {
+            for (int i = 0; i < mapLength; i++) {
+                for (int j = 0; j < mapLength; j++) {
+                    map[i, j].hasEntered = true;
+                }
+            }
         }
 
         updateRoom();

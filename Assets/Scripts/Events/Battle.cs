@@ -697,15 +697,15 @@ public class Battle : MonoBehaviour
                                     usedSkill = true;
                                 }
                             } else if (skill.targetType == "Non-Self Ally") {
-                                battleSP -= skill.spConsumption;
                                 if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
+                                    battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     usedSkill = true;
                                 }
-                            } else if (skill.targetType == "Non-Self Ally") {
-                                battleSP -= skill.spConsumption;
-                                if (Game.characters[sel_target].health > 0 && Game.characters[sel_target] != cycle[0]) {
+                            } else if (skill.targetType == "Dead") {
+                                if (Game.characters[sel_target].health <= 0 && Game.characters[sel_target] != cycle[0]) {
+                                    battleSP -= skill.spConsumption;
                                     dmg = Skills.useSkill(cycle[0], skill, Game.characters[sel_target]);
                                     StartCoroutine(ShowSkillUse(1, cycle[0], skill));
                                     usedSkill = true;

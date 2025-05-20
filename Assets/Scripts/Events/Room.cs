@@ -32,12 +32,18 @@ public class Room
     public void ResetSkills() {
         List<int> temp = new List<int>();
         for (int i = 2; i < SkillsRegistry.registry.Count; i++) {
-            if (SkillsRegistry.registry[i].maxStacks >= 0) {
+            if (SkillsRegistry.registry[i].maxStacks >= 0)
+            {
                 Skills testSkill = SkillsRegistry.getSkill(Character.GetCharacter(SkillsRegistry.registry[i].skillUser).skills, SkillsRegistry.registry[i].skillName);
-                if (testSkill.stacks < SkillsRegistry.registry[i].maxStacks) {
-                    temp.Add(i);
+                if (testSkill != null) {
+                    if (testSkill.stacks < SkillsRegistry.registry[i].maxStacks)
+                    {
+                        temp.Add(i);
+                    }
                 }
-            } else {
+            }
+            else
+            {
                 temp.Add(i);
             }
         }

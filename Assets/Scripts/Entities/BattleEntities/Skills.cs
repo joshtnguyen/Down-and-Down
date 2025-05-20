@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Numerics; 
 using UnityEngine;
 
 public class Skills
@@ -137,6 +137,11 @@ public class Skills
                 t.spd_mod[0].Add(m);
                 t.spd_mod[1].Add(m);
                 t.health += (int)(c.maxhealth * (0.06 + 0.015 * s.stacks));
+                break;
+            case "Life Saving Measures":
+                if ((rand.NextDouble() * 100.0) < (5 + s.stacks)) {
+                    t.health = (int)(t.maxhealth * 0.2);
+                }
                 break;
 
             case "Goo Shot":

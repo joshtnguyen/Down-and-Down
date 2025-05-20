@@ -25,6 +25,7 @@ public class SkillsRegistry
         registry.Add(new Skills("Loving Meal", "Heals an ally by 15% (+1.75% per stack) of the user's Max HP.", 2, 0, -1, "Ally", "Jade"));
         registry.Add(new Skills("Dedicated Meal", "Heals an ally by 12% (+2% per stack) of the ally's Max HP.", 2, 0, -1, "Ally", "Jade"));
         registry.Add(new Skills("Energy Bar", "Heals an ally by 6% (+1.5% per stack) of the user's Max HP and increases SPD by 1 (+1 per stack) for 2 turns.", 3, 0, -1, "Ally", "Jade"));
+        registry.Add(new Skills("Life Saving Measures", "There is a 5% (+1% per stack) chance to resurrect a downed player to 20% of the target's Max HP.", 5, 0, 95, "Dead", "Jade"));
         
         // Enemy Skills
         registry_E.Add(new Skills("Goo Shot", "Deals 120% of the user's ATK, decreases SPD by 2 (+1 per stack), and decreases DEF by 20% (+2% per stack) on a single target for 2 turns.", 2, 0, -1, "Enemy", "Slime"));
