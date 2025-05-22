@@ -103,7 +103,7 @@ public class Game : MonoBehaviour
                 switch (c.character)
                 {
                     case "Walter":
-                        Skills s1 = SkillsRegistry.getSkill("Heavy Slice");
+                        Skills s1 = SkillsRegistry.getSkill("Axe Swing");
                         c.skills.Add(s1);
                         c.skill1 = s1;
                         break;

@@ -8,16 +8,18 @@ using System.Linq;
 public class Mod {
     public string modName;
     public double value;
+    public double duration;
     public bool isDebuff;
 
-    public Mod(string modName, double value, bool isDebuff) {
+    public Mod(string modName, double value, int duration, bool isDebuff) {
         this.modName = modName;
         this.value = value;
+        this.duration = duration;
         this.isDebuff = isDebuff;
     }
 
     public override string ToString() {
-        return "{ name: " + modName + ", value: " + value + ", isDebuff: " + isDebuff + " }";
+        return "{ name: " + modName + ", value: " + value + ", duration: " + duration + ", isDebuff: " + isDebuff + " }";
     }
 
 }
@@ -36,50 +38,51 @@ public class Character
     public int level;
     public int xp;
     public int sp;
+    public double av = 0;
 
     public int health;
     public int maxhealth;
     public int baseHP;
     public double hp_ex;
     public double hp_p_ex;
-    public List<List<Mod>> hp_mod = new List<List<Mod>>();
-    public List<List<Mod>> hp_p_mod = new List<List<Mod>>();
+    public List<Mod> hp_mod = new List<Mod>();
+    public List<Mod> hp_p_mod = new List<Mod>();
 
     public double currentATK;
     public double baseATK;
     public double atk_ex;
     public double atk_p_ex;
-    public List<List<Mod>> atk_mod = new List<List<Mod>>();
-    public List<List<Mod>> atk_p_mod = new List<List<Mod>>();
+    public List<Mod> atk_mod = new List<Mod>();
+    public List<Mod> atk_p_mod = new List<Mod>();
 
     public double currentDEF;
     public double baseDEF;
     public double def_ex;
     public double def_p_ex;
-    public List<List<Mod>> def_mod = new List<List<Mod>>();
-    public List<List<Mod>> def_p_mod = new List<List<Mod>>();
+    public List<Mod> def_mod = new List<Mod>();
+    public List<Mod> def_p_mod = new List<Mod>();
 
     public double currentSPD;
     public int baseSPD;
     public double spd_ex;
-    public List<List<Mod>> spd_mod = new List<List<Mod>>();
+    public List<Mod> spd_mod = new List<Mod>();
 
     public double currentCR;
     public double baseCR;
     public double cr_ex;
-    public List<List<Mod>> cr_mod = new List<List<Mod>>();
+    public List<Mod> cr_mod = new List<Mod>();
 
     public double currentCD;
     public double baseCD;
     public double cd_ex;
-    public List<List<Mod>> cd_mod = new List<List<Mod>>();
+    public List<Mod> cd_mod = new List<Mod>();
 
     public Gear gear = new Gear();
 
     public double effect_bleed = 0;
     public double effect_freeze = 0;
-    public List<List<Mod>> bleed = new List<List<Mod>>();
-    public List<List<Mod>> freeze = new List<List<Mod>>();
+    public List<Mod> bleed = new List<Mod>();
+    public List<Mod> freeze = new List<Mod>();
 
     public List<Skills> skills = new List<Skills>();
     public Skills skill1;
@@ -115,26 +118,75 @@ public class Character
         skipTurn = false;
     }
 
+    public void printMod() {
+        foreach (Mod m in hp_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in hp_p_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in atk_mod) {
+            Debug.Log(m);
+        }
+        
+        foreach (Mod m in atk_p_mod) {
+            Debug.Log(m);
+        }
+        
+        foreach (Mod m in def_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in def_p_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in spd_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in cr_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in cd_mod) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in bleed) {
+            Debug.Log(m);
+        }
+
+        foreach (Mod m in freeze) {
+            Debug.Log(m);
+        }
+    }
+
     public int startTurn() {
+
+        printMod();
 
         double dmg = 0;
         var rand = new System.Random();
 
         if (bleed.Any()) {
-            foreach(Mod m in bleed[0]) {
+            foreach(Mod m in bleed) {
                 dmg += m.value;
             }
-            bleed.RemoveAt(0);
         }
         if (freeze.Any()) {
             double freezeChance = 0;
-            foreach(Mod m in freeze[0]) {
+            foreach(Mod m in freeze) {
                 freezeChance += m.value;
             }
             if ((rand.NextDouble() * 100.0) < freezeChance) {
                 Battle.sel_phase = -2;
             }
-            freeze.RemoveAt(0);
+            if (skipTurn) {
+                Battle.sel_phase = -2;
+            }
         }
         health -= (int) dmg;
         return (int) dmg;
@@ -142,34 +194,93 @@ public class Character
     
     public void endTurn() {
         
-        if (hp_mod.Any()) {
-            hp_mod.RemoveAt(0);
+        for (int i = hp_mod.Count() - 1; i >= 0; i--) {
+            Mod m = hp_mod[i];
+            if (m.duration <= 0) {
+                hp_mod.Remove(m);
+            }
+            m.duration -= 1;
         }
-        if (hp_p_mod.Any()) {
-            hp_p_mod.RemoveAt(0);
+
+        for (int i = hp_p_mod.Count() - 1; i >= 0; i--) {
+            Mod m = hp_p_mod[i];
+            if (m.duration <= 0) {
+                hp_p_mod.Remove(m);
+            }
+            m.duration -= 1;
         }
-        if (atk_mod.Any()) {
-            atk_mod.RemoveAt(0);
-        }
-        if (atk_p_mod.Any()) {
-            atk_p_mod.RemoveAt(0);
-        }
-        if (def_mod.Any()) {
-            hp_mod.RemoveAt(0);
-        }
-        if (def_p_mod.Any()) {
-            def_p_mod.RemoveAt(0);
-        }
-        if (spd_mod.Any()) {
-            spd_mod.RemoveAt(0);
-        }
-        if (cr_mod.Any()) {
-            cr_mod.RemoveAt(0);
-        }
-        if (cd_mod.Any()) {
-            cd_mod.RemoveAt(0);
+
+        for (int i = atk_mod.Count() - 1; i >= 0; i--) {
+            Mod m = atk_mod[i];
+            if (m.duration <= 0) {
+                atk_mod.Remove(m);
+            }
+            m.duration -= 1;
         }
         
+        for (int i = atk_p_mod.Count() - 1; i >= 0; i--) {
+            Mod m = atk_p_mod[i];
+            if (m.duration <= 0) {
+                atk_p_mod.Remove(m);
+            }
+            m.duration -= 1;
+        }
+        
+        for (int i = def_mod.Count() - 1; i >= 0; i--) {
+            Mod m = def_mod[i];
+            if (m.duration <= 0) {
+                def_mod.Remove(m);
+            }
+            m.duration -= 1;
+        }
+
+        for (int i = def_p_mod.Count() - 1; i >= 0; i--) {
+            Mod m = def_p_mod[i];
+            if (m.duration <= 0) {
+                def_p_mod.Remove(m);
+            }
+            m.duration -= 1;
+        }
+
+        for (int i = spd_mod.Count() - 1; i >= 0; i--) {
+            Mod m = spd_mod[i];
+            if (m.duration <= 0) {
+                spd_mod.Remove(m);
+            }
+            m.duration -= 1;
+        }
+
+        for (int i = cr_mod.Count() - 1; i >= 0; i--) {
+            Mod m = cr_mod[i];
+            if (m.duration <= 0) {
+                cr_mod.Remove(m);
+            }
+            m.duration -= 1;
+        }
+
+        for (int i = cd_mod.Count() - 1; i >= 0; i--) {
+            Mod m = cd_mod[i];
+            if (m.duration <= 0) {
+                cd_mod.Remove(m);
+            }
+            m.duration -= 1;
+        }
+
+        for (int i = bleed.Count() - 1; i >= 0; i--) {
+            Mod m = bleed[i];
+            if (m.duration <= 0) {
+                bleed.Remove(m);
+            }
+            m.duration -= 1;
+        }
+
+        for (int i = freeze.Count() - 1; i >= 0; i--) {
+            Mod m = freeze[i];
+            if (m.duration <= 0) {
+                freeze.Remove(m);
+            }
+            m.duration -= 1;
+        }
     }
 
     public int damage(Character ch, double multiplier) {
@@ -220,57 +331,22 @@ public class Character
             effect_bleed += Game.getDisruption("Bleed").stacks * 0.5;
             effect_freeze += Game.getDisruption("Freeze").stacks * 0.375;
         }
-        for (int i = 0; i < 6; i++) {
-            if (bleed.Count < 5) {
-                bleed.Add(new List<Mod>());
-            }
-            if (freeze.Count < 5) {
-                freeze.Add(new List<Mod>());
-            }
-            if (hp_mod.Count < 5) {
-                hp_mod.Add(new List<Mod>());
-            }
-            if (hp_p_mod.Count < 5) {
-                hp_p_mod.Add(new List<Mod>());
-            }
-            if (atk_mod.Count < 5) {
-                atk_mod.Add(new List<Mod>());
-            }
-            if (atk_p_mod.Count < 5) {
-                atk_p_mod.Add(new List<Mod>());
-            }
-            if (def_mod.Count < 5) {
-                def_mod.Add(new List<Mod>());
-            }
-            if (def_p_mod.Count < 5) {
-                def_p_mod.Add(new List<Mod>());
-            }
-            if (spd_mod.Count < 5) {
-                spd_mod.Add(new List<Mod>());
-            }
-            if (cr_mod.Count < 5) {
-                cr_mod.Add(new List<Mod>());
-            }
-            if (cd_mod.Count < 5) {
-                cd_mod.Add(new List<Mod>());
-            }
-        }
         
         double val = 0;
         double per = 100;
 
         val = baseHP + hp_ex + gear.hp + (L_UP_HP * (level-1));
         per = 100 + hp_p_ex + gear.hp_p;
-        if (hp_mod[0].Any()) {
-            foreach (Mod m in hp_mod[0]) {
+        if (hp_mod.Any()) {
+            foreach (Mod m in hp_mod) {
                 if (m != null) {
                     val += m.value;
                 }
             }
 
         }
-        if (hp_p_mod[0].Any()) {
-            foreach (Mod m in hp_p_mod[0]) {
+        if (hp_p_mod.Any()) {
+            foreach (Mod m in hp_p_mod) {
                 if (m != null) {
                     per += m.value;
                 }
@@ -280,15 +356,15 @@ public class Character
 
         val = baseATK + atk_ex + gear.atk + (L_UP_ATK * (level-1));
         per = 100 + atk_p_ex + gear.atk_p;
-        if (atk_mod[0].Any()) {
-            foreach (Mod m in atk_mod[0]) {
+        if (atk_mod.Any()) {
+            foreach (Mod m in atk_mod) {
                 if (m != null) {
                     val += m.value;
                 }
             }
         }
-        if (atk_p_mod[0].Any()) {
-            foreach (Mod m in atk_p_mod[0]) {
+        if (atk_p_mod.Any()) {
+            foreach (Mod m in atk_p_mod) {
                 if (m != null) {
                     per += m.value;
                 }
@@ -298,15 +374,15 @@ public class Character
 
         val = baseDEF + def_ex + gear.def + (L_UP_DEF * (level-1));
         per = 100 + def_p_ex + gear.def_p;
-        if (def_mod[0].Any()) {
-            foreach (Mod m in def_mod[0]) {
+        if (def_mod.Any()) {
+            foreach (Mod m in def_mod) {
                 if (m != null) {
                     val += m.value;
                 }
             }
         }
-        if (def_p_mod[0].Any()) {
-            foreach (Mod m in def_p_mod[0]) {
+        if (def_p_mod.Any()) {
+            foreach (Mod m in def_p_mod) {
                 if (m != null) {
                     per += m.value;
                 }
@@ -315,28 +391,31 @@ public class Character
         currentDEF = val * (per / 100);
 
         val = baseSPD + spd_ex + gear.spd;
-        if (spd_mod[0].Any()) {
-            foreach (Mod m in spd_mod[0]) {
+        if (spd_mod.Any()) {
+            foreach (Mod m in spd_mod) {
                 if (m != null) {
                     val += m.value;
                 }
             }
         }
-        currentSPD = val * (per / 100);
+        currentSPD = val;
+        if (currentSPD <= 1) {
+            currentSPD = 1;
+        } 
 
         val = baseCR + cr_ex + gear.cr;
-        if (cr_mod[0].Any()) {
-            foreach (Mod m in cr_mod[0]) {
+        if (cr_mod.Any()) {
+            foreach (Mod m in cr_mod) {
                 if (m != null) {
                     val += m.value;
                 }
             }
         }
-        currentCR = val * (per / 100);
+        currentCR = val;
 
         val = baseCD + 100 + cd_ex + gear.cd;
-        if (cd_mod[0].Any()) {
-            foreach (Mod m in cd_mod[0]) {
+        if (cd_mod.Any()) {
+            foreach (Mod m in cd_mod) {
                 if (m != null) {
                     val += m.value;
                 }

@@ -72,6 +72,7 @@ public class Battle : MonoBehaviour
 
     public GameObject SkillUsageBox;
 
+    public static double avNumerator = 10000; // Numerator for Action Values
     public static bool firstRun = false;
     public static int battleSP;
     public static int battleSPMAX;
@@ -171,8 +172,17 @@ public class Battle : MonoBehaviour
             enemies.Add(e);
         }
         
+        
         foreach (Character c in Game.characters) {
             c.resetMod();
+            c.verifyMod();
+            c.av = avNumerator / c.currentSPD;
+        }
+
+        foreach (Character c in enemies) {
+            c.resetMod();
+            c.verifyMod();
+            c.av = avNumerator / c.currentSPD;
         }
 
         SceneManager.LoadScene("Battle Scene");
@@ -180,6 +190,53 @@ public class Battle : MonoBehaviour
 
     public static void StartBattle(int numEnemies) {
         StartBattle(numEnemies, 0, 1);
+    }
+
+    private void UpdateAVCycle() {
+        // Rebuilding the Cycle using Action Values
+        cycle.Clear();
+
+        List<Character> aliveList = new List<Character>();
+        foreach (Character c in Game.characters) {
+            if (c.health > 0) {
+                aliveList.Add(c);
+            }
+        }
+        foreach (Character c in enemies) {
+            if (c.health > 0) {
+                aliveList.Add(c);
+            }
+        }
+
+        while (aliveList.Any()) {
+            Character fastest = aliveList[0];
+            foreach (Character test in aliveList){
+                test.verifyMod();
+                if (fastest.av > test.av) {
+                    fastest = test;
+                }
+            }
+            cycle.Add(fastest);
+            aliveList.Remove(fastest);
+        }
+
+        if (cycle.Any()) {
+            double avUsed = cycle[0].av;
+            foreach (Character c in Game.characters) {
+                if (c.health > 0) {
+                    c.av -= avUsed;
+                }
+            }
+            foreach (Character c in enemies) {
+                if (c.health > 0) {
+                    c.av -= avUsed;
+                }
+            }
+            cycle[0].verifyMod();
+            cycle[0].av = avNumerator / cycle[0].currentSPD;
+        }
+
+        StartCoroutine(Sleep(2));
     }
 
     private void NewCycle() {
@@ -277,7 +334,7 @@ public class Battle : MonoBehaviour
         obj_NAME_4.fontStyle = FontStyle.Normal;
 
         if (!cycle.Any()) {
-            NewCycle();
+            UpdateAVCycle();
         }
 
         string turn = cycle[0].getName();
@@ -487,7 +544,11 @@ public class Battle : MonoBehaviour
         string displayCycle = "";
         foreach(Character c in cycle) {
             turnNumber++;
-            displayCycle += turnNumber + " - " + c.getName() + "\n";
+            if (turnNumber == 1) {
+                displayCycle += "0 | " + c.getName() + "\n";
+            } else {
+                displayCycle += (int)(c.av / 15) + " | " + c.getName() + "\n";
+            }
         }
 
         turnOrderDisplay.text = displayCycle;
@@ -511,7 +572,12 @@ public class Battle : MonoBehaviour
                             targetPos.x += 517;
                             StartCoroutine(Move(ActionBox, targetPos));
                         } else {
-                            StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                            if (cycle[0].skipTurn) {
+                                StartCoroutine(ShowStatus(1, cycle[0].getName() + " can't move!"));
+                            } else {
+                                StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                            }
+                            cycle[0].skipTurn = false;
                         }
                     } else {
                         sel_phase = -2;
@@ -756,7 +822,12 @@ public class Battle : MonoBehaviour
                         if (sel_phase != -2) {
                             sel_phase = 2;
                         } else {
-                            StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                            if (cycle[0].skipTurn) {
+                                StartCoroutine(ShowStatus(1, cycle[0].getName() + " can't move!"));
+                            } else {
+                                StartCoroutine(ShowStatus(1, cycle[0].getName() + " is frozen and can't move!"));
+                            }
+                            cycle[0].skipTurn = false;
                         }
                     } else {
                         sel_phase = -2;
@@ -936,7 +1007,7 @@ public class Battle : MonoBehaviour
 
         buttonCooldown = true;
         yield return new WaitForSecondsRealtime(seconds);
-        cycle.RemoveAt(0);
+        cycle.Clear();
         checkGameStatus();
         buttonCooldown = false;
         
