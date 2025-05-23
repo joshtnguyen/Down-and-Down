@@ -166,7 +166,7 @@ public class Character
 
     public int startTurn() {
 
-        printMod();
+        //printMod();
 
         double dmg = 0;
         var rand = new System.Random();

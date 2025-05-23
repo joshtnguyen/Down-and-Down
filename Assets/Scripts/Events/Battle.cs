@@ -11,6 +11,12 @@ public class Battle : MonoBehaviour
 {
 
     private List<GameObject> trashCan = new List<GameObject>();
+
+    public List<GameObject> enemyTrashCan = new List<GameObject>();
+
+    public GameObject enemyVisualParent;
+    public GameObject enemyVisual;
+
     public GameObject SP_Bar;
     public Slider obj_SPSLIDER;
     public Text obj_SP;
@@ -114,51 +120,53 @@ public class Battle : MonoBehaviour
         double atk_p = Game.getDisruption("Strengthening").stacks * 0.5;
         double def_p = Game.getDisruption("Polishing").stacks * 0.3;
 
-        for (int i = 0; i < numEnemies; i++) {
+        for (int i = 0; i < numEnemies; i++)
+        {
             string enemyType = Game.enemies[Random.Range(0, Game.enemies.Count)];
             Enemy e;
             Skills s;
-            switch (enemyType) {
+            switch (enemyType)
+            {
                 // NAME / ID / LEVEL / HP / ATK / DEF / SPD / CR / CD / SP
                 case "Slime":
                     e = new Enemy("Slime", i + 1, level, 45, 12, 8, 11, 5, 8, 1);
                     s = SkillsRegistry.getSkill("Goo Shot");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 case "Cave Bull":
                     e = new Enemy("Cave Bull", i + 1, level, 52, 14, 2, 9, 7, 20, 1);
                     s = SkillsRegistry.getSkill("Drunken Charge");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 case "Sandbat":
                     e = new Enemy("Sandbat", i + 1, level, 60, 7, 22, 8, 5, 7, 2);
                     s = SkillsRegistry.getSkill("Sand Spray");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 case "Koy Vamp":
                     e = new Enemy("Koy Vamp", i + 1, level, 40, 12, 9, 11, 3, 3, 2);
                     s = SkillsRegistry.getSkill("Vampiric Gnaw");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 case "Sledger":
                     e = new Enemy("Sledger", i + 1, level, 42, 13, 5, 10, 12, 6, 0);
                     s = SkillsRegistry.getSkill("Hammer Down");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 case "Big Tox":
                     e = new Enemy("Big Tox", i + 1, level, 55, 8, 16, 13, 16, 3, 2);
                     s = SkillsRegistry.getSkill("Mysterious Dew-hickey");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 case "Unskilled":
                     e = new Enemy("Unskilled", i + 1, level, 53, 10, 15, 11, 5, 4, 2);
                     s = SkillsRegistry.getSkill("Skilln't");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
                 default:
                     e = new Enemy("Slime", i + 1, level, 45, 12, 8, 11, 5, 8, 1);
                     s = SkillsRegistry.getSkill("Goo Shot");
-                    s.stacks = (int) (Game.floorNumber * -1 / 3);
+                    s.stacks = (int)(Game.floorNumber * -1 / 3);
                     break;
 
             }
@@ -294,8 +302,22 @@ public class Battle : MonoBehaviour
     void Start()
     {
 
-        if (!firstRun) {
+        if (!firstRun)
+        {
             firstRun = true;
+        }
+
+        foreach (Enemy e in enemies)
+        {
+            GameObject VisualEnemyClone = Instantiate(enemyVisual, enemyVisualParent.transform.position, enemyVisualParent.transform.rotation);
+            VisualEnemyClone.transform.SetParent(enemyVisualParent.transform);
+            VisualEnemyClone.name = "TEMP VisualEnemy";
+
+            EnemyVisual visualScript = VisualEnemyClone.GetComponent<EnemyVisual>();
+            visualScript.enemy = e;
+
+            VisualEnemyClone.SetActive(true);
+            enemyTrashCan.Add(VisualEnemyClone);
         }
         
     }
@@ -544,7 +566,7 @@ public class Battle : MonoBehaviour
         string displayCycle = "";
         foreach(Character c in cycle) {
             turnNumber++;
-            if (turnNumber == 1) {
+            if (turnNumber == 1 || c.av <= 0) {
                 displayCycle += "0 | " + c.getName() + "\n";
             } else {
                 displayCycle += (int)(c.av / 15) + " | " + c.getName() + "\n";
