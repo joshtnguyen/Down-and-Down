@@ -13,7 +13,7 @@ public class EnemyVisual : MonoBehaviour
     public Enemy enemy = null;
 
     private Vector2 center;
-    private float radius = 200f;
+    private float radius = 300f;
 
     private Vector2 velocity;
     private Vector2 acceleration;

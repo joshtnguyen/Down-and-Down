@@ -70,6 +70,10 @@ public class Battle : MonoBehaviour
     public GameObject TurnBox;
     public Text turnOrderDisplay;
 
+    public GameObject StatusesBox;
+    public Text StatusesTitle;
+    public Text Statuses;
+
     public GameObject DescriptionBox;
     public GameObject DamageBox;
 
@@ -94,6 +98,7 @@ public class Battle : MonoBehaviour
     public static List<Character> cycle = new List<Character>();
     public static string lastTurn;
     public static double multiplier = 0;
+    public static int statusPage = 0;
 
     public static List<Enemy> enemies = new List<Enemy>();
 
@@ -357,6 +362,7 @@ public class Battle : MonoBehaviour
 
         if (!cycle.Any()) {
             UpdateAVCycle();
+            StatusesBox.SetActive(false);
         }
 
         string turn = cycle[0].getName();
@@ -969,6 +975,72 @@ public class Battle : MonoBehaviour
         } else if (Input.GetKeyDown(KeyCode.X)) {
             return -1;
         } else {
+            if (Input.GetKeyDown(KeyCode.Z)) {
+                if (StatusesBox.activeSelf) {
+                    statusPage++;
+                    if (statusPage > cycle.Count() - 1) {
+                        statusPage = 0;
+                    }
+                } else {
+                    StatusesBox.SetActive(true);
+                    statusPage = 0;
+                }
+            }
+
+            if (statusPage <= cycle.Count() - 1) {
+                string currentStatuses = "";
+                
+                foreach (Mod m in cycle[statusPage].hp_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " HP (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].hp_p_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " HP% (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].atk_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " ATK (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].atk_p_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " ATK% (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].def_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " DEF (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].def_p_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " DEF% (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].spd_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " SPD (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].cr_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " CR% (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].cd_mod) {
+                    currentStatuses += m.modName + ": " + m.value + " CD% (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].bleed) {
+                    currentStatuses += m.modName + ": " + m.value + " BLEED (" + m.duration + ") \n";
+                }
+
+                foreach (Mod m in cycle[statusPage].freeze) {
+                    currentStatuses += m.modName + ": " + m.value + " FREEZE (" + m.duration + ") \n";
+                }
+
+                if (currentStatuses == "") {
+                    currentStatuses = "There are no statuses on them!";
+                }
+
+                StatusesTitle.text = "Statuses: " + cycle[statusPage].getName() + "\n";
+                Statuses.text = currentStatuses;
+            }
             return 0;
         }
     }
