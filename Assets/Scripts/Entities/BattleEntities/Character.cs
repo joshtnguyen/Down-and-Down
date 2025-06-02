@@ -6,22 +6,37 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 
 public class Mod {
+
     public string modName;
+    public string user;
     public double value;
     public double duration;
     public bool isDebuff;
 
-    public Mod(string modName, double value, int duration, bool isDebuff) {
+    public Mod(string modName, string user, double value, int duration, bool isDebuff) {
         this.modName = modName;
+        this.user = user;
         this.value = value;
         this.duration = duration;
         this.isDebuff = isDebuff;
     }
 
     public override string ToString() {
-        return "{ name: " + modName + ", value: " + value + ", duration: " + duration + ", isDebuff: " + isDebuff + " }";
+        return "{ name: " + modName + ", user: " + user + ", value: " + value + ", duration: " + duration + ", isDebuff: " + isDebuff + " }";
     }
 
+}
+
+public class ModHandler {
+    public static void UpdateOrAddMod(List<Mod> mods, Mod m) {
+        foreach (var mod in mods) {
+            if (mod.modName == m.modName && mod.user == m.user) {
+                mod.duration = m.duration;
+                return;
+            }
+        }
+        mods.Add(m);
+    }
 }
 
 public class Character
@@ -29,9 +44,9 @@ public class Character
 
     public static int L_UP_REQ = 5;
 
-    private static int L_UP_HP = 3;
-    private static int L_UP_ATK = 2;
-    private static int L_UP_DEF = 4;
+    public static int L_UP_HP = 3;
+    public static int L_UP_ATK = 2;
+    public static int L_UP_DEF = 4;
 
     public string character;
 
@@ -413,7 +428,7 @@ public class Character
         }
         currentCR = val;
 
-        val = baseCD + 100 + cd_ex + gear.cd;
+        val = baseCD + cd_ex + gear.cd;
         if (cd_mod.Any()) {
             foreach (Mod m in cd_mod) {
                 if (m != null) {
@@ -421,7 +436,7 @@ public class Character
                 }
             }
         }
-        currentCD = val / 100;
+        currentCD = val;
 
         if (health > maxhealth) {
             health = maxhealth;

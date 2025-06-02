@@ -70,9 +70,16 @@ public class Battle : MonoBehaviour
     public GameObject TurnBox;
     public Text turnOrderDisplay;
 
+    public GameObject CharacterStatsBox;
+    public Text CharacterTitle;
+    public Text CharacterStats;
+
     public GameObject StatusesBox;
     public Text StatusesTitle;
     public Text Statuses;
+
+    public GameObject EnemySkillBox;
+    public Text EnemySkillDescription;
 
     public GameObject DescriptionBox;
     public GameObject DamageBox;
@@ -130,51 +137,46 @@ public class Battle : MonoBehaviour
             string enemyType = Game.enemies[Random.Range(0, Game.enemies.Count)];
             Enemy e;
             Skills s;
+            string skillName;
             switch (enemyType)
             {
                 // NAME / ID / LEVEL / HP / ATK / DEF / SPD / CR / CD / SP
                 case "Slime":
                     e = new Enemy("Slime", i + 1, level, 45, 12, 8, 11, 5, 8, 1);
-                    s = SkillsRegistry.getSkill("Goo Shot");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Goo Shot";
                     break;
                 case "Cave Bull":
                     e = new Enemy("Cave Bull", i + 1, level, 52, 14, 2, 9, 7, 20, 1);
-                    s = SkillsRegistry.getSkill("Drunken Charge");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Drunken Charge";
                     break;
                 case "Sandbat":
                     e = new Enemy("Sandbat", i + 1, level, 60, 7, 22, 8, 5, 7, 2);
-                    s = SkillsRegistry.getSkill("Sand Spray");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Sand Spray";
                     break;
                 case "Koy Vamp":
                     e = new Enemy("Koy Vamp", i + 1, level, 40, 12, 9, 11, 3, 3, 2);
-                    s = SkillsRegistry.getSkill("Vampiric Gnaw");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Vampiric Gnaw";
                     break;
                 case "Sledger":
                     e = new Enemy("Sledger", i + 1, level, 42, 13, 5, 10, 12, 6, 0);
-                    s = SkillsRegistry.getSkill("Hammer Down");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Hammer Down";
                     break;
                 case "Big Tox":
                     e = new Enemy("Big Tox", i + 1, level, 55, 8, 16, 13, 16, 3, 2);
-                    s = SkillsRegistry.getSkill("Mysterious Dew-hickey");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Mysterious Dew-hickey";
                     break;
                 case "Unskilled":
                     e = new Enemy("Unskilled", i + 1, level, 53, 10, 15, 11, 5, 4, 2);
-                    s = SkillsRegistry.getSkill("Skilln't");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Skilln't";
                     break;
                 default:
                     e = new Enemy("Slime", i + 1, level, 45, 12, 8, 11, 5, 8, 1);
-                    s = SkillsRegistry.getSkill("Goo Shot");
-                    s.stacks = (int)(Game.floorNumber * -1 / 3);
+                    skillName = "Goo Shot";
                     break;
 
             }
+            s = SkillsRegistry.getSkill(skillName);
+            s.stacks = (int)(Game.floorNumber * -1 / 3);
             e.hp_ex += hp_p;
             e.atk_ex += atk_p;
             e.def_ex += def_p;
@@ -363,6 +365,8 @@ public class Battle : MonoBehaviour
         if (!cycle.Any()) {
             UpdateAVCycle();
             StatusesBox.SetActive(false);
+            CharacterStatsBox.SetActive(false);
+            EnemySkillBox.SetActive(false);
         }
 
         string turn = cycle[0].getName();
@@ -689,7 +693,7 @@ public class Battle : MonoBehaviour
                                         battleSP -= skill.spConsumption;
                                         foreach (Character c in Game.characters) {
                                             if (c.health > 0) {
-                                                dmg += Skills.useSkill(c, skill);
+                                                dmg += Skills.useSkill(cycle[0], skill, c);
                                             }
                                         }
                                         StartCoroutine(ShowSkillUse(1, cycle[0], skill));
@@ -976,70 +980,105 @@ public class Battle : MonoBehaviour
             return -1;
         } else {
             if (Input.GetKeyDown(KeyCode.Z)) {
-                if (StatusesBox.activeSelf) {
+                if (CharacterStatsBox.activeSelf) {
                     statusPage++;
                     if (statusPage > cycle.Count() - 1) {
                         statusPage = 0;
                     }
                 } else {
-                    StatusesBox.SetActive(true);
+                    CharacterStatsBox.SetActive(true);
                     statusPage = 0;
                 }
             }
+            if (CharacterStatsBox.activeSelf) {
+                if (statusPage <= cycle.Count() - 1) {
+                    string currentStatuses = "";
+                    int modCount = 0;
+                    
+                    foreach (Mod m in cycle[statusPage].hp_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " HP (" + m.duration + ") \n";
+                        modCount++;
+                    }
 
-            if (statusPage <= cycle.Count() - 1) {
-                string currentStatuses = "";
-                
-                foreach (Mod m in cycle[statusPage].hp_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " HP (" + m.duration + ") \n";
+                    foreach (Mod m in cycle[statusPage].hp_p_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " HP% (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].atk_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " ATK (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].atk_p_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " ATK% (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].def_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " DEF (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].def_p_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " DEF% (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].spd_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " SPD (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].cr_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " CR% (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].cd_mod) {
+                        currentStatuses += m.modName + ": " + m.value + " CD% (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].bleed) {
+                        currentStatuses += m.modName + ": " + m.value + " BLEED (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    foreach (Mod m in cycle[statusPage].freeze) {
+                        currentStatuses += m.modName + ": " + m.value + " FREEZE (" + m.duration + ") \n";
+                        modCount++;
+                    }
+
+                    if (modCount == 0) {
+                        currentStatuses = "There are no statuses on them!";
+                        StatusesBox.SetActive(false);
+                    } else {
+                        StatusesBox.SetActive(true);
+                    }
+
+                    Character statusCharacter = cycle[statusPage];
+
+                    StatusesTitle.text = modCount + " Statuses";
+                    Statuses.text = currentStatuses;
+
+                    CharacterTitle.text = statusCharacter.getName();
+                    string characterStatText = "Level: " + statusCharacter.level;
+                    characterStatText += "\nHP: " + (statusCharacter.baseHP + statusCharacter.hp_ex + statusCharacter.gear.hp + (Character.L_UP_HP * (statusCharacter.level-1))) + " / " + statusCharacter.maxhealth;
+                    characterStatText += "\nATK: " + (statusCharacter.baseATK + statusCharacter.atk_ex + statusCharacter.gear.atk + (Character.L_UP_ATK * (statusCharacter.level-1))) + " > " + (statusCharacter.currentATK);
+                    characterStatText += "\nDEF: " + (statusCharacter.baseDEF + statusCharacter.def_ex + statusCharacter.gear.def + (Character.L_UP_DEF * (statusCharacter.level-1))) + " > " + (statusCharacter.currentDEF);
+                    characterStatText += "\nSPD: " + (statusCharacter.baseSPD + statusCharacter.spd_ex + statusCharacter.gear.spd) + " > " + (statusCharacter.currentSPD);
+                    characterStatText += "\nCRIT RATE: " + (statusCharacter.baseCR + statusCharacter.cr_ex + statusCharacter.gear.cr) + " > " + (statusCharacter.currentCR);
+                    characterStatText += "\nCRIT DMG: " + (statusCharacter.baseCD + statusCharacter.cd_ex + statusCharacter.gear.cd) + " > " + (statusCharacter.currentCD);
+                    CharacterStats.text = characterStatText;
+
+                    if (statusCharacter.isEnemy()) {
+                        EnemySkillBox.SetActive(true);
+                        EnemySkillDescription.text = statusCharacter.skill1.skillName + " (" + statusCharacter.skill1.stacks + " Stacks)" + ": " + statusCharacter.skill1.description;
+                    } else {
+                        EnemySkillBox.SetActive(false);
+                    }
                 }
-
-                foreach (Mod m in cycle[statusPage].hp_p_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " HP% (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].atk_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " ATK (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].atk_p_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " ATK% (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].def_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " DEF (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].def_p_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " DEF% (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].spd_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " SPD (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].cr_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " CR% (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].cd_mod) {
-                    currentStatuses += m.modName + ": " + m.value + " CD% (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].bleed) {
-                    currentStatuses += m.modName + ": " + m.value + " BLEED (" + m.duration + ") \n";
-                }
-
-                foreach (Mod m in cycle[statusPage].freeze) {
-                    currentStatuses += m.modName + ": " + m.value + " FREEZE (" + m.duration + ") \n";
-                }
-
-                if (currentStatuses == "") {
-                    currentStatuses = "There are no statuses on them!";
-                }
-
-                StatusesTitle.text = "Statuses: " + cycle[statusPage].getName() + "\n";
-                Statuses.text = currentStatuses;
             }
             return 0;
         }
