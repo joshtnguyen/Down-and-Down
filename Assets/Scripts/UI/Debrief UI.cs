@@ -32,7 +32,7 @@ public class DebriefUI : MonoBehaviour
         if (getConfirmation() != 0) {
             Game.createFloor();
             Game.gameMovementFreeze = false;
-            Game.floorNumber--;
+            Game.floorNumber++;
             SceneManager.LoadScene("Overworld Scene");
         }
     }

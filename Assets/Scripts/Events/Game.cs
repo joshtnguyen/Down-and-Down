@@ -42,7 +42,7 @@ public class Game : MonoBehaviour
     public static int mapEasing = 13;
     public static int row = 0;
     public static int col = 0;
-    public static int floorNumber = -1;
+    public static int floorNumber = 1;
     public static int gold = 20;
     public static List<Gear> gear = new List<Gear>();
 
@@ -191,7 +191,7 @@ public class Game : MonoBehaviour
             d.stacks = 0;
         }
 
-        for (int i = 0; i < disruptionStart + (disruptionMultiplier * (floorNumber * -1) - 1); i++) {
+        for (int i = 0; i < disruptionStart + (disruptionMultiplier * (floorNumber) - 1); i++) {
             if (usableDisruptions.Any()) {
                 int d = UnityEngine.Random.Range(0, usableDisruptions.Count);
                 usableDisruptions[d].stacks++;
@@ -601,7 +601,7 @@ public class Game : MonoBehaviour
             Destroy(t);
         }
 
-        floorIndicator.text = "Floor " + floorNumber;
+        floorIndicator.text = "Floor " + floorNumber * -1;
 
         for (int i = 0; i < mapLength; i++) {
             for (int j = 0; j < mapLength; j++) {

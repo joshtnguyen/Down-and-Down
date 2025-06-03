@@ -19,7 +19,7 @@ public class EndUI : MonoBehaviour
     void Update()
     {
         List<string> results = new List<string>();
-        results.Add("Floors Climbed: " + Game.floorNumber);
+        results.Add("Floors Climbed: " + Game.floorNumber * -1);
         results.Add(" ");
         foreach (Character c in Game.characters) {
             results.Add(c.character + ": Level " + c.level);
