@@ -16875,7 +16875,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAlive: 0
-  moveSpeed: 2
+  moveSpeed: 3
   canMove: 1
   solidObjectsLayer:
     serializedVersion: 2

@@ -48,7 +48,8 @@ public class Game : MonoBehaviour
 
     // Disruptions
     public static List<Disruptions> disruptions = new List<Disruptions>();
-    public static int disruptionCount = -3;
+    public static int disruptionStart = 5;
+    public static int disruptionMultiplier = 5;
 
     // FLOOR INFO
     public static int steps = 0;
@@ -183,7 +184,6 @@ public class Game : MonoBehaviour
         steps = 0;
         enemiesKilled = 0;
         timesDowned = 0;
-        disruptionCount += 3;
 
         List<Disruptions> usableDisruptions = new List<Disruptions>();
         foreach(Disruptions d in disruptions) {
@@ -191,12 +191,13 @@ public class Game : MonoBehaviour
             d.stacks = 0;
         }
 
-        for (int i = 0; i < disruptionCount; i++) {
+        for (int i = 0; i < disruptionStart + (disruptionMultiplier * (floorNumber * -1) - 1); i++) {
             if (usableDisruptions.Any()) {
                 int d = UnityEngine.Random.Range(0, usableDisruptions.Count);
                 usableDisruptions[d].stacks++;
                 if (usableDisruptions[d].maxStacks >= 0 && usableDisruptions[d].stacks >= usableDisruptions[d].maxStacks) {
-                    usableDisruptions.RemoveAt(d);
+                    usableDisruptions[d].stacks--;
+                    i--;
                 }
             }
         }

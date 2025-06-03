@@ -446,10 +446,13 @@ public class Character
 
     public int checkLevelChange() {
         int up = 0;
-        while (xp >= L_UP_REQ * level) {
+        while (xp >= L_UP_REQ * level)
+        {
             xp -= L_UP_REQ * level;
             level++;
             up++;
+            health += L_UP_HP;
+            verifyMod();
         }
         return up;
     }
@@ -457,7 +460,7 @@ public class Character
     public string getStats()
     {
         verifyMod();
-        string characterStatText = "Level " + level + " (Progress: " + xp + "/" + L_UP_REQ + ")";
+        string characterStatText = "Level " + level + " (Progress: " + xp + "/" + (L_UP_REQ * level) + ")";
         characterStatText += "\nHP: " + (health) + " / " + (maxhealth);
         characterStatText += "\nATK: " + (baseATK + atk_ex + gear.atk + (Character.L_UP_ATK * (level - 1)));
         characterStatText += "\nDEF: " + (baseDEF + def_ex + gear.def + (Character.L_UP_DEF * (level - 1)));

@@ -126,7 +126,7 @@ public class Battle : MonoBehaviour
         cycle.Clear();
         enemies.Clear();
 
-        int level = Game.floorNumber * -1 + difficulty;
+        int level = Game.floorNumber + difficulty;
 
         double hp_p = Game.getDisruption("Heartiness").stacks * 0.5;
         double atk_p = Game.getDisruption("Strengthening").stacks * 0.5;
@@ -176,7 +176,7 @@ public class Battle : MonoBehaviour
 
             }
             s = SkillsRegistry.getSkill(skillName);
-            s.stacks = (int)(Game.floorNumber * -1 / 3);
+            s.stacks = (int)(Game.floorNumber / 3);
             e.hp_ex += hp_p;
             e.atk_ex += atk_p;
             e.def_ex += def_p;

@@ -1673,7 +1673,7 @@ public class GameUIManager : MonoBehaviour
         if (r.wishes <= 0){
             return 0;
         } 
-        int cost = (int)(-4 * Game.floorNumber * Math.Pow(2, r.wishes));
+        int cost = (int)(4 * Game.floorNumber * Math.Pow(2, r.wishes));
         return cost;
     }
     

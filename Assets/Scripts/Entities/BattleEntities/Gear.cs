@@ -50,7 +50,7 @@ public class Gear
         } else {
             id = 0;
         }
-        for (int i = 0; i < Game.floorNumber * -1; i++) {
+        for (int i = 0; i < Game.floorNumber; i++) {
             switch (UnityEngine.Random.Range(0, 9)) {
                 case 0:
                     hp += Random(1.5, 4.0);
