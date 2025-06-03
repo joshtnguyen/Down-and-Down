@@ -1064,7 +1064,7 @@ public class Battle : MonoBehaviour
 
                     CharacterTitle.text = statusCharacter.getName();
                     string characterStatText = "Level: " + statusCharacter.level;
-                    characterStatText += "\nHP: " + (statusCharacter.baseHP + statusCharacter.hp_ex + statusCharacter.gear.hp + (Character.L_UP_HP * (statusCharacter.level-1))) + " / " + statusCharacter.maxhealth;
+                    characterStatText += "\nHP: " + (statusCharacter.health) + " / " + (statusCharacter.maxhealth);
                     characterStatText += "\nATK: " + (statusCharacter.baseATK + statusCharacter.atk_ex + statusCharacter.gear.atk + (Character.L_UP_ATK * (statusCharacter.level-1))) + " > " + (statusCharacter.currentATK);
                     characterStatText += "\nDEF: " + (statusCharacter.baseDEF + statusCharacter.def_ex + statusCharacter.gear.def + (Character.L_UP_DEF * (statusCharacter.level-1))) + " > " + (statusCharacter.currentDEF);
                     characterStatText += "\nSPD: " + (statusCharacter.baseSPD + statusCharacter.spd_ex + statusCharacter.gear.spd) + " > " + (statusCharacter.currentSPD);

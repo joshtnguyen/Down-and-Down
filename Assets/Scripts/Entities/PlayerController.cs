@@ -47,31 +47,44 @@ public class PlayerController : MonoBehaviour
 
             int confirm = getConfirmation();
 
-            if (confirm == 1) {
-                if (Game.map[Game.row, Game.col].roomType == "Exit" && Game.map[Game.row, Game.col].enemiesLeft <= 0 && IsOnTeleporter()) {
+            if (confirm == 1)
+            {
+                if (Game.map[Game.row, Game.col].roomType == "Exit" && Game.map[Game.row, Game.col].enemiesLeft <= 0 && IsOnTeleporter())
+                {
                     UI.GetComponent<GameUIManager>().openMenu("Teleporter");
                 }
 
-                if (Game.map[Game.row, Game.col].roomType == "Wizard Room" && IsOnWizard()) {
+                if (Game.map[Game.row, Game.col].roomType == "Wizard Room" && IsOnWizard())
+                {
                     UI.GetComponent<GameUIManager>().openMenu("Wizard");
                 }
 
-                if (Game.map[Game.row, Game.col].roomType == "Break Room" && IsOnBreak()) {
+                if (Game.map[Game.row, Game.col].roomType == "Break Room" && IsOnBreak())
+                {
                     UI.GetComponent<GameUIManager>().openMenu("Break");
                 }
 
-                if (Game.map[Game.row, Game.col].roomType == "Shrine Room" && IsOnShrine()) {
+                if (Game.map[Game.row, Game.col].roomType == "Shrine Room" && IsOnShrine())
+                {
                     UI.GetComponent<GameUIManager>().openMenu("Shrine");
                 }
 
-                if (Game.map[Game.row, Game.col].roomType == "Demon Room" && IsOnShrine()) {
+                if (Game.map[Game.row, Game.col].roomType == "Demon Room" && IsOnShrine())
+                {
                     UI.GetComponent<GameUIManager>().openMenu("Demon");
                 }
 
-                if (Game.map[Game.row, Game.col].roomType == "Gear Room" && IsOnGear()) {
+                if (Game.map[Game.row, Game.col].roomType == "Gear Room" && IsOnGear())
+                {
                     UI.GetComponent<GameUIManager>().openMenu("Gear");
                 }
 
+            }
+            else if (confirm == -1)
+            {
+                if (Input.GetKeyDown(KeyCode.X)) {
+                    UI.GetComponent<GameUIManager>().openMenu("Stats");
+                }
             }
 
 

@@ -454,17 +454,34 @@ public class Character
         return up;
     }
 
-    public static void addSkill(Skills s) {
+    public string getStats()
+    {
+        verifyMod();
+        string characterStatText = "Level " + level + " (Progress: " + xp + "/" + L_UP_REQ + ")";
+        characterStatText += "\nHP: " + (health) + " / " + (maxhealth);
+        characterStatText += "\nATK: " + (baseATK + atk_ex + gear.atk + (Character.L_UP_ATK * (level - 1)));
+        characterStatText += "\nDEF: " + (baseDEF + def_ex + gear.def + (Character.L_UP_DEF * (level - 1)));
+        characterStatText += "\nSPD: " + (baseSPD + spd_ex + gear.spd);
+        characterStatText += "\nCRIT RATE: " + (baseCR + cr_ex + gear.cr);
+        characterStatText += "\nCRIT DMG: " + (baseCD + cd_ex + gear.cd);
+        return characterStatText;
+    }
+
+    public static void addSkill(Skills s)
+    {
         Character c = GetCharacter(s.skillUser);
         bool hasAdded = false;
-        foreach (Skills skill in c.skills) {
-            if (s.skillName == skill.skillName) {
+        foreach (Skills skill in c.skills)
+        {
+            if (s.skillName == skill.skillName)
+            {
                 skill.stacks += s.stacks + 1;
                 hasAdded = true;
             }
         }
 
-        if (!hasAdded) {
+        if (!hasAdded)
+        {
             c.skills.Add(s);
         }
     }

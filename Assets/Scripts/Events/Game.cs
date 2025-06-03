@@ -531,9 +531,12 @@ public class Game : MonoBehaviour
             updateMap();
         }
 
-        if (Input.GetKeyDown(KeyCode.K)) {
-            for (int i = 0; i < mapLength; i++) {
-                for (int j = 0; j < mapLength; j++) {
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            for (int i = 0; i < mapLength; i++)
+            {
+                for (int j = 0; j < mapLength; j++)
+                {
                     map[i, j].hasEntered = true;
                 }
             }

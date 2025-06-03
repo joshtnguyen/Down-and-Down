@@ -64,7 +64,8 @@ public class GameUIManager : MonoBehaviour
         TargetBox.transform.position = DescriptionBox.transform.position;
         emptyTrash();
 
-        switch(menuType) {
+        switch (menuType)
+        {
             case "Teleporter":
                 OptionBox.SetActive(true);
                 D_1.text = "Would you like to go further down? You will not be able to come back here later...";
@@ -91,24 +92,36 @@ public class GameUIManager : MonoBehaviour
                 D_2.text = "";
                 D_3.text = "";
                 D_4.text = "";
-                if (r.skillList[0] != null) {
+                if (r.skillList[0] != null)
+                {
                     A_1.text = ">> Skill: " + r.skillList[0].skillName;
-                } else {
+                }
+                else
+                {
                     A_1.text = ">> [PURCHASED!]";
                 }
-                if (r.skillList[1] != null) {
+                if (r.skillList[1] != null)
+                {
                     A_2.text = ">> Skill: " + r.skillList[1].skillName;
-                } else {
+                }
+                else
+                {
                     A_2.text = ">> [PURCHASED!]";
                 }
-                if (r.skillList[2] != null) {
+                if (r.skillList[2] != null)
+                {
                     A_3.text = ">> Skill: " + r.skillList[2].skillName;
-                } else {
+                }
+                else
+                {
                     A_3.text = ">> [PURCHASED!]";
                 }
-                if (r.skillList[3] != null) {
+                if (r.skillList[3] != null)
+                {
                     A_4.text = ">> Skill: " + r.skillList[3].skillName;
-                } else {
+                }
+                else
+                {
                     A_4.text = ">> [PURCHASED!]";
                 }
                 T_1.text = ">> Confirm Purchase";
@@ -153,12 +166,15 @@ public class GameUIManager : MonoBehaviour
                 break;
             case "Shrine":
                 OptionBox.SetActive(true);
-                if (r.wishes <= 0) {
+                if (r.wishes <= 0)
+                {
                     D_1.text = "The remanants of a shrine stands before you. It calls for you to wish upon it.";
                     A_1.text = ">> Wish Upon It";
                     T_1.text = ">> Confirm Wish";
                     MoneyBox.SetActive(false);
-                } else {
+                }
+                else
+                {
                     D_1.text = "The remanants of a shrine stands before you once again. It imposes a price this time.";
                     A_1.text = ">> Wish Upon It for " + getShrineCost() + "G";
                     T_1.text = ">> Confirm Wish for " + getShrineCost() + "G";
@@ -208,7 +224,8 @@ public class GameUIManager : MonoBehaviour
                 Game.gameMovementFreeze = true;
                 break;
             case "Gear":
-                if (Game.map[Game.row, Game.col].wishes == 0) {
+                if (Game.map[Game.row, Game.col].wishes == 0)
+                {
                     OptionBox.SetActive(true);
                     D_1.text = "The lava acknowledges your power. For your first time arriving here, it gives you gear and an upgrade point.";
                     D_2.text = "";
@@ -232,10 +249,13 @@ public class GameUIManager : MonoBehaviour
                     target_selection_limit = -1;
                     Game.gameMovementFreeze = true;
                     Gear.wallet += 1;
-                    for (int i = 0; i < 1; i++){
+                    for (int i = 0; i < 1; i++)
+                    {
                         Game.gear.Add(new Gear(true));
                     }
-                } else {
+                }
+                else
+                {
                     OptionBox.SetActive(true);
                     D_1.text = "";
                     D_2.text = "";
@@ -255,11 +275,38 @@ public class GameUIManager : MonoBehaviour
                     menu_selection = 0;
                     menu_selection_limit = -1;
                     action_selection = 0;
-                    action_selection_limit = 2;
+                    action_selection_limit = 1;
                     target_selection = -1;
                     target_selection_limit = -1;
                     Game.gameMovementFreeze = true;
                 }
+                break;
+
+            case "Stats":
+                OptionBox.SetActive(true);
+                D_1.text = ">> " + Game.characters[0].character + " (HP: " + Game.characters[0].health + "/" + Game.characters[0].maxhealth + ")";
+                D_2.text = ">> " + Game.characters[1].character + " (HP: " + Game.characters[1].health + "/" + Game.characters[1].maxhealth + ")";
+                D_3.text = ">> " + Game.characters[2].character + " (HP: " + Game.characters[2].health + "/" + Game.characters[2].maxhealth + ")";
+                D_4.text = ">> " + Game.characters[3].character + " (HP: " + Game.characters[3].health + "/" + Game.characters[3].maxhealth + ")";
+                A_1.text = ">> Change Skill 1";
+                A_2.text = ">> Change Skill 2";
+                A_3.text = ">> Check Gear";
+                A_4.text = "";
+                T_1.text = "";
+                T_2.text = "";
+                T_3.text = "";
+                T_4.text = "";
+                menu_type = "Highlight";
+                menu_phase = 0;
+                menu_selection = 0;
+                menu_selection_limit = 3;
+                action_selection = 0;
+                action_selection_limit = 2;
+                target_selection = -1;
+                target_selection_limit = -1;
+                MoneyBox.SetActive(true);
+                Game.gameMovementFreeze = true;
+                updateOptions = true;
                 break;
         }
 
@@ -291,7 +338,6 @@ public class GameUIManager : MonoBehaviour
         target_selection_limit = -1;
         MoneyBox.SetActive(false);
         emptyTrash();
-
     }
 
     private int updateSelection(ref int option, int optionLimit) {
@@ -436,14 +482,14 @@ public class GameUIManager : MonoBehaviour
                 int pageUpdate = updateSelection(ref menu_selection, menu_selection_limit);
 
                 int confirm = getConfirmation();
-                switch (menu_name) {
+                switch (menu_name)
+                {
                     case "Break":
                         if (confirm == 1) {
                             A_3.text = ">> Heal for " + (5 * Game.characters[menu_selection].level) + "G";
                             menu_phase = 1;
                             action_selection = 0;
-                        }
-                        if (confirm == -1) {
+                        } else if (confirm == -1) {
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = false;
@@ -451,64 +497,123 @@ public class GameUIManager : MonoBehaviour
                         break;
                     case "Gear":
                         int maxPage = 0;
-                        if (Game.gear.Count <= 0) {
+                        if (Game.gear.Count <= 0)
+                        {
                             menu_selection = -2;
                             menu_selection_limit = -2;
                             D_1.text = "You have no gear to choose from. Come back when you have some!";
                             D_2.text = "";
                             D_3.text = "";
                             D_4.text = "";
-                        } else if (Game.gear.Count > 0) {
+                        }
+                        else if (Game.gear.Count > 0)
+                        {
                             maxPage = (Game.gear.Count - 1) / 4;
-                            if (menu_page < 0) {
+                            if (menu_page < 0)
+                            {
                                 menu_page = maxPage;
                                 menu_selection = (Game.gear.Count) % 4 - 1;
-                            } else if (menu_page > maxPage) {
+                            }
+                            else if (menu_page > maxPage)
+                            {
                                 menu_page = 0;
                                 menu_selection = 0;
                             }
 
-                            if ((Game.gear.Count) >= (menu_page * 4) + 1) {
+                            if ((Game.gear.Count) >= (menu_page * 4) + 1)
+                            {
                                 D_1.text = ">> " + Game.gear[(menu_page * 4) + 0].GetDisplayName();
                                 menu_selection_limit = 0;
-                                if (pageUpdate == -1) {
+                                if (pageUpdate == -1)
+                                {
                                     menu_selection = menu_selection_limit;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 D_1.text = "";
                             }
 
-                            if ((Game.gear.Count) >= (menu_page * 4) + 2) {
+                            if ((Game.gear.Count) >= (menu_page * 4) + 2)
+                            {
                                 D_2.text = ">> " + Game.gear[(menu_page * 4) + 1].GetDisplayName();
                                 menu_selection_limit = 1;
-                                if (pageUpdate == -1) {
+                                if (pageUpdate == -1)
+                                {
                                     menu_selection = menu_selection_limit;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 D_2.text = "";
                             }
 
-                            if ((Game.gear.Count) >= (menu_page * 4) + 3) {
+                            if ((Game.gear.Count) >= (menu_page * 4) + 3)
+                            {
                                 D_3.text = ">> " + Game.gear[(menu_page * 4) + 2].GetDisplayName();
                                 menu_selection_limit = 2;
-                                if (pageUpdate == -1) {
+                                if (pageUpdate == -1)
+                                {
                                     menu_selection = menu_selection_limit;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 D_3.text = "";
                             }
 
-                            if ((Game.gear.Count) >= (menu_page * 4) + 4) {
+                            if ((Game.gear.Count) >= (menu_page * 4) + 4)
+                            {
                                 D_4.text = ">> " + Game.gear[(menu_page * 4) + 3].GetDisplayName();
                                 menu_selection_limit = 3;
-                                if (pageUpdate == -1) {
+                                if (pageUpdate == -1)
+                                {
                                     menu_selection = menu_selection_limit;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 D_4.text = "";
                             }
 
                         }
+                        if (confirm == 1 && menu_selection >= 0)
+                        {
+                            menu_phase = 1;
+                            action_selection = 0;
+                            break;
+                        }
+                        if (confirm == -1)
+                        {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+
+                        if (updateOptions && menu_phase == 0)
+                        {
+                            emptyTrash();
+
+                            if (Game.gear.Count > (menu_page * 4) + menu_selection && menu_selection >= 0)
+                            {
+                                if (Game.gear[(menu_page * 4) + menu_selection] != null)
+                                {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(DescriptionBox.transform.position.x, DescriptionBox.transform.position.y), DescriptionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + menu_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = Game.gear[menu_page * 4 + menu_selection].GetValues();
+                                    InfoBoxClone.GetComponent<TextManager>().textBox.lineSpacing = 0.8f;
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = DescriptionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }
+                            }
+                        }
+                        break;
+
+                    case "Stats":
                         if (confirm == 1 && menu_selection >= 0) {
                             menu_phase = 1;
                             action_selection = 0;
@@ -522,21 +627,16 @@ public class GameUIManager : MonoBehaviour
 
                         if (updateOptions && menu_phase == 0) {
                             emptyTrash();
-
-                            if (Game.gear.Count > (menu_page * 4) + menu_selection && menu_selection >= 0) {
-                                if (Game.gear[(menu_page * 4) + menu_selection] != null) {
-                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(DescriptionBox.transform.position.x, DescriptionBox.transform.position.y), DescriptionBox.transform.rotation);
-                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
-                                    InfoBoxClone.name = "TEMP InfoBox" + menu_selection;
-                                    InfoBoxClone.GetComponent<TextManager>().text = Game.gear[menu_page * 4 + menu_selection].GetValues();
-                                    InfoBoxClone.GetComponent<TextManager>().textBox.lineSpacing = 0.8f;
-                                    trashCan.Add(InfoBoxClone);
-                                    var targetPos = DescriptionBox.transform.position;
-                                    targetPos.x += 517;
-                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
-                                    updateOptions = false;
-                                }
-                            }
+                            GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(DescriptionBox.transform.position.x, DescriptionBox.transform.position.y), DescriptionBox.transform.rotation);
+                            InfoBoxClone.transform.SetParent(InfoBox.transform);
+                            InfoBoxClone.name = "TEMP InfoBox" + menu_selection;
+                            InfoBoxClone.GetComponent<TextManager>().text = Game.characters[menu_selection].getStats();
+                            InfoBoxClone.GetComponent<TextManager>().textBox.lineSpacing = 0.8f;
+                            trashCan.Add(InfoBoxClone);
+                            var targetPos = DescriptionBox.transform.position;
+                            targetPos.x += 517;
+                            StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                            updateOptions = false;
                         }
                         break;
                 }
@@ -555,43 +655,55 @@ public class GameUIManager : MonoBehaviour
                 int pageUpdate = updateSelection(ref action_selection, action_selection_limit);
 
                 int confirm = getConfirmation();
-                switch (menu_name) {
+                switch (menu_name)
+                {
                     case "Teleporter":
-                        if (confirm == 1) {
-                            if (action_selection == 0) {
+                        if (confirm == 1)
+                        {
+                            if (action_selection == 0)
+                            {
                                 SceneManager.LoadScene("Debrief Scene");
-                            } else if (action_selection == 1) {
+                            }
+                            else if (action_selection == 1)
+                            {
                                 confirm = -1;
                             }
                         }
-                        if (confirm == -1) {
+                        if (confirm == -1)
+                        {
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = false;
                         }
                         break;
                     case "Wizard":
-                        if (confirm == 1) {
-                            if (Game.map[Game.row, Game.col].skillList[action_selection] != null) {
+                        if (confirm == 1)
+                        {
+                            if (Game.map[Game.row, Game.col].skillList[action_selection] != null)
+                            {
                                 int cost = TextManager.getSkillCost(Game.map[Game.row, Game.col].skillList[action_selection]);
-                                if (Game.gold >= cost) {
+                                if (Game.gold >= cost)
+                                {
                                     menu_phase = 3;
                                     T_1.text = ">> Confirm Purchase for " + cost + "G";
                                     target_selection = 1;
                                 }
                             }
-                            
+
                         }
-                        if (confirm == -1) {
+                        if (confirm == -1)
+                        {
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = false;
                         }
 
-                        if (updateOptions && menu_phase == 2) {
+                        if (updateOptions && menu_phase == 2)
+                        {
                             emptyTrash();
 
-                            if (Game.map[Game.row, Game.col].skillList[action_selection] != null) {
+                            if (Game.map[Game.row, Game.col].skillList[action_selection] != null)
+                            {
                                 GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
                                 InfoBoxClone.transform.SetParent(InfoBox.transform);
                                 InfoBoxClone.name = "TEMP InfoBox" + action_selection;
@@ -607,8 +719,10 @@ public class GameUIManager : MonoBehaviour
 
                         break;
                     case "Break":
-                        if (confirm == 1) {
-                            switch (action_selection) {
+                        if (confirm == 1)
+                        {
+                            switch (action_selection)
+                            {
                                 case 0 or 1:
                                     target_page = 0;
                                     target_selection = 0;
@@ -616,7 +730,8 @@ public class GameUIManager : MonoBehaviour
                                     menu_phase = 3;
                                     break;
                                 case 2:
-                                    if (Game.gold >= 5 * Game.characters[menu_selection].level) {
+                                    if (Game.gold >= 5 * Game.characters[menu_selection].level)
+                                    {
                                         target_selection = 1;
                                         target_selection_limit = 1;
                                         menu_phase = 3;
@@ -628,62 +743,279 @@ public class GameUIManager : MonoBehaviour
                                     break;
                             }
                         }
-                        if (confirm == -1) {
+                        if (confirm == -1)
+                        {
                             emptyTrash();
                             menu_phase = 0;
                         }
 
-                        if (updateOptions && menu_phase == 2) {
+                        if (updateOptions && menu_phase == 2)
+                        {
                             emptyTrash();
 
-                            if (action_selection == 0 || action_selection == 1) {
+                            if (action_selection == 0 || action_selection == 1)
+                            {
                                 Character c = Game.characters[menu_selection];
                                 Skills s = null;
 
-                                if (c.skills.Count <= 2) {
+                                if (c.skills.Count <= 2)
+                                {
                                     target_selection = -2;
                                     target_selection_limit = -2;
                                     T_1.text = "You have no skills to choose from. Learn a few from the Wizard!";
                                     T_2.text = "";
                                     T_3.text = "";
                                     T_4.text = "";
-                                } else if (c.skills.Count > 2) {
+                                }
+                                else if (c.skills.Count > 2)
+                                {
                                     target_page = 0;
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 1) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 1)
+                                    {
                                         T_1.text = ">> " + c.skills[(target_page * 4) + 2].skillName;
                                         target_selection_limit = 0;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_1.text = "";
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 2) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 2)
+                                    {
                                         T_2.text = ">> " + c.skills[(target_page * 4) + 3].skillName;
                                         target_selection_limit = 1;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_2.text = "";
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 3) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 3)
+                                    {
                                         T_3.text = ">> " + c.skills[(target_page * 4) + 4].skillName;
                                         target_selection_limit = 2;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_3.text = "";
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 4) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 4)
+                                    {
                                         T_4.text = ">> " + c.skills[(target_page * 4) + 5].skillName;
                                         target_selection_limit = 3;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_4.text = "";
                                     }
 
                                 }
 
-                                if (action_selection == 0 && c.skill1 != null) {
+                                if (action_selection == 0 && c.skill1 != null)
+                                {
                                     s = c.skill1;
                                 }
-                                if (action_selection == 1 && c.skill2 != null) {
+                                if (action_selection == 1 && c.skill2 != null)
+                                {
+                                    s = c.skill2;
+                                }
+
+                                if (s != null)
+                                {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillDescription(c, s.skillName);
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }
+                                else
+                                {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = "This skill has not been selected yet. Learn skills from the Wizard and equip them here!";
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }
+                            }
+                        }
+                        break;
+
+                    case "Shrine":
+                        if (confirm == 1)
+                        {
+                            switch (action_selection)
+                            {
+                                case 0:
+                                    if (Game.gold >= getShrineCost())
+                                    {
+                                        menu_phase = 3;
+                                    }
+                                    break;
+                                case 1:
+                                    confirm = -1;
+                                    break;
+                            }
+                        }
+                        if (confirm == -1)
+                        {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+
+                    case "Demon":
+                        if (confirm == 1)
+                        {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = true;
+                            Battle.StartBattle(Game.getEnemyCount() + 2, 2, 0);
+                            Game.map[Game.row, Game.col].roomType = "Empty Room";
+                        }
+                        break;
+
+                    case "Gear":
+                        if (confirm == 1)
+                        {
+                            switch (action_selection)
+                            {
+                                case 0:
+                                    T_1.text = ">> " + Game.characters[0].character;
+                                    T_2.text = ">> " + Game.characters[1].character;
+                                    T_3.text = ">> " + Game.characters[2].character;
+                                    T_4.text = ">> " + Game.characters[3].character;
+                                    target_selection = 0;
+                                    target_selection_limit = 3;
+                                    menu_phase = 3;
+                                    break;
+                                case 1:
+                                    if (Gear.wallet > 0)
+                                    {
+                                        T_1.text = ">> Confirm Purchase for 1 Point";
+                                        T_2.text = ">> Cancel";
+                                        T_3.text = "";
+                                        T_4.text = "";
+                                        target_selection = 1;
+                                        target_selection_limit = 1;
+                                        menu_phase = 3;
+                                    }
+                                    break;
+                                case 2:
+                                    T_1.text = ">> Discard Item Forever";
+                                    T_2.text = ">> Cancel";
+                                    T_3.text = "";
+                                    T_4.text = "";
+                                    target_selection = 1;
+                                    target_selection_limit = 1;
+                                    menu_phase = 3;
+                                    break;
+                            }
+                        }
+                        if (confirm == -1)
+                        {
+                            closeMenu();
+                            emptyTrash();
+                            Game.gameMovementFreeze = false;
+                        }
+                        break;
+
+                    case "Stats":
+                        if (confirm == 1) {
+                            if (action_selection == 0 || action_selection == 1) {
+                                target_page = 0;
+                                target_selection = 0;
+                                target_selection_limit = 0;
+                                menu_phase = 3;
+                                break;
+                            }
+                        }
+                        if (confirm == -1)
+                        {
+                            emptyTrash();
+                            menu_phase = 0;
+                            updateOptions = true;
+                        }
+
+                        if (updateOptions && menu_phase == 2) {
+                            emptyTrash();
+
+                            if (action_selection == 0 || action_selection == 1)
+                            {
+                                Character c = Game.characters[menu_selection];
+                                Skills s = null;
+
+                                if (c.skills.Count <= 2)
+                                {
+                                    target_selection = -2;
+                                    target_selection_limit = -2;
+                                    T_1.text = "You have no skills to choose from. Learn a few from the Wizard!";
+                                    T_2.text = "";
+                                    T_3.text = "";
+                                    T_4.text = "";
+                                }
+                                else if (c.skills.Count > 2)
+                                {
+                                    target_page = 0;
+
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 1)
+                                    {
+                                        T_1.text = ">> " + c.skills[(target_page * 4) + 2].skillName;
+                                        target_selection_limit = 0;
+                                    }
+                                    else
+                                    {
+                                        T_1.text = "";
+                                    }
+
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 2)
+                                    {
+                                        T_2.text = ">> " + c.skills[(target_page * 4) + 3].skillName;
+                                        target_selection_limit = 1;
+                                    }
+                                    else
+                                    {
+                                        T_2.text = "";
+                                    }
+
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 3)
+                                    {
+                                        T_3.text = ">> " + c.skills[(target_page * 4) + 4].skillName;
+                                        target_selection_limit = 2;
+                                    }
+                                    else
+                                    {
+                                        T_3.text = "";
+                                    }
+
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 4)
+                                    {
+                                        T_4.text = ">> " + c.skills[(target_page * 4) + 5].skillName;
+                                        target_selection_limit = 3;
+                                    }
+                                    else
+                                    {
+                                        T_4.text = "";
+                                    }
+
+                                }
+
+                                if (action_selection == 0 && c.skill1 != null)
+                                {
+                                    s = c.skill1;
+                                }
+                                if (action_selection == 1 && c.skill2 != null)
+                                {
                                     s = c.skill2;
                                 }
 
@@ -708,77 +1040,36 @@ public class GameUIManager : MonoBehaviour
                                     StartCoroutine(Slide(InfoBoxClone, targetPos, false));
                                     updateOptions = false;
                                 }
+                            } else if (action_selection == 2) {
+                                Character c = Game.characters[menu_selection];
+                                if (c.gear.id != 0)
+                                {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = c.gear.GetValues();
+                                    InfoBoxClone.GetComponent<TextManager>().textBox.lineSpacing = 0.8f;
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }
+                                else
+                                {
+                                    GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(ActionBox.transform.position.x, ActionBox.transform.position.y), ActionBox.transform.rotation);
+                                    InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                    InfoBoxClone.name = "TEMP InfoBox" + action_selection;
+                                    InfoBoxClone.GetComponent<TextManager>().text = "There is no gear equipped right now!. Find and equip them at a gear pool!";
+                                    trashCan.Add(InfoBoxClone);
+                                    var targetPos = ActionBox.transform.position;
+                                    targetPos.x += 517;
+                                    StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                    updateOptions = false;
+                                }  
                             }
                         }
 
-                        break;
-                    case "Shrine":
-                        if (confirm == 1) {
-                            switch (action_selection) {
-                                case 0:
-                                    if (Game.gold >= getShrineCost()) {
-                                        menu_phase = 3;
-                                    }
-                                    break;
-                                case 1:
-                                    confirm = -1;
-                                    break;
-                            }
-                        }
-                        if (confirm == -1) {
-                            closeMenu();
-                            emptyTrash();
-                            Game.gameMovementFreeze = false;
-                        }
-                        break;
-                    case "Demon":
-                        if (confirm == 1) {
-                            closeMenu();
-                            emptyTrash();
-                            Game.gameMovementFreeze = true;
-                            Battle.StartBattle(Game.getEnemyCount() + 2, 2, 0);
-                            Game.map[Game.row, Game.col].roomType = "Empty Room";
-                        }
-                        break;
-                    case "Gear":
-                        if (confirm == 1) {
-                            switch (action_selection) {
-                                case 0:
-                                    T_1.text = ">> " + Game.characters[0].character;
-                                    T_2.text = ">> " + Game.characters[1].character;
-                                    T_3.text = ">> " + Game.characters[2].character;
-                                    T_4.text = ">> " + Game.characters[3].character;
-                                    target_selection = 0;
-                                    target_selection_limit = 3;
-                                    menu_phase = 3;
-                                    break;
-                                case 1:
-                                    if (Gear.wallet > 0) {
-                                        T_1.text = ">> Confirm Purchase for 1 Point";
-                                        T_2.text = ">> Cancel";
-                                        T_3.text = "";
-                                        T_4.text = "";
-                                        target_selection = 1;
-                                        target_selection_limit = 1;
-                                        menu_phase = 3;
-                                    }
-                                    break;
-                                case 2:
-                                    T_1.text = ">> Discard Item Forever";
-                                    T_2.text = ">> Cancel";
-                                    T_3.text = "";
-                                    T_4.text = "";
-                                    target_selection = 1;
-                                    target_selection_limit = 1;
-                                    menu_phase = 3;
-                                    break;
-                            }
-                        }
-                        if (confirm == -1) {
-                            closeMenu();
-                            emptyTrash();
-                            Game.gameMovementFreeze = false;
-                        }
                         break;
                 }
             } else if (menu_phase == 3) {
@@ -794,34 +1085,49 @@ public class GameUIManager : MonoBehaviour
                 int pageUpdate = updateSelection(ref target_selection, target_selection_limit);
 
                 int confirm = getConfirmation();
-                switch (menu_name) {
+                switch (menu_name)
+                {
                     case "Wizard":
-                        if (confirm == 1) {
-                            switch (target_selection) {
+                        if (confirm == 1)
+                        {
+                            switch (target_selection)
+                            {
                                 case 0:
                                     Room r = Game.map[Game.row, Game.col];
                                     int cost = TextManager.getSkillCost(r.skillList[action_selection]);
                                     Game.gold -= cost;
                                     Character.addSkill(r.skillList[action_selection]);
                                     r.skillList[action_selection] = null;
-                                    if (r.skillList[0] != null) {
+                                    if (r.skillList[0] != null)
+                                    {
                                         A_1.text = ">> Skill: " + r.skillList[0].skillName;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         A_1.text = ">> [PURCHASED!]";
                                     }
-                                    if (r.skillList[1] != null) {
+                                    if (r.skillList[1] != null)
+                                    {
                                         A_2.text = ">> Skill: " + r.skillList[1].skillName;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         A_2.text = ">> [PURCHASED!]";
                                     }
-                                    if (r.skillList[2] != null) {
+                                    if (r.skillList[2] != null)
+                                    {
                                         A_3.text = ">> Skill: " + r.skillList[2].skillName;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         A_3.text = ">> [PURCHASED!]";
                                     }
-                                    if (r.skillList[3] != null) {
+                                    if (r.skillList[3] != null)
+                                    {
                                         A_4.text = ">> Skill: " + r.skillList[3].skillName;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         A_4.text = ">> [PURCHASED!]";
                                     }
                                     menu_phase = 2;
@@ -831,75 +1137,101 @@ public class GameUIManager : MonoBehaviour
                                     break;
                             }
                         }
-                        if (confirm == -1) {
+                        if (confirm == -1)
+                        {
                             menu_phase = 2;
                         }
                         break;
                     case "Break":
-                        switch (action_selection) {
+                        switch (action_selection)
+                        {
                             case 0 or 1:
                                 Character c = Game.characters[menu_selection];
                                 int maxPage = 0;
-                                if (c.skills.Count <= 2) {
+                                if (c.skills.Count <= 2)
+                                {
                                     target_selection = -2;
                                     target_selection_limit = -2;
                                     T_1.text = "You have no skills to choose from. Learn a few from the Wizard!";
                                     T_2.text = "";
                                     T_3.text = "";
                                     T_4.text = "";
-                                } else if (c.skills.Count > 2) {
+                                }
+                                else if (c.skills.Count > 2)
+                                {
                                     maxPage = (c.skills.Count - 3) / 4;
-                                    if (target_page < 0) {
+                                    if (target_page < 0)
+                                    {
                                         target_page = maxPage;
                                         target_selection = (c.skills.Count - 2) % 4 - 1;
-                                    } else if (target_page > maxPage) {
+                                    }
+                                    else if (target_page > maxPage)
+                                    {
                                         target_page = 0;
                                         target_selection = 0;
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 1) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 1)
+                                    {
                                         T_1.text = ">> " + c.skills[(target_page * 4) + 2].skillName;
                                         target_selection_limit = 0;
-                                        if (pageUpdate == -1) {
+                                        if (pageUpdate == -1)
+                                        {
                                             target_selection = target_selection_limit;
                                         }
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_1.text = "";
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 2) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 2)
+                                    {
                                         T_2.text = ">> " + c.skills[(target_page * 4) + 3].skillName;
                                         target_selection_limit = 1;
-                                        if (pageUpdate == -1) {
+                                        if (pageUpdate == -1)
+                                        {
                                             target_selection = target_selection_limit;
                                         }
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_2.text = "";
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 3) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 3)
+                                    {
                                         T_3.text = ">> " + c.skills[(target_page * 4) + 4].skillName;
                                         target_selection_limit = 2;
-                                        if (pageUpdate == -1) {
+                                        if (pageUpdate == -1)
+                                        {
                                             target_selection = target_selection_limit;
                                         }
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_3.text = "";
                                     }
 
-                                    if ((c.skills.Count - 2) >= (target_page * 4) + 4) {
+                                    if ((c.skills.Count - 2) >= (target_page * 4) + 4)
+                                    {
                                         T_4.text = ">> " + c.skills[(target_page * 4) + 5].skillName;
                                         target_selection_limit = 3;
-                                        if (pageUpdate == -1) {
+                                        if (pageUpdate == -1)
+                                        {
                                             target_selection = target_selection_limit;
                                         }
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         T_4.text = "";
                                     }
 
                                 }
-                                if (confirm == 1 && target_selection >= 0) {
-                                    switch (action_selection) {
+                                if (confirm == 1 && target_selection >= 0)
+                                {
+                                    switch (action_selection)
+                                    {
                                         case 0:
                                             c.skill1 = c.skills[target_page * 4 + target_selection + 2];
                                             emptyTrash();
@@ -914,17 +1246,21 @@ public class GameUIManager : MonoBehaviour
                                             break;
                                     }
                                 }
-                                if (confirm == -1) {
+                                if (confirm == -1)
+                                {
                                     emptyTrash();
                                     updateOptions = true;
                                     menu_phase = 2;
                                 }
 
-                                if (updateOptions && menu_phase == 4) {
+                                if (updateOptions && menu_phase == 4)
+                                {
                                     emptyTrash();
 
-                                    if (c.skills.Count > (target_page * 4) + target_selection + 2 && target_selection >= 0) {
-                                        if (c.skills[(target_page * 4) + target_selection + 2] != null) {
+                                    if (c.skills.Count > (target_page * 4) + target_selection + 2 && target_selection >= 0)
+                                    {
+                                        if (c.skills[(target_page * 4) + target_selection + 2] != null)
+                                        {
                                             GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
                                             InfoBoxClone.transform.SetParent(InfoBox.transform);
                                             InfoBoxClone.name = "TEMP InfoBox" + target_selection;
@@ -939,10 +1275,13 @@ public class GameUIManager : MonoBehaviour
                                 }
                                 break;
                             case 2:
-                                if (confirm == 1) {
-                                    switch (target_selection) {
+                                if (confirm == 1)
+                                {
+                                    switch (target_selection)
+                                    {
                                         case 0:
-                                            if (Game.gold >= 5 * Game.characters[menu_selection].level) {
+                                            if (Game.gold >= 5 * Game.characters[menu_selection].level)
+                                            {
                                                 Game.gold -= 5 * Game.characters[menu_selection].level;
                                                 Game.characters[menu_selection].health = Game.characters[menu_selection].maxhealth;
                                                 D_1.text = ">> " + Game.characters[0].character + " (HP: " + Game.characters[0].health + "/" + Game.characters[0].maxhealth + ")";
@@ -958,18 +1297,23 @@ public class GameUIManager : MonoBehaviour
                                             break;
                                     }
                                 }
-                                if (confirm == -1) {
+                                if (confirm == -1)
+                                {
                                     emptyTrash();
                                     menu_phase = 2;
                                 }
                                 break;
                         }
                         break;
+
                     case "Shrine":
-                        if (confirm == 1) {
-                            switch (target_selection) {
+                        if (confirm == 1)
+                        {
+                            switch (target_selection)
+                            {
                                 case 0:
-                                    if (Game.gold >= getShrineCost()) {
+                                    if (Game.gold >= getShrineCost())
+                                    {
                                         Game.gold -= getShrineCost();
 
                                         string text = "";
@@ -984,7 +1328,8 @@ public class GameUIManager : MonoBehaviour
 
                                         shrine = shrines[UnityEngine.Random.Range(0, shrines.Count)];
 
-                                        switch (shrine) {
+                                        switch (shrine)
+                                        {
                                             case "Nothing":
                                                 text = "You offer to the shrine, but gain nothing.";
                                                 break;
@@ -999,23 +1344,30 @@ public class GameUIManager : MonoBehaviour
                                                 break;
                                             case "Skill Up":
                                                 List<Skills> skills = new List<Skills>();
-                                                foreach (Character c in Game.characters) {
-                                                    foreach (Skills s in c.skills) {
-                                                        if (s.skillName != "Attack" && s.skillName != "Block") {
+                                                foreach (Character c in Game.characters)
+                                                {
+                                                    foreach (Skills s in c.skills)
+                                                    {
+                                                        if (s.skillName != "Attack" && s.skillName != "Block")
+                                                        {
                                                             skills.Add(s);
                                                         }
                                                     }
                                                 }
-                                                if (skills.Any()) {
+                                                if (skills.Any())
+                                                {
                                                     Skills skillUp = skills[UnityEngine.Random.Range(0, skills.Count)];
                                                     skillUp.stacks++;
                                                     text = "The shrine in its generosity enhanced the understanding of " + skillUp.skillUser + "\'s " + skillUp.skillName + "! One stack has been added to it.";
-                                                } else {
+                                                }
+                                                else
+                                                {
                                                     text = "The shrine in its generosity offers you a chance to understand your skills better, but you haven't learned any.";
                                                 }
                                                 break;
                                             case "Heal":
-                                                foreach (Character c in Game.characters) {
+                                                foreach (Character c in Game.characters)
+                                                {
                                                     c.health = c.maxhealth;
                                                 }
                                                 text = "The shrine radiates with light. The next thing you know, all wounds you bore are gone.";
@@ -1039,21 +1391,27 @@ public class GameUIManager : MonoBehaviour
                                     break;
                             }
                         }
-                        if (confirm == -1) {
+                        if (confirm == -1)
+                        {
                             closeMenu();
                             emptyTrash();
                             Game.gameMovementFreeze = false;
                         }
                         break;
+
                     case "Gear":
                         Gear selectedGear = Game.gear[(menu_page * 4) + menu_selection];
-                        if (confirm == 1) {
+                        if (confirm == 1)
+                        {
                             Character c = Game.characters[target_selection];
-                            if (action_selection == 0) {
-                                if (c.gear != null) {
+                            if (action_selection == 0)
+                            {
+                                if (c.gear != null)
+                                {
                                     c.gear.user = null;
                                 }
-                                if (selectedGear.user != null) {
+                                if (selectedGear.user != null)
+                                {
                                     selectedGear.user.gear = new Gear();
                                 }
                                 selectedGear.user = c;
@@ -1069,12 +1427,17 @@ public class GameUIManager : MonoBehaviour
                                 StartCoroutine(Slide(InfoBoxClone, targetPos, false));
 
                                 menu_phase = 21;
-                                foreach (Character chars in Game.characters) {
+                                foreach (Character chars in Game.characters)
+                                {
                                     Debug.Log(chars.gear.GetDisplayName());
-                                    }
-                            } else if (action_selection == 1) {
-                                if (target_selection == 0) {
-                                    if (Gear.wallet > 0) {
+                                }
+                            }
+                            else if (action_selection == 1)
+                            {
+                                if (target_selection == 0)
+                                {
+                                    if (Gear.wallet > 0)
+                                    {
                                         selectedGear.points++;
                                         selectedGear.levelUp(1);
                                         Gear.wallet--;
@@ -1090,12 +1453,17 @@ public class GameUIManager : MonoBehaviour
 
                                         menu_phase = 21;
                                     }
-                                } else if (target_selection == 1) {
+                                }
+                                else if (target_selection == 1)
+                                {
                                     confirm = -1;
                                 }
-                                
-                            } else if (action_selection == 2) {
-                                if (target_selection == 0) {
+
+                            }
+                            else if (action_selection == 2)
+                            {
+                                if (target_selection == 0)
+                                {
                                     GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
                                     InfoBoxClone.transform.SetParent(InfoBox.transform);
                                     InfoBoxClone.name = "TEMP InfoBox" + target_selection;
@@ -1109,16 +1477,124 @@ public class GameUIManager : MonoBehaviour
                                     Game.gear.RemoveAt((menu_page * 4) + menu_selection);
 
                                     menu_phase = 21;
-                                } else if (target_selection == 1) {
+                                }
+                                else if (target_selection == 1)
+                                {
                                     confirm = -1;
                                 }
                             }
                         }
-                        if (confirm == -1) {
+                        if (confirm == -1)
+                        {
                             emptyTrash();
                             menu_phase = 2;
                         }
                         break;
+                    
+                    case "Stats":
+                        if (action_selection == 0 || action_selection == 1) {
+                            Character c = Game.characters[menu_selection];
+                            int maxPage = 0;
+                            if (c.skills.Count <= 2) {
+                                target_selection = -2;
+                                target_selection_limit = -2;
+                                T_1.text = "You have no skills to choose from. Learn a few from the Wizard!";
+                                T_2.text = "";
+                                T_3.text = "";
+                                T_4.text = "";
+                            } else if (c.skills.Count > 2) {
+                                maxPage = (c.skills.Count - 3) / 4;
+                                if (target_page < 0) {
+                                    target_page = maxPage;
+                                    target_selection = (c.skills.Count - 2) % 4 - 1;
+                                } else if (target_page > maxPage) {
+                                    target_page = 0;
+                                    target_selection = 0;
+                                }
+
+                                if ((c.skills.Count - 2) >= (target_page * 4) + 1) {
+                                    T_1.text = ">> " + c.skills[(target_page * 4) + 2].skillName;
+                                    target_selection_limit = 0;
+                                    if (pageUpdate == -1) {
+                                        target_selection = target_selection_limit;
+                                    }
+                                } else {
+                                    T_1.text = "";
+                                }
+
+                                if ((c.skills.Count - 2) >= (target_page * 4) + 2) {
+                                    T_2.text = ">> " + c.skills[(target_page * 4) + 3].skillName;
+                                    target_selection_limit = 1;
+                                    if (pageUpdate == -1) {
+                                        target_selection = target_selection_limit;
+                                    }
+                                } else {
+                                    T_2.text = "";
+                                }
+
+                                if ((c.skills.Count - 2) >= (target_page * 4) + 3) {
+                                    T_3.text = ">> " + c.skills[(target_page * 4) + 4].skillName;
+                                    target_selection_limit = 2;
+                                    if (pageUpdate == -1) {
+                                        target_selection = target_selection_limit;
+                                    }
+                                } else {
+                                    T_3.text = "";
+                                }
+
+                                if ((c.skills.Count - 2) >= (target_page * 4) + 4) {
+                                    T_4.text = ">> " + c.skills[(target_page * 4) + 5].skillName;
+                                    target_selection_limit = 3;
+                                    if (pageUpdate == -1) {
+                                        target_selection = target_selection_limit;
+                                    }
+                                } else {
+                                    T_4.text = "";
+                                }
+
+                            }
+                            if (confirm == 1 && target_selection >= 0) {
+                                switch (action_selection) {
+                                    case 0:
+                                        c.skill1 = c.skills[target_page * 4 + target_selection + 2];
+                                        emptyTrash();
+                                        updateOptions = true;
+                                        menu_phase = 2;
+                                        break;
+                                    case 1:
+                                        c.skill2 = c.skills[target_page * 4 + target_selection + 2];
+                                        emptyTrash();
+                                        updateOptions = true;
+                                        menu_phase = 2;
+                                        break;
+                                }
+                            }
+                            if (confirm == -1) {
+                                emptyTrash();
+                                updateOptions = true;
+                                menu_phase = 2;
+                            }
+
+                            if (updateOptions && menu_phase == 4) {
+                                emptyTrash();
+
+                                if (c.skills.Count > (target_page * 4) + target_selection + 2 && target_selection >= 0) {
+                                    if (c.skills[(target_page * 4) + target_selection + 2] != null) {
+                                        GameObject InfoBoxClone = Instantiate(InfoBox, new Vector3(TargetBox.transform.position.x, TargetBox.transform.position.y), TargetBox.transform.rotation);
+                                        InfoBoxClone.transform.SetParent(InfoBox.transform);
+                                        InfoBoxClone.name = "TEMP InfoBox" + target_selection;
+                                        InfoBoxClone.GetComponent<TextManager>().text = TextManager.convertSkillDescription(c, c.skills[target_page * 4 + target_selection + 2].skillName);
+                                        trashCan.Add(InfoBoxClone);
+                                        var targetPos = TargetBox.transform.position;
+                                        targetPos.y += 260;
+                                        StartCoroutine(Slide(InfoBoxClone, targetPos, false));
+                                        updateOptions = false;
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                        
                 }
             } else if (menu_phase == 20) {
                 int confirm = getConfirmation();
